@@ -14,11 +14,17 @@ public class User extends BaseEntity {
     private static final String WITHDRAWN_NICKNAME = "탈퇴한 사용자";
 
     private Long id;
+
     private Provider provider;
+
     private String providerId;
+
     private String email;
+
     private String nickname;
+
     private String profileImageUrl;
+
     private LocalDateTime deletedAt;
 
     public static User register(UserRegisterRequest request) {
