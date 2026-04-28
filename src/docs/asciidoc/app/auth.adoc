@@ -1,0 +1,14 @@
+== 인증 API
+=== 토큰 갱신
+
+쿠키의 refreshToken으로 새로운 accessToken을 발급받습니다.
+
+operation::auth/refresh[snippets='http-request,http-response']
+
+=== 로그아웃
+
+operation::auth/logout[snippets='http-request,http-response']
+
+=== 회원 탈퇴
+
+operation::auth/withdraw[snippets='http-request,http-response']
