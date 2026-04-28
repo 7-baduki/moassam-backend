@@ -39,4 +39,27 @@
     </attributes>
   </entity>
 
+  <entity class="com.moassam.auth.domain.RefreshToken">
+    <table name="refresh_tokens">
+      <unique-constraint name="uk_refresh_tokens_token">
+        <column-name>token</column-name>
+      </unique-constraint>
+    </table>
+    <attributes>
+      <id name="id">
+        <column name="id"/>
+        <generated-value strategy="IDENTITY"/>
+      </id>
+      <basic name="userId">
+        <column name="user_id" nullable="false"/>
+      </basic>
+      <basic name="token">
+        <column name="token" nullable="false" length="512"/>
+      </basic>
+      <basic name="expiresAt">
+        <column name="expires_at" nullable="false"/>
+      </basic>
+    </attributes>
+  </entity>
+
 </entity-mappings>
