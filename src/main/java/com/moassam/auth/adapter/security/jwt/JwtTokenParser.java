@@ -1,4 +1,4 @@
-package com.moassam.auth.adapter.security;
+package com.moassam.auth.adapter.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
