@@ -23,6 +23,8 @@ public class User extends BaseEntity {
 
     private String nickname;
 
+    private Role role;
+
     private String profileImageUrl;
 
     private LocalDateTime deletedAt;
@@ -34,6 +36,7 @@ public class User extends BaseEntity {
         user.providerId = request.providerId();
         user.email = request.email();
         user.nickname = request.nickname();
+        user.role = Role.TEACHER;
         user.profileImageUrl = request.profileImageUrl();
 
         return user;
