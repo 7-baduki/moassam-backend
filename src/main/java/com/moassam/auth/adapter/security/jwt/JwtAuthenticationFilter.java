@@ -15,8 +15,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-@Component
 @RequiredArgsConstructor
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
