@@ -17,6 +17,7 @@ class UserTest {
         assertThat(user.getEmail()).isEqualTo("moassam@kakao.com");
         assertThat(user.getNickname()).isEqualTo("모아쌤");
         assertThat(user.getProfileImageUrl()).isEqualTo("https://kakaocdn.net/profile/moassam.jpg");
+        assertThat(user.getRole()).isEqualTo(Role.TEACHER);
         assertThat(user.isDeleted()).isFalse();
     }
 
