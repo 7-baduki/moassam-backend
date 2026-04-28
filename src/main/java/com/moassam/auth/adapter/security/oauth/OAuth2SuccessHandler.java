@@ -1,12 +1,12 @@
 package com.moassam.auth.adapter.security.oauth;
 
+import com.moassam.auth.adapter.security.cookie.RefreshTokenCookie;
 import com.moassam.auth.application.required.RefreshTokenRepository;
 import com.moassam.auth.application.required.TokenProvider;
 import com.moassam.auth.domain.RefreshToken;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -15,12 +15,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenCookie refreshTokenCookie;
 
     @Value("${app.oauth.success-redirect-uri}")
     private String redirectUri;
@@ -37,7 +38,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String accessToken = tokenProvider.generateAccessToken(userId);
         String refreshToken = issueRefreshToken(userId);
 
-        String targetUrl = buildRedirectUrl(accessToken, refreshToken);
+        refreshTokenCookie.add(response, refreshToken);
+
+        String targetUrl = buildRedirectUrl(accessToken);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
@@ -51,10 +54,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         return token;
     }
 
-    private String buildRedirectUrl(String accessToken, String refreshToken) {
+    private String buildRedirectUrl(String accessToken) {
         return UriComponentsBuilder.fromUriString(redirectUri)
                 .queryParam("accessToken", accessToken)
-                .queryParam("refreshToken", refreshToken)
                 .build()
                 .toUriString();
     }

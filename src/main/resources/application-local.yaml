@@ -15,3 +15,8 @@ app:
     allowed-origins: http://localhost:3000
   oauth:
     success-redirect-uri: http://localhost:3000/oauth/callback
+  cookie:
+    refresh-token:
+      name: refreshToken
+      max-age-days: 14
+      secure: false
