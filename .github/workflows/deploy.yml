@@ -54,4 +54,4 @@ jobs:
             cd /home/ubuntu
             mv moassam-0.0.1-SNAPSHOT.jar moassam-0.0.1-SNAPSHOT.jar.bak 2>/dev/null || true
             find build/libs -name "*SNAPSHOT.jar" -exec mv {} /home/ubuntu/moassam-0.0.1-SNAPSHOT.jar \; 2>/dev/null || true
-            docker compose restart app
+            docker-compose -f /home/ubuntu/docker-compose.yml restart app
