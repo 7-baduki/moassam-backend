@@ -48,3 +48,15 @@ spring:
 jwt:
   access-token-expiry-ms: 1800000
   refresh-token-expiry-days: 14
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION}
+    s3:
+      bucket: ${S3_BUCKET_NAME}
+    stack:
+      auto: false
