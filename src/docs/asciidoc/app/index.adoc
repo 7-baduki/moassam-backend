@@ -12,3 +12,5 @@
 include::../shared/overview.adoc[]
 
 include::auth.adoc[]
+
+include::observation.adoc[]

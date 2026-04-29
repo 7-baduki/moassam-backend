@@ -1,0 +1,8 @@
+== 관찰일지 API
+
+=== Generate Observation
+
+OpenAI를 이용하여 관찰일지를 생성합니다.
+
+operation::observation/generate[snippets='http-request,http-response']
+
