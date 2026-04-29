@@ -66,4 +66,89 @@
     </attributes>
   </entity>
 
+  <embeddable class="com.moassam.observation.domain.Keyword">
+    <attributes>
+      <basic name="type">
+        <column name="type" nullable="false" length="20"/>
+        <enumerated>STRING</enumerated>
+      </basic>
+      <basic name="value">
+        <column name="value" nullable="false"/>
+      </basic>
+    </attributes>
+  </embeddable>
+
+  <entity class="com.moassam.observation.domain.Observation">
+    <table name="observations"/>
+    <attributes>
+      <id name="id">
+        <column name="id"/>
+        <generated-value strategy="IDENTITY"/>
+      </id>
+      <basic name="userId">
+        <column name="user_id" nullable="false"/>
+      </basic>
+      <basic name="memo">
+        <column name="memo" nullable="false" length="1000"/>
+      </basic>
+      <basic name="age">
+        <column name="age" nullable="false" length="20"/>
+        <enumerated>STRING</enumerated>
+      </basic>
+      <basic name="curriculum">
+        <column name="curriculum" nullable="false" length="20"/>
+        <enumerated>STRING</enumerated>
+      </basic>
+      <element-collection name="keywords">
+        <collection-table name="observation_keywords">
+          <join-column name="observation_id"/>
+        </collection-table>
+      </element-collection>
+      <one-to-many name="sections" target-entity="com.moassam.observation.domain.ObservationSection" mapped-by="observation" orphan-removal="true">
+        <cascade>
+          <cascade-all/>
+        </cascade>
+      </one-to-many>
+      <basic name="summaryContent">
+        <column name="summary_content" length="2000"/>
+      </basic>
+      <basic name="phoneConsultationContent">
+        <column name="phone_consultation_content" length="2000"/>
+      </basic>
+      <basic name="derivedContentStale">
+        <column name="derived_content_stale" nullable="false"/>
+      </basic>
+      <basic name="status">
+        <column name="status" nullable="false" length="20"/>
+        <enumerated>STRING</enumerated>
+      </basic>
+      <basic name="savedAt">
+        <column name="saved_at"/>
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity class="com.moassam.observation.domain.ObservationSection">
+    <table name="observation_sections"/>
+    <attributes>
+      <id name="id">
+        <column name="id"/>
+        <generated-value strategy="IDENTITY"/>
+      </id>
+      <many-to-one name="observation" fetch="LAZY" optional="false">
+        <join-column name="observation_id" nullable="false"/>
+      </many-to-one>
+      <basic name="type">
+        <column name="type" nullable="false" length="20"/>
+        <enumerated>STRING</enumerated>
+      </basic>
+      <basic name="content">
+        <column name="content" nullable="false" length="2000"/>
+      </basic>
+      <basic name="edited">
+        <column name="edited" nullable="false"/>
+      </basic>
+    </attributes>
+  </entity>
+
 </entity-mappings>
