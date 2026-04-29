@@ -1,0 +1,14 @@
+= didit App API Docs
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+:sectanchors:
+
+:snippets: ../../../build/generated-snippets
+
+include::../shared/overview.adoc[]
+
+include::auth.adoc[]
