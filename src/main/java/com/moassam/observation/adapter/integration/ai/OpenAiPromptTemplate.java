@@ -1,7 +1,7 @@
 package com.moassam.observation.adapter.integration.ai;
 
-import com.moassam.observation.application.command.KeywordCommand;
-import com.moassam.observation.application.command.ObservationGenerateCommand;
+import com.moassam.observation.domain.KeywordInput;
+import com.moassam.observation.domain.ObservationGenerateInput;
 import com.moassam.observation.domain.SectionType;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +38,7 @@ public class OpenAiPromptTemplate {
                 """;
     }
 
-    public String observationBase(ObservationGenerateCommand command) {
+    public String observationBase(ObservationGenerateInput input) {
         return """
                 관찰 상황: %s
                 나이: 만 %d세
@@ -49,11 +49,11 @@ public class OpenAiPromptTemplate {
                 키워드:
                 %s
                 """.formatted(
-                command.memo(),
-                command.age().toYearsOld(),
-                command.curriculum().name(),
-                formatSectionTypes(command.sectionTypes()),
-                formatKeywords(command.keywords())
+                input.memo(),
+                input.age().toYearsOld(),
+                input.curriculum().name(),
+                formatSectionTypes(input.sectionTypes()),
+                formatKeywords(input.keywords())
         );
     }
 
@@ -69,7 +69,7 @@ public class OpenAiPromptTemplate {
                 .collect(Collectors.joining("\n"));
     }
 
-    private String formatKeywords(List<KeywordCommand> keywords) {
+    private String formatKeywords(List<KeywordInput> keywords) {
         if (keywords == null || keywords.isEmpty()) {
             return "없음";
         }

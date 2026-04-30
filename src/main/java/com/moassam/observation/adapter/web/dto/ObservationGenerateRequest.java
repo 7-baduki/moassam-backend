@@ -1,8 +1,8 @@
 package com.moassam.observation.adapter.web.dto;
 
-import com.moassam.observation.application.command.ObservationGenerateCommand;
 import com.moassam.observation.domain.Age;
 import com.moassam.observation.domain.Curriculum;
+import com.moassam.observation.domain.ObservationGenerateInput;
 import com.moassam.observation.domain.SectionType;
 
 import java.util.List;
@@ -15,8 +15,8 @@ public record ObservationGenerateRequest(
         List<KeywordRequest> keywords
 ) {
 
-    public ObservationGenerateCommand toCommand() {
-        return new ObservationGenerateCommand(
+    public ObservationGenerateInput toInput() {
+        return new ObservationGenerateInput(
                 memo,
                 age,
                 curriculum,
@@ -24,7 +24,7 @@ public record ObservationGenerateRequest(
                 keywords == null
                         ? List.of()
                         : keywords.stream()
-                                .map(KeywordRequest::toCommand)
+                                .map(KeywordRequest::toInput)
                                 .toList()
         );
     }

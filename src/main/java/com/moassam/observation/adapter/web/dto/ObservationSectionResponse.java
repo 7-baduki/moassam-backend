@@ -1,6 +1,6 @@
 package com.moassam.observation.adapter.web.dto;
 
-import com.moassam.observation.application.result.ObservationSectionResult;
+import com.moassam.observation.domain.ObservationSection;
 import com.moassam.observation.domain.SectionType;
 
 public record ObservationSectionResponse(
@@ -10,12 +10,12 @@ public record ObservationSectionResponse(
         boolean edited
 ) {
 
-    public static ObservationSectionResponse from(ObservationSectionResult result) {
+    public static ObservationSectionResponse from(ObservationSection section) {
         return new ObservationSectionResponse(
-                result.sectionId(),
-                result.type(),
-                result.content(),
-                result.edited()
+                section.getId(),
+                section.getType(),
+                section.getContent(),
+                section.isEdited()
         );
     }
 }

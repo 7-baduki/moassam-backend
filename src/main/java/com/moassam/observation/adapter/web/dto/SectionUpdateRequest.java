@@ -1,12 +1,12 @@
 package com.moassam.observation.adapter.web.dto;
 
-import com.moassam.observation.application.command.SectionUpdateCommand;
+import com.moassam.observation.domain.SectionUpdateInput;
 
 public record SectionUpdateRequest(
         String content
 ) {
 
-    public SectionUpdateCommand toCommand() {
-        return new SectionUpdateCommand(content);
+    public SectionUpdateInput toInput() {
+        return new SectionUpdateInput(content);
     }
 }

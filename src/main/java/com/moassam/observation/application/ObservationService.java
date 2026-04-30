@@ -1,18 +1,9 @@
 package com.moassam.observation.application;
 
-import com.moassam.observation.application.command.ObservationGenerateCommand;
-import com.moassam.observation.application.command.ObservationRegenerateCommand;
-import com.moassam.observation.application.command.SectionRegenerateCommand;
-import com.moassam.observation.application.command.SectionUpdateCommand;
-import com.moassam.observation.application.provided.ObservationUseCase;
+import com.moassam.observation.application.provided.*;
 import com.moassam.observation.application.required.ObservationGenerator;
 import com.moassam.observation.application.required.ObservationRepository;
-import com.moassam.observation.application.result.ObservationGenerateResult;
-import com.moassam.observation.application.result.ObservationResult;
-import com.moassam.observation.application.result.ObservationSectionResult;
-import com.moassam.observation.application.result.PhoneConsultationResult;
-import com.moassam.observation.domain.Keyword;
-import com.moassam.observation.domain.Observation;
+import com.moassam.observation.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,23 +11,30 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ObservationService implements ObservationUseCase {
+public class ObservationService implements
+        ObservationCreator,
+        ObservationFinder,
+        ObservationRegenerator,
+        ObservationSectionModifier,
+        PhoneConsultationCreator,
+        ObservationSaver
+{
 
     private final ObservationRepository observationRepository;
     private final ObservationGenerator observationGenerator;
 
     @Transactional
     @Override
-    public ObservationResult generateObservation(
+    public Observation generateObservation(
             Long userId,
-            ObservationGenerateCommand command
+            ObservationGenerateInput input
     ) {
         Observation observation = Observation.create(
                 userId,
-                command.memo(),
-                command.age(),
-                command.curriculum(),
-                command.keywords().stream()
+                input.memo(),
+                input.age(),
+                input.curriculum(),
+                input.keywords().stream()
                         .map(keyword -> Keyword.create(
                                 keyword.type(),
                                 keyword.value()
@@ -44,56 +42,58 @@ public class ObservationService implements ObservationUseCase {
                         .toList()
         );
 
-        ObservationGenerateResult generateResult = observationGenerator.generate(command);
+        GeneratedObservationContent generated = observationGenerator.generate(input);
 
         observation.replaceGeneratedContent(
-                generateResult.sections(),
-                generateResult.summaryContent(),
-                generateResult.phoneConsultationContent()
+                generated.sections(),
+                generated.summaryContent(),
+                generated.phoneConsultationContent()
         );
 
-        Observation savedObservation = observationRepository.save(observation);
-
-        return ObservationResult.from(savedObservation);
+        return observationRepository.save(observation);
     }
 
     @Override
-    public ObservationResult get(Long userId, Long observationId) {
+    public Observation get(Long userId, Long observationId) {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 
     @Override
-    public ObservationSectionResult getSection(Long userId, Long observationId, Long sectionId) {
+    public ObservationSection getSection(Long userId, Long observationId, Long sectionId) {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 
     @Override
-    public ObservationResult regenerate(Long userId, Long observationId, ObservationRegenerateCommand command) {
-        throw new UnsupportedOperationException("Not implemented yet.");
-    }
-
-    @Override
-    public ObservationSectionResult regenerateSection(
+    public Observation regenerate(
             Long userId,
             Long observationId,
-            Long sectionId,
-            SectionRegenerateCommand command
+            ObservationRegenerateInput input
     ) {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 
     @Override
-    public ObservationSectionResult updateSection(
+    public ObservationSection regenerateSection(
             Long userId,
             Long observationId,
             Long sectionId,
-            SectionUpdateCommand command
+            SectionRegenerateInput input
     ) {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 
     @Override
-    public PhoneConsultationResult createPhoneConsultation(Long userId, Long observationId) {
+    public ObservationSection updateSection(
+            Long userId,
+            Long observationId,
+            Long sectionId,
+            SectionUpdateInput input
+    ) {
+        throw new UnsupportedOperationException("Not implemented yet.");
+    }
+
+    @Override
+    public Observation createPhoneConsultation(Long userId, Long observationId) {
         throw new UnsupportedOperationException("Not implemented yet.");
     }
 

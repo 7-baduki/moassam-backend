@@ -1,6 +1,6 @@
 package com.moassam.observation.adapter.web.dto;
 
-import com.moassam.observation.application.command.KeywordCommand;
+import com.moassam.observation.domain.KeywordInput;
 import com.moassam.observation.domain.KeywordType;
 
 public record KeywordRequest(
@@ -8,7 +8,7 @@ public record KeywordRequest(
         String value
 ) {
 
-    public KeywordCommand toCommand() {
-        return new KeywordCommand(type, value);
+    public KeywordInput toInput() {
+        return new KeywordInput(type, value);
     }
 }

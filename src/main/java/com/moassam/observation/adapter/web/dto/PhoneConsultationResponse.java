@@ -1,6 +1,6 @@
 package com.moassam.observation.adapter.web.dto;
 
-import com.moassam.observation.application.result.PhoneConsultationResult;
+import com.moassam.observation.domain.Observation;
 
 public record PhoneConsultationResponse(
         String summaryContent,
@@ -8,11 +8,11 @@ public record PhoneConsultationResponse(
         boolean derivedContentStale
 ) {
 
-    public static PhoneConsultationResponse from(PhoneConsultationResult result) {
+    public static PhoneConsultationResponse from(Observation observation) {
         return new PhoneConsultationResponse(
-                result.summaryContent(),
-                result.phoneConsultationContent(),
-                result.derivedContentStale()
+                observation.getSummaryContent(),
+                observation.getPhoneConsultationContent(),
+                observation.isDerivedContentStale()
         );
     }
 }

@@ -1,13 +1,7 @@
 package com.moassam.observation.adapter.integration.ai;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.moassam.observation.application.command.KeywordCommand;
-import com.moassam.observation.application.command.ObservationGenerateCommand;
-import com.moassam.observation.application.result.ObservationGenerateResult;
-import com.moassam.observation.domain.Age;
-import com.moassam.observation.domain.Curriculum;
-import com.moassam.observation.domain.KeywordType;
-import com.moassam.observation.domain.SectionType;
+import com.moassam.observation.domain.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -45,19 +39,19 @@ class OpenAiObservationGeneratorLiveTest {
 
     @Test
     void generateObservationWithRealOpenAi() {
-        ObservationGenerateCommand command = new ObservationGenerateCommand(
+        ObservationGenerateInput input = new ObservationGenerateInput(
                 "블록으로 집을 만들던 유아가 친구에게 지붕 모양을 설명하고, 무너진 부분을 함께 다시 쌓았다.",
                 Age.AGE_5,
                 Curriculum.NOORI,
                 List.of(SectionType.SOCIAL, SectionType.COMMUNITY),
                 List.of(
-                        new KeywordCommand(KeywordType.ACTIVITY, "블록 놀이"),
-                        new KeywordCommand(KeywordType.TRAIT, "협력적, 탐구적"),
-                        new KeywordCommand(KeywordType.INTERACTION, "친구, 교사")
+                        new KeywordInput(KeywordType.ACTIVITY, "블록 놀이"),
+                        new KeywordInput(KeywordType.TRAIT, "협력적, 탐구적"),
+                        new KeywordInput(KeywordType.INTERACTION, "친구, 교사")
                 )
         );
 
-        ObservationGenerateResult result = generator.generate(command);
+        GeneratedObservationContent result = generator.generate(input);
 
         assertThat(result.sections())
                 .hasSize(2)

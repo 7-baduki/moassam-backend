@@ -9,10 +9,9 @@ import com.moassam.observation.adapter.web.dto.ObservationSectionResponse;
 import com.moassam.observation.adapter.web.dto.PhoneConsultationResponse;
 import com.moassam.observation.adapter.web.dto.SectionRegenerateRequest;
 import com.moassam.observation.adapter.web.dto.SectionUpdateRequest;
-import com.moassam.observation.application.provided.ObservationUseCase;
-import com.moassam.observation.application.result.ObservationResult;
-import com.moassam.observation.application.result.ObservationSectionResult;
-import com.moassam.observation.application.result.PhoneConsultationResult;
+import com.moassam.observation.application.provided.*;
+import com.moassam.observation.domain.Observation;
+import com.moassam.observation.domain.ObservationSection;
 import com.moassam.shared.web.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,7 +29,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ObservationApi {
 
-    private final ObservationUseCase observationUseCase;
+    private final ObservationCreator observationCreator;
+    private final ObservationFinder observationFinder;
+    private final ObservationRegenerator observationRegenerator;
+    private final ObservationSectionModifier observationSectionModifier;
+    private final PhoneConsultationCreator phoneConsultationCreator;
+    private final ObservationSaver observationSaver;
 
     @RequireAuth
     @PostMapping
@@ -38,9 +42,9 @@ public class ObservationApi {
             @CurrentUserId Long userId,
             @RequestBody ObservationGenerateRequest request
     ) {
-        ObservationResult result = observationUseCase.generateObservation(userId, request.toCommand());
+        Observation observation = observationCreator.generateObservation(userId, request.toInput());
 
-        return SuccessResponse.of(ObservationResponse.from(result));
+        return SuccessResponse.of(ObservationResponse.from(observation));
     }
 
     @RequireAuth
@@ -49,9 +53,9 @@ public class ObservationApi {
             @CurrentUserId Long userId,
             @PathVariable Long observationId
     ) {
-        ObservationResult result = observationUseCase.get(userId, observationId);
+        Observation observation = observationFinder.get(userId, observationId);
 
-        return SuccessResponse.of(ObservationResponse.from(result));
+        return SuccessResponse.of(ObservationResponse.from(observation));
     }
 
     @RequireAuth
@@ -61,9 +65,9 @@ public class ObservationApi {
             @PathVariable Long observationId,
             @PathVariable Long sectionId
     ) {
-        ObservationSectionResult result = observationUseCase.getSection(userId, observationId, sectionId);
+        ObservationSection section = observationFinder.getSection(userId, observationId, sectionId);
 
-        return SuccessResponse.of(ObservationSectionResponse.from(result));
+        return SuccessResponse.of(ObservationSectionResponse.from(section));
     }
 
     @RequireAuth
@@ -73,9 +77,9 @@ public class ObservationApi {
             @PathVariable Long observationId,
             @RequestBody ObservationRegenerateRequest request
     ) {
-        ObservationResult result = observationUseCase.regenerate(userId, observationId, request.toCommand());
+        Observation regenerated = observationRegenerator.regenerate(userId, observationId, request.toInput());
 
-        return SuccessResponse.of(ObservationResponse.from(result));
+        return SuccessResponse.of(ObservationResponse.from(regenerated));
     }
 
     @RequireAuth
@@ -86,14 +90,14 @@ public class ObservationApi {
             @PathVariable Long sectionId,
             @RequestBody SectionRegenerateRequest request
     ) {
-        ObservationSectionResult result = observationUseCase.regenerateSection(
+        ObservationSection section = observationRegenerator.regenerateSection(
                 userId,
                 observationId,
                 sectionId,
-                request.toCommand()
+                request.toInput()
         );
 
-        return SuccessResponse.of(ObservationSectionResponse.from(result));
+        return SuccessResponse.of(ObservationSectionResponse.from(section));
     }
 
     @RequireAuth
@@ -104,14 +108,14 @@ public class ObservationApi {
             @PathVariable Long sectionId,
             @RequestBody SectionUpdateRequest request
     ) {
-        ObservationSectionResult result = observationUseCase.updateSection(
+        ObservationSection section = observationSectionModifier.updateSection(
                 userId,
                 observationId,
                 sectionId,
-                request.toCommand()
+                request.toInput()
         );
 
-        return SuccessResponse.of(ObservationSectionResponse.from(result));
+        return SuccessResponse.of(ObservationSectionResponse.from(section));
     }
 
     @RequireAuth
@@ -120,9 +124,9 @@ public class ObservationApi {
             @CurrentUserId Long userId,
             @PathVariable Long observationId
     ) {
-        PhoneConsultationResult result = observationUseCase.createPhoneConsultation(userId, observationId);
+        Observation observation = phoneConsultationCreator.createPhoneConsultation(userId, observationId);
 
-        return SuccessResponse.of(PhoneConsultationResponse.from(result));
+        return SuccessResponse.of(PhoneConsultationResponse.from(observation));
     }
 
     @RequireAuth
@@ -132,6 +136,6 @@ public class ObservationApi {
             @CurrentUserId Long userId,
             @PathVariable Long observationId
     ) {
-        observationUseCase.save(userId, observationId);
+        observationSaver.save(userId, observationId);
     }
 }

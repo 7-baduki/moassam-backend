@@ -1,20 +1,14 @@
 package com.moassam.observation.application.required;
 
-import com.moassam.observation.application.command.ObservationGenerateCommand;
-import com.moassam.observation.application.command.ObservationRegenerateCommand;
-import com.moassam.observation.application.command.SectionRegenerateCommand;
-import com.moassam.observation.application.result.ObservationGenerateResult;
-import com.moassam.observation.application.result.ObservationResult;
-import com.moassam.observation.application.result.ObservationSectionResult;
-import com.moassam.observation.application.result.PhoneConsultationResult;
+import com.moassam.observation.domain.*;
 
 public interface ObservationGenerator {
 
-    ObservationGenerateResult generate(ObservationGenerateCommand command);
+    GeneratedObservationContent generate(ObservationGenerateInput input);
 
-    ObservationGenerateResult regenerate(ObservationRegenerateCommand command);
+    GeneratedObservationContent regenerate(ObservationRegenerateInput input);
 
-    ObservationSectionResult regenerateSection(SectionRegenerateCommand command);
+    ObservationSection regenerateSection(SectionRegenerateInput input);
 
-    PhoneConsultationResult generatePhoneConsultation();
+    GeneratedObservationContent generatePhoneConsultation();
 }

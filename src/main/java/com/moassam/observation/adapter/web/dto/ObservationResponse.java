@@ -1,8 +1,8 @@
 package com.moassam.observation.adapter.web.dto;
 
-import com.moassam.observation.application.result.ObservationResult;
 import com.moassam.observation.domain.Age;
 import com.moassam.observation.domain.Curriculum;
+import com.moassam.observation.domain.Observation;
 import com.moassam.observation.domain.ObservationStatus;
 
 import java.time.LocalDateTime;
@@ -22,23 +22,23 @@ public record ObservationResponse(
         LocalDateTime savedAt
 ) {
 
-    public static ObservationResponse from(ObservationResult result) {
+    public static ObservationResponse from(Observation observation) {
         return new ObservationResponse(
-                result.observationId(),
-                result.memo(),
-                result.age(),
-                result.curriculum(),
-                result.status(),
-                result.keywords().stream()
+                observation.getId(),
+                observation.getMemo(),
+                observation.getAge(),
+                observation.getCurriculum(),
+                observation.getStatus(),
+                observation.getKeywords().stream()
                         .map(KeywordResponse::from)
                         .toList(),
-                result.sections().stream()
+                observation.getSections().stream()
                         .map(ObservationSectionResponse::from)
                         .toList(),
-                result.summaryContent(),
-                result.phoneConsultationContent(),
-                result.derivedContentStale(),
-                result.savedAt()
+                observation.getSummaryContent(),
+                observation.getPhoneConsultationContent(),
+                observation.isDerivedContentStale(),
+                observation.getSavedAt()
         );
     }
 }

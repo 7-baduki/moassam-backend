@@ -3,19 +3,12 @@ package com.moassam.observation.adapter.web;
 import com.moassam.docs.ApiDocumentUtils;
 import com.moassam.docs.CommonDocumentation;
 import com.moassam.docs.RestDocsSupport;
-import com.moassam.observation.application.command.ObservationGenerateCommand;
-import com.moassam.observation.application.provided.ObservationUseCase;
-import com.moassam.observation.application.result.KeywordResult;
-import com.moassam.observation.application.result.ObservationResult;
-import com.moassam.observation.application.result.ObservationSectionResult;
-import com.moassam.observation.domain.Age;
-import com.moassam.observation.domain.Curriculum;
-import com.moassam.observation.domain.KeywordType;
-import com.moassam.observation.domain.ObservationStatus;
-import com.moassam.observation.domain.SectionType;
+import com.moassam.observation.application.provided.*;
+import com.moassam.observation.domain.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,19 +27,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class ObservationApiTest extends RestDocsSupport {
 
-    private final ObservationUseCase observationUseCase = mock(ObservationUseCase.class);
+    private final ObservationCreator observationCreator = mock(ObservationCreator.class);
+    private final ObservationFinder observationFinder = mock(ObservationFinder.class);
+    private final ObservationRegenerator observationRegenerator = mock(ObservationRegenerator.class);
+    private final ObservationSectionModifier observationSectionModifier = mock(ObservationSectionModifier.class);
+    private final PhoneConsultationCreator phoneConsultationCreator = mock(PhoneConsultationCreator.class);
+    private final ObservationSaver observationSaver = mock(ObservationSaver.class);
 
     @Override
     protected Object initController() {
-        return new ObservationApi(observationUseCase);
+        return new ObservationApi(
+                observationCreator,
+                observationFinder,
+                observationRegenerator,
+                observationSectionModifier,
+                phoneConsultationCreator,
+                observationSaver
+                );
     }
 
     @Test
     void generateObservation() throws Exception {
-        given(observationUseCase.generateObservation(
+        given(observationCreator.generateObservation(
                 nullable(Long.class),
-                any(ObservationGenerateCommand.class)
-        )).willReturn(observationResult());
+                any(ObservationGenerateInput.class)
+        )).willReturn(observation());
 
         Map<String, Object> request = Map.of(
                 "memo", "블록으로 집을 만들고 친구에게 설명함",
@@ -97,27 +102,32 @@ class ObservationApiTest extends RestDocsSupport {
                 ));
     }
 
-    private ObservationResult observationResult() {
-        return new ObservationResult(
+    private Observation observation() {
+        ObservationSection section = ObservationSection.create(
+                SectionType.SOCIAL,
+                "친구에게 자신이 구성한 블록 집의 특징을 설명하였다."
+        );
+        ReflectionTestUtils.setField(section, "id", 10L);
+
+        Observation observation = Observation.create(
                 1L,
                 "블록으로 집을 만들고 친구에게 설명함",
                 Age.AGE_5,
                 Curriculum.NOORI,
-                ObservationStatus.TEMP,
                 List.of(
-                        new KeywordResult(KeywordType.ACTIVITY, "자유놀이"),
-                        new KeywordResult(KeywordType.TRAIT, "탐구적")
-                ),
-                List.of(new ObservationSectionResult(
-                        10L,
-                        SectionType.SOCIAL,
-                        "친구에게 자신이 구성한 블록 집의 특징을 설명하였다.",
-                        false
-                )),
-                "또래와 상호작용하며 자신의 생각을 표현하는 모습이 관찰되었다.",
-                "오늘 블록 놀이 중 친구에게 자신의 구성물을 설명하는 모습이 있었습니다.",
-                false,
-                LocalDateTime.of(2026, 4, 29, 12, 0)
+                        Keyword.create(KeywordType.ACTIVITY, "자유놀이"),
+                        Keyword.create(KeywordType.TRAIT, "탐구적")
+                )
         );
+        ReflectionTestUtils.setField(observation, "id", 1L);
+        ReflectionTestUtils.setField(observation, "savedAt", LocalDateTime.of(2026, 4, 29, 12, 0));
+
+        observation.replaceGeneratedContent(
+                List.of(section),
+                "또래와 상호작용하며 자신의 생각을 표현하는 모습이 관찰되었다.",
+                "오늘 블록 놀이 중 친구에게 자신의 구성물을 설명하는 모습이 있었습니다."
+        );
+
+        return observation;
     }
 }

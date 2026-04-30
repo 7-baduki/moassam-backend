@@ -1,15 +1,8 @@
 package com.moassam.observation.adapter.integration.ai;
 
 import com.moassam.observation.adapter.integration.ai.dto.OpenAiObservationResponse;
-import com.moassam.observation.application.command.ObservationGenerateCommand;
-import com.moassam.observation.application.command.ObservationRegenerateCommand;
-import com.moassam.observation.application.command.SectionRegenerateCommand;
 import com.moassam.observation.application.required.ObservationGenerator;
-import com.moassam.observation.application.result.ObservationGenerateResult;
-import com.moassam.observation.application.result.ObservationResult;
-import com.moassam.observation.application.result.ObservationSectionResult;
-import com.moassam.observation.application.result.PhoneConsultationResult;
-import com.moassam.observation.domain.ObservationSection;
+import com.moassam.observation.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,13 +14,13 @@ public class OpenAiObservationGenerator implements ObservationGenerator {
     private final OpenAiObservationClient openAiObservationClient;
 
     @Override
-    public ObservationGenerateResult generate(ObservationGenerateCommand command) {
+    public GeneratedObservationContent generate(ObservationGenerateInput input) {
         OpenAiObservationResponse response = openAiObservationClient.generate(
                 promptTemplate.systemBase(),
-                promptTemplate.observationBase(command)
+                promptTemplate.observationBase(input)
         );
 
-        return new ObservationGenerateResult(
+        return new GeneratedObservationContent(
                 response.sections().stream()
                         .map(section -> ObservationSection.create(
                                 section.type(),
@@ -40,17 +33,17 @@ public class OpenAiObservationGenerator implements ObservationGenerator {
     }
 
     @Override
-    public ObservationGenerateResult regenerate(ObservationRegenerateCommand command) {
+    public GeneratedObservationContent regenerate(ObservationRegenerateInput input) {
         return null;
     }
 
     @Override
-    public ObservationSectionResult regenerateSection(SectionRegenerateCommand command) {
+    public ObservationSection regenerateSection(SectionRegenerateInput input) {
         return null;
     }
 
     @Override
-    public PhoneConsultationResult generatePhoneConsultation() {
+    public GeneratedObservationContent generatePhoneConsultation() {
         return null;
     }
 }

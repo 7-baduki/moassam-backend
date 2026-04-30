@@ -1,6 +1,6 @@
 package com.moassam.observation.adapter.web.dto;
 
-import com.moassam.observation.application.result.KeywordResult;
+import com.moassam.observation.domain.Keyword;
 import com.moassam.observation.domain.KeywordType;
 
 public record KeywordResponse(
@@ -8,10 +8,10 @@ public record KeywordResponse(
         String value
 ) {
 
-    public static KeywordResponse from(KeywordResult result) {
+    public static KeywordResponse from(Keyword keyword) {
         return new KeywordResponse(
-                result.type(),
-                result.value()
+                keyword.getType(),
+                keyword.getValue()
         );
     }
 }
