@@ -43,6 +43,10 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+server:
+  port: 8080
+  forward-headers-strategy: native
+
 jwt:
   access-token-expiry-ms: 1800000
   refresh-token-expiry-days: 14
