@@ -66,4 +66,91 @@
     </attributes>
   </entity>
 
+  <entity class="com.moassam.post.domain.Post">
+    <table name="posts"/>
+
+    <attributes>
+      <id name="id">
+        <column name="id"/>
+        <generated-value strategy="IDENTITY"/>
+      </id>
+
+      <basic name="userId">
+        <column name="user_id" nullable="false"/>
+      </basic>
+
+      <basic name="title">
+        <column name="title" nullable="false" length="200"/>
+      </basic>
+
+      <basic name="content">
+        <column name="content" nullable="false"/>
+      </basic>
+
+      <basic name="category">
+        <column name="category" nullable="false" length="20"/>
+        <enumerated>STRING</enumerated>
+      </basic>
+
+      <basic name="age">
+        <column name="age" length="20"/>
+        <enumerated>STRING</enumerated>
+      </basic>
+
+      <basic name="resourceType">
+        <column name="resource_type" length="30"/>
+        <enumerated>STRING</enumerated>
+      </basic>
+
+      <basic name="headTag">
+        <column name="head_tag" length="30"/>
+        <enumerated>STRING</enumerated>
+      </basic>
+
+      <basic name="viewCount">
+        <column name="view_count" nullable="false"/>
+      </basic>
+
+      <basic name="likeCount">
+        <column name="like_count" nullable="false"/>
+      </basic>
+
+      <basic name="commentCount">
+        <column name="comment_count" nullable="false"/>
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity class="com.moassam.post.domain.PostFile">
+    <table name="post_files"/>
+
+    <attributes>
+      <id name="id">
+        <column name="id"/>
+        <generated-value strategy="IDENTITY"/>
+      </id>
+
+      <basic name="postId">
+        <column name="post_id" nullable="false"/>
+      </basic>
+
+      <basic name="originalName">
+        <column name="original_name" nullable="false" length="255"/>
+      </basic>
+
+      <basic name="url">
+        <column name="url" nullable="false" length="1000"/>
+      </basic>
+
+      <basic name="size">
+        <column name="size" nullable="false"/>
+      </basic>
+
+      <basic name="fileType">
+        <column name="file_type" nullable="false" length="20"/>
+        <enumerated>STRING</enumerated>
+      </basic>
+    </attributes>
+  </entity>
+
 </entity-mappings>
