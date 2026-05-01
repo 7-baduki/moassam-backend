@@ -42,6 +42,10 @@ public class User extends BaseEntity {
         return user;
     }
 
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
     public void withdraw() {
         if (isDeleted()) {
             throw new IllegalStateException("이미 탈퇴한 회원입니다.");
@@ -52,6 +56,7 @@ public class User extends BaseEntity {
         this.nickname = WITHDRAWN_NICKNAME;
         this.profileImageUrl = null;
     }
+
 
     public void rejoin(String email, String nickname, String profileImageUrl) {
         this.deletedAt = null;

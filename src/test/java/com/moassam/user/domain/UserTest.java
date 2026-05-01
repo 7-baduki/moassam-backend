@@ -22,6 +22,15 @@ class UserTest {
     }
 
     @Test
+    void updateNickname() {
+        User user = UserFixture.create();
+
+        user.updateNickname("새닉네임");
+
+        assertThat(user.getNickname()).isEqualTo("새닉네임");
+    }
+
+    @Test
     void withdraw() {
         User user = UserFixture.create();
 

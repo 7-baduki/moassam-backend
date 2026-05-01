@@ -16,6 +16,12 @@ public class UserFixture {
         ));
     }
 
+    public static User createWithNickname(String nickname) {
+        User user = create();
+        user.updateNickname(nickname);
+        return user;
+    }
+
     public static User createWithdrawn() {
         User user = create();
         user.withdraw();

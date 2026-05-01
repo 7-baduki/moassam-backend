@@ -3,6 +3,7 @@ package com.moassam.auth.adapter.security.oauth;
 import com.moassam.auth.adapter.integration.oauth.UserInfo;
 import com.moassam.auth.adapter.integration.oauth.parser.ParserFactory;
 import com.moassam.auth.adapter.integration.oauth.parser.UserInfoParser;
+import com.moassam.user.application.ProfileImageProvider;
 import com.moassam.user.application.required.UserRepository;
 import com.moassam.user.domain.Provider;
 import com.moassam.user.domain.User;
@@ -21,15 +22,14 @@ public class SocialUserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
     private final ParserFactory parserFactory;
+    private final ProfileImageProvider profileImageProvider;
 
     @Override
     @Transactional
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oauth2User = super.loadUser(userRequest);
         UserInfo userInfo = extractUserInfo(userRequest, oauth2User);
-
         User user = resolveUser(userInfo);
-
         return new SocialUser(user.getId(), user.getRole(), oauth2User.getAttributes());
     }
 
@@ -47,20 +47,23 @@ public class SocialUserService extends DefaultOAuth2UserService {
 
     private User reactivateIfNeeded(User user, UserInfo userInfo) {
         if (user.isDeleted()) {
-            user.rejoin(userInfo.email(), userInfo.nickname(), null);
+            String profileImage = profileImageProvider.getRandomProfileImage();
+            user.rejoin(userInfo.email(), userInfo.nickname(), profileImage);
             userRepository.save(user);
         }
         return user;
     }
 
     private User registerNew(UserInfo userInfo) {
+        String profileImage = profileImageProvider.getRandomProfileImage();
+
         return userRepository.save(
                 User.register(new UserRegisterRequest(
                         userInfo.provider(),
                         userInfo.providerId(),
                         userInfo.email(),
                         userInfo.nickname(),
-                        null
+                        profileImage
                 ))
         );
     }
