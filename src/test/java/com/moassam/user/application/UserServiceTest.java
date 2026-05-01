@@ -27,6 +27,28 @@ class UserServiceTest {
     private UserService userService;
 
     @Test
+    void getProfile() {
+        User user = UserFixture.create();
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+
+        User result = userService.getProfile(1L);
+
+        assertThat(result.getEmail()).isEqualTo("moassam@kakao.com");
+        assertThat(result.getNickname()).isEqualTo("모아쌤");
+        assertThat(result.getProfileImageUrl()).isEqualTo("https://kakaocdn.net/profile/moassam.jpg");
+    }
+
+    @Test
+    void getProfile_userNotFound() {
+        given(userRepository.findById(999L)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.getProfile(999L))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(UserErrorCode.USER_NOT_FOUND);
+    }
+
+    @Test
     void updateNickname() {
         User user = UserFixture.create();
         given(userRepository.findById(1L)).willReturn(Optional.of(user));

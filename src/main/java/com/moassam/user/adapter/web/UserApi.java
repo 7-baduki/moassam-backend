@@ -7,10 +7,7 @@ import com.moassam.user.adapter.web.dto.ProfileResponse;
 import com.moassam.user.application.provided.UserProfile;
 import com.moassam.user.domain.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
@@ -18,6 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserApi {
 
     private final UserProfile userProfile;
+
+    @RequireAuth
+    @GetMapping("/profile")
+    public SuccessResponse<ProfileResponse> getProfile(
+            @CurrentUserId Long userId
+    ) {
+        User user = userProfile.getProfile(userId);
+        return SuccessResponse.of(ProfileResponse.from(user));
+    }
 
     @RequireAuth
     @PatchMapping("/profile")

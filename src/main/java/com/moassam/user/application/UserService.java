@@ -26,4 +26,10 @@ public class UserService implements UserProfile {
 
         return user;
     }
+
+    @Override
+    public User getProfile(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
+    }
 }

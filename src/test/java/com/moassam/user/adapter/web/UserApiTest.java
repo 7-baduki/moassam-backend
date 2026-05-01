@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -27,6 +28,26 @@ class UserApiTest extends RestDocsSupport {
     @Override
     protected Object initController() {
         return new UserApi(userProfile);
+    }
+
+    @Test
+    void getProfile() throws Exception {
+        User user = UserFixture.create();
+        given(userProfile.getProfile(any())).willReturn(user);
+
+        mockMvc.perform(get("/api/v1/users/profile"))
+                .andExpect(status().isOk())
+                .andDo(document("user/get-profile",
+                        ApiDocumentUtils.getDocumentRequest(),
+                        ApiDocumentUtils.getDocumentResponse(),
+                        responseFields(
+                                CommonDocumentation.successResponseFields(
+                                        fieldWithPath("data.email").type(JsonFieldType.STRING).description("이메일"),
+                                        fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("닉네임"),
+                                        fieldWithPath("data.profileImageUrl").type(JsonFieldType.STRING).description("프로필 이미지 URL")
+                                )
+                        )
+                ));
     }
 
     @Test
