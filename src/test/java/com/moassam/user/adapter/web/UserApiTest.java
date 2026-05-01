@@ -10,11 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,20 +31,37 @@ class UserApiTest extends RestDocsSupport {
     }
 
     @Test
+    void getProfile() throws Exception {
+        User user = UserFixture.create();
+        given(userProfile.getProfile(any())).willReturn(user);
+
+        mockMvc.perform(get("/api/v1/users/profile"))
+                .andExpect(status().isOk())
+                .andDo(document("user/get-profile",
+                        ApiDocumentUtils.getDocumentRequest(),
+                        ApiDocumentUtils.getDocumentResponse(),
+                        responseFields(
+                                CommonDocumentation.successResponseFields(
+                                        fieldWithPath("data.email").type(JsonFieldType.STRING).description("이메일"),
+                                        fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("닉네임"),
+                                        fieldWithPath("data.profileImageUrl").type(JsonFieldType.STRING).description("프로필 이미지 URL")
+                                )
+                        )
+                ));
+    }
+
+    @Test
     void updateNickname() throws Exception {
         User user = UserFixture.createWithNickname("새닉네임");
-        given(userProfile.updateNickname(1L, "새닉네임")).willReturn(user);
+        given(userProfile.updateNickname(any(), eq("새닉네임"))).willReturn(user);
 
-        mockMvc.perform(patch("/api/v1/users/me/nickname")
+        mockMvc.perform(patch("/api/v1/users/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nickname\": \"새닉네임\"}"))
+                        .content("\"새닉네임\""))
                 .andExpect(status().isOk())
                 .andDo(document("user/update-nickname",
                         ApiDocumentUtils.getDocumentRequest(),
                         ApiDocumentUtils.getDocumentResponse(),
-                        requestFields(
-                                fieldWithPath("nickname").type(JsonFieldType.STRING).description("변경할 닉네임")
-                        ),
                         responseFields(
                                 CommonDocumentation.successResponseFields(
                                         fieldWithPath("data.email").type(JsonFieldType.STRING).description("이메일"),
