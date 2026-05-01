@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -31,18 +33,15 @@ class UserApiTest extends RestDocsSupport {
     @Test
     void updateNickname() throws Exception {
         User user = UserFixture.createWithNickname("새닉네임");
-        given(userProfile.updateNickname(1L, "새닉네임")).willReturn(user);
+        given(userProfile.updateNickname(any(), eq("새닉네임"))).willReturn(user);
 
-        mockMvc.perform(patch("/api/v1/users/me/nickname")
+        mockMvc.perform(patch("/api/v1/users/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nickname\": \"새닉네임\"}"))
+                        .content("\"새닉네임\""))
                 .andExpect(status().isOk())
                 .andDo(document("user/update-nickname",
                         ApiDocumentUtils.getDocumentRequest(),
                         ApiDocumentUtils.getDocumentResponse(),
-                        requestFields(
-                                fieldWithPath("nickname").type(JsonFieldType.STRING).description("변경할 닉네임")
-                        ),
                         responseFields(
                                 CommonDocumentation.successResponseFields(
                                         fieldWithPath("data.email").type(JsonFieldType.STRING).description("이메일"),

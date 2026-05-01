@@ -20,7 +20,7 @@ public class UserApi {
     private final UserProfile userProfile;
 
     @RequireAuth
-    @PatchMapping("/me/nickname")
+    @PatchMapping("/profile")
     public SuccessResponse<ProfileResponse> updateNickname(
             @CurrentUserId Long userId,
             @RequestBody String nickname
