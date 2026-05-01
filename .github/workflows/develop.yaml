@@ -110,6 +110,7 @@ jobs:
             chmod +x deploy/scripts/*.sh
 
             cat > deploy/.env << 'ENVEOF'
+            
             DB_NAME=moassam
             DB_USER=${{ secrets.DEV_DB_USER }}
             DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}
