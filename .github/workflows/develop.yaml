@@ -107,10 +107,11 @@ jobs:
           script: |
             cd /root/moassam
 
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
             chmod +x deploy/scripts/*.sh
 
             cat > deploy/.env << 'ENVEOF'
-            
             DB_NAME=moassam
             DB_USER=${{ secrets.DEV_DB_USER }}
             DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}
@@ -127,8 +128,8 @@ jobs:
             NCP_BUCKET=${{ secrets.NCP_BUCKET }}
             NCP_ENDPOINT=https://kr.object.ncloudstorage.com
             NCP_REGION=kr-standard
-            CORS_ALLOWED_ORIGINS=${{ secrets.DEV_CORS_ALLOWED_ORIGINS }}
-            OAUTH_SUCCESS_REDIRECT_URI=${{ secrets.DEV_OAUTH_SUCCESS_REDIRECT_URI }}
+            CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }}
+            OAUTH_SUCCESS_REDIRECT_URI=${{ secrets.OAUTH_SUCCESS_REDIRECT_URI }}
             ENVEOF
 
             chmod 600 deploy/.env
