@@ -1,0 +1,21 @@
+services:
+  moassam-api:
+    image: ghcr.io/7-baduki/moassam-backend:latest
+    container_name: moassam-api
+    restart: always
+    networks:
+      - moassam-network
+    ports:
+      - "127.0.0.1:8080:8080"
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      TZ: Asia/Seoul
+    volumes:
+      - /root/logs/moassam:/logs
+    command: ["java", "-Duser.timezone=Asia/Seoul", "-jar", "app.jar"]
+
+networks:
+  moassam-network:
+    external: true
