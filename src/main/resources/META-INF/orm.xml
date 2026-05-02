@@ -153,4 +153,31 @@
     </attributes>
   </entity>
 
+  <entity class="com.moassam.post.domain.comment.Comment">
+    <table name="comments"/>
+
+    <attributes>
+      <id name="id">
+        <column name="id"/>
+        <generated-value strategy="IDENTITY"/>
+      </id>
+
+      <basic name="postId">
+        <column name="post_id" nullable="false"/>
+      </basic>
+
+      <basic name="userId">
+        <column name="user_id" nullable="false"/>
+      </basic>
+
+      <basic name="nickname">
+        <column name="nickname" nullable="false" length="50"/>
+      </basic>
+
+      <basic name="content">
+        <column name="content" nullable="false" length="3000"/>
+      </basic>
+    </attributes>
+  </entity>
+
 </entity-mappings>
