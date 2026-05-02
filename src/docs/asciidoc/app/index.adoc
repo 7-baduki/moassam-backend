@@ -1,4 +1,4 @@
-= didit App API Docs
+= Moassam App API Docs
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
@@ -13,4 +13,5 @@ include::../shared/overview.adoc[]
 
 include::auth.adoc[]
 include::user.adoc[]
+include::post.adoc[]
 
