@@ -1,7 +1,7 @@
-package com.moassam.post.adapter.web.dto;
+package com.moassam.post.adapter.web.dto.post;
 
-import com.moassam.post.domain.FileType;
-import com.moassam.post.domain.PostFile;
+import com.moassam.post.domain.post.FileType;
+import com.moassam.post.domain.post.PostFile;
 
 public record PostFileResponse(
         Long fileId,

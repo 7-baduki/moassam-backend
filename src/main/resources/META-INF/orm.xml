@@ -66,7 +66,7 @@
     </attributes>
   </entity>
 
-  <entity class="com.moassam.post.domain.Post">
+  <entity class="com.moassam.post.domain.post.Post">
     <table name="posts"/>
 
     <attributes>
@@ -121,7 +121,7 @@
     </attributes>
   </entity>
 
-  <entity class="com.moassam.post.domain.PostFile">
+  <entity class="com.moassam.post.domain.post.PostFile">
     <table name="post_files"/>
 
     <attributes>
@@ -149,6 +149,33 @@
       <basic name="fileType">
         <column name="file_type" nullable="false" length="20"/>
         <enumerated>STRING</enumerated>
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity class="com.moassam.post.domain.comment.Comment">
+    <table name="comments"/>
+
+    <attributes>
+      <id name="id">
+        <column name="id"/>
+        <generated-value strategy="IDENTITY"/>
+      </id>
+
+      <basic name="postId">
+        <column name="post_id" nullable="false"/>
+      </basic>
+
+      <basic name="userId">
+        <column name="user_id" nullable="false"/>
+      </basic>
+
+      <basic name="nickname">
+        <column name="nickname" nullable="false" length="50"/>
+      </basic>
+
+      <basic name="content">
+        <column name="content" nullable="false" length="3000"/>
       </basic>
     </attributes>
   </entity>

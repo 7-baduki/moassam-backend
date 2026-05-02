@@ -6,8 +6,6 @@
 
 자유게시판은 말머리(headTag)가 필수이며, 연령(age)과 자료 유형(resourceType)은 사용하지 않습니다.
 
-operation::post/create-free[snippets='request-parts,request-part-request-fields']
-
 ==== HTTP Request
 
 [source,http]
@@ -35,8 +33,17 @@ Content-Type: application/pdf
 
 (file binary)
 ----
+==== Request Parts
 
-operation::post/create-free[snippets='http-response,response-fields']
+operation::post/create-free[snippets='request-parts']
+
+==== Request Fields
+
+operation::post/create-free[snippets='request-part-request-fields']
+
+==== HTTP Response
+
+operation::post/create-free[snippets='http-response']
 
 
 === *모아방* 게시글 등록
@@ -44,8 +51,6 @@ operation::post/create-free[snippets='http-response,response-fields']
 모아방 게시글을 등록합니다.
 
 모아방은 연령(age)과 자료 유형(resourceType)이 필수이며, 말머리(headTag)는 사용하지 않습니다.
-
-operation::post/create-moabang[snippets='request-parts,request-part-request-fields']
 
 ==== HTTP Request
 
@@ -75,7 +80,17 @@ Content-Type: application/pdf
 (file binary)
 ----
 
-operation::post/create-moabang[snippets='http-response,response-fields']
+==== Request Parts
+
+operation::post/create-moabang[snippets='request-parts']
+
+==== Request Fields
+
+operation::post/create-moabang[snippets='request-part-request-fields']
+
+==== HTTP Response
+
+operation::post/create-moabang[snippets='http-response']
 
 === 게시글 상세 조회
 
@@ -83,7 +98,7 @@ operation::post/create-moabang[snippets='http-response,response-fields']
 
 일반 첨부파일은 files, 에디터 이미지는 editorFiles로 분리되어 응답됩니다.
 
-operation::post/get-post[snippets='http-request,http-response']
+operation::post/get-post[snippets='http-request,http-response,response-fields']
 
 === *자유게시판* 게시글 수정
 
@@ -92,8 +107,6 @@ operation::post/get-post[snippets='http-request,http-response']
 기존 파일 삭제가 필요한 경우 deleteFileIds에 삭제할 파일 ID 목록을 전달합니다.
 
 수정 요청은 최종 게시글 상태 전체를 전송합니다.
-
-operation::post/update-free[snippets='request-parts,request-part-request-fields']
 
 ==== HTTP Request
 
@@ -124,7 +137,17 @@ Content-Type: application/pdf
 (file binary)
 ----
 
-operation::post/update-free[snippets='http-response,response-fields']
+==== Request Parts
+
+operation::post/update-free[snippets='request-parts']
+
+==== Request Fields
+
+operation::post/update-free[snippets='request-part-request-fields']
+
+==== HTTP Response
+
+operation::post/update-free[snippets='http-response']
 
 === *모아방* 게시글 수정
 
@@ -133,8 +156,6 @@ operation::post/update-free[snippets='http-response,response-fields']
 기존 파일 삭제가 필요한 경우 deleteFileIds에 삭제할 파일 ID 목록을 전달합니다.
 
 수정 요청은 최종 게시글 상태 전체를 전송합니다.
-
-operation::post/update-moabang[snippets='request-parts,request-part-request-fields']
 
 ==== HTTP Request
 
@@ -165,7 +186,17 @@ Content-Type: application/pdf
 (file binary)
 ----
 
-operation::post/update-moabang[snippets='http-response,response-fields']
+==== Request Parts
+
+operation::post/update-moabang[snippets='request-parts']
+
+==== Request Fields
+
+operation::post/update-moabang[snippets='request-part-request-fields']
+
+==== HTTP Response
+
+operation::post/update-moabang[snippets='http-response']
 
 
 

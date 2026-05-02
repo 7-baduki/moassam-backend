@@ -3,11 +3,11 @@ package com.moassam.post.adapter.web;
 import com.moassam.docs.ApiDocumentUtils;
 import com.moassam.docs.CommonDocumentation;
 import com.moassam.docs.RestDocsSupport;
-import com.moassam.post.application.provided.PostCreator;
-import com.moassam.post.application.provided.PostDeleter;
-import com.moassam.post.application.provided.PostFinder;
-import com.moassam.post.application.provided.PostUpdater;
-import com.moassam.post.domain.*;
+import com.moassam.post.application.provided.post.PostCreator;
+import com.moassam.post.application.provided.post.PostDeleter;
+import com.moassam.post.application.provided.post.PostFinder;
+import com.moassam.post.application.provided.post.PostUpdater;
+import com.moassam.post.domain.post.*;
 import com.moassam.support.post.PostFileFixture;
 import com.moassam.support.post.PostFixture;
 import org.junit.jupiter.api.Test;
@@ -165,7 +165,40 @@ class PostApiTest extends RestDocsSupport {
                 .andExpect(status().isOk())
                 .andDo(document("post/get-post",
                         ApiDocumentUtils.getDocumentRequest(),
-                        ApiDocumentUtils.getDocumentResponse()
+                        ApiDocumentUtils.getDocumentResponse(),
+                        responseFields(
+                                CommonDocumentation.successResponseFields(
+                                        fieldWithPath("data.postId").type(JsonFieldType.NUMBER).description("게시글 ID"),
+                                        fieldWithPath("data.authorId").type(JsonFieldType.NUMBER).description("작성자 ID"),
+                                        fieldWithPath("data.authorNickName").type(JsonFieldType.STRING).description("작성자 닉네임"),
+                                        fieldWithPath("data.title").type(JsonFieldType.STRING).description("게시글 제목"),
+                                        fieldWithPath("data.category").type(JsonFieldType.STRING).description("게시글 카테고리"),
+                                        fieldWithPath("data.age").type(JsonFieldType.NULL).description("연령"),
+                                        fieldWithPath("data.resourceType").type(JsonFieldType.NULL).description("자료 유형"),
+                                        fieldWithPath("data.headTag").type(JsonFieldType.STRING).description("말머리"),
+                                        fieldWithPath("data.content").type(JsonFieldType.STRING).description("게시글 내용"),
+
+                                        fieldWithPath("data.files").type(JsonFieldType.ARRAY).description("일반 첨부파일 목록"),
+                                        fieldWithPath("data.files[].fileId").type(JsonFieldType.NUMBER).description("파일 ID"),
+                                        fieldWithPath("data.files[].originalName").type(JsonFieldType.STRING).description("원본 파일명"),
+                                        fieldWithPath("data.files[].url").type(JsonFieldType.STRING).description("파일 URL"),
+                                        fieldWithPath("data.files[].size").type(JsonFieldType.NUMBER).description("파일 크기"),
+                                        fieldWithPath("data.files[].fileType").type(JsonFieldType.STRING).description("파일 유형"),
+
+                                        fieldWithPath("data.editorFiles").type(JsonFieldType.ARRAY).description("에디터 이미지 목록"),
+                                        fieldWithPath("data.editorFiles[].fileId").type(JsonFieldType.NUMBER).description("에디터 이미지 ID"),
+                                        fieldWithPath("data.editorFiles[].originalName").type(JsonFieldType.STRING).description("원본 파일명"),
+                                        fieldWithPath("data.editorFiles[].url").type(JsonFieldType.STRING).description("이미지 URL"),
+                                        fieldWithPath("data.editorFiles[].size").type(JsonFieldType.NUMBER).description("이미지 크기"),
+                                        fieldWithPath("data.editorFiles[].fileType").type(JsonFieldType.STRING).description("파일 유형"),
+
+                                        fieldWithPath("data.viewCount").type(JsonFieldType.NUMBER).description("조회수"),
+                                        fieldWithPath("data.commentCount").type(JsonFieldType.NUMBER).description("댓글 수"),
+                                        fieldWithPath("data.likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"),
+                                        fieldWithPath("data.bookmarked").type(JsonFieldType.BOOLEAN).description("북마크 여부"),
+                                        fieldWithPath("data.createdAt").type(JsonFieldType.STRING).description("생성 시간")
+                                )
+                        )
                 ));
 
     }

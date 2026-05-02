@@ -1,13 +1,13 @@
 package com.moassam.post.application;
 
-import com.moassam.post.application.provided.PostDeleter;
-import com.moassam.post.application.provided.PostFinder;
-import com.moassam.post.application.provided.PostUpdater;
+import com.moassam.post.application.provided.post.PostDeleter;
+import com.moassam.post.application.provided.post.PostFinder;
+import com.moassam.post.application.provided.post.PostUpdater;
 import com.moassam.post.application.required.PostFileRepository;
-import com.moassam.post.domain.*;
+import com.moassam.post.domain.post.*;
 import com.moassam.post.exception.PostErrorCode;
 import com.moassam.shared.adapter.filestorage.FileStorage;
-import com.moassam.post.application.provided.PostCreator;
+import com.moassam.post.application.provided.post.PostCreator;
 import com.moassam.post.application.required.PostRepository;
 import com.moassam.shared.exception.BusinessException;
 import com.moassam.user.application.required.UserRepository;

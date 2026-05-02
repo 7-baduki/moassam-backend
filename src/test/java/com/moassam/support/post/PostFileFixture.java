@@ -1,7 +1,7 @@
 package com.moassam.support.post;
 
-import com.moassam.post.domain.FileType;
-import com.moassam.post.domain.PostFile;
+import com.moassam.post.domain.post.FileType;
+import com.moassam.post.domain.post.PostFile;
 import org.springframework.test.util.ReflectionTestUtils;
 
 public class PostFileFixture {
