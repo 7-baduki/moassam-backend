@@ -1,6 +1,6 @@
 package com.moassam.support.post;
 
-import com.moassam.post.domain.*;
+import com.moassam.post.domain.post.*;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;

@@ -1,6 +1,6 @@
-package com.moassam.post.adapter.web.dto;
+package com.moassam.post.adapter.web.dto.post;
 
-import com.moassam.post.domain.*;
+import com.moassam.post.domain.post.*;
 
 import java.time.LocalDateTime;
 import java.util.List;

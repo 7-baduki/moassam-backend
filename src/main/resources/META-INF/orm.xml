@@ -66,7 +66,7 @@
     </attributes>
   </entity>
 
-  <entity class="com.moassam.post.domain.Post">
+  <entity class="com.moassam.post.domain.post.Post">
     <table name="posts"/>
 
     <attributes>
@@ -121,7 +121,7 @@
     </attributes>
   </entity>
 
-  <entity class="com.moassam.post.domain.PostFile">
+  <entity class="com.moassam.post.domain.post.PostFile">
     <table name="post_files"/>
 
     <attributes>
