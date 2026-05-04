@@ -1,6 +1,6 @@
 package com.moassam.post.application.required;
 
-import com.moassam.post.domain.PostFile;
+import com.moassam.post.domain.post.PostFile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

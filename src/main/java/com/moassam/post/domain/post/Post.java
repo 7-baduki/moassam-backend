@@ -1,4 +1,4 @@
-package com.moassam.post.domain;
+package com.moassam.post.domain.post;
 
 import com.moassam.post.exception.PostErrorCode;
 import com.moassam.shared.domain.BaseEntity;
@@ -65,6 +65,16 @@ public class Post extends BaseEntity {
         this.age = age;
         this.resourceType = resourceType;
         this.headTag = headTag;
+    }
+
+    public void increaseCommentCount() {
+        this.commentCount++;
+    }
+
+    public void decreaseCommentCount() {
+        if (this.commentCount > 0) {
+            this.commentCount--;
+        }
     }
 
     private static void validateCategoryOptions(
