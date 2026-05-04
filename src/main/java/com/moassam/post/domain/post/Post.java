@@ -16,7 +16,7 @@ public class Post extends BaseEntity {
     private String title;
     private String content;
     private Category category;
-    private Age age;
+    private PostAge postAge;
     private ResourceType resourceType;
     private HeadTag headTag;
 
@@ -29,11 +29,11 @@ public class Post extends BaseEntity {
             String title,
             String content,
             Category category,
-            Age age,
+            PostAge postAge,
             ResourceType resourceType,
             HeadTag headTag
     ) {
-        validateCategoryOptions(category, age, resourceType, headTag);
+        validateCategoryOptions(category, postAge, resourceType, headTag);
 
 
         Post post = new Post();
@@ -42,7 +42,7 @@ public class Post extends BaseEntity {
         post.title = title;
         post.content = content;
         post.category = category;
-        post.age = age;
+        post.postAge = postAge;
         post.resourceType = resourceType;
         post.headTag = headTag;
 
@@ -53,16 +53,16 @@ public class Post extends BaseEntity {
             String title,
             String content,
             Category category,
-            Age age,
+            PostAge postAge,
             ResourceType resourceType,
             HeadTag headTag
     ) {
-        validateCategoryOptions(category, age, resourceType, headTag);
+        validateCategoryOptions(category, postAge, resourceType, headTag);
 
         this.title = title;
         this.content = content;
         this.category = category;
-        this.age = age;
+        this.postAge = postAge;
         this.resourceType = resourceType;
         this.headTag = headTag;
     }
@@ -79,12 +79,12 @@ public class Post extends BaseEntity {
 
     private static void validateCategoryOptions(
             Category category,
-            Age age,
+            PostAge postAge,
             ResourceType resourceType,
             HeadTag headTag
     ) {
         if (category == Category.MOABANG) {
-            if(age == null || resourceType == null) {
+            if(postAge == null || resourceType == null) {
                 throw new BusinessException(PostErrorCode.POST_INVALID_CATEGORY_OPTION, "모아방은 연령과 자료 유형이 필수입니다.");
             }
             if (headTag != null) {
@@ -96,7 +96,7 @@ public class Post extends BaseEntity {
             if (headTag == null) {
                 throw new BusinessException(PostErrorCode.POST_INVALID_CATEGORY_OPTION, "자유게시판은 말머리가 필수입니다.");
             }
-            if (age != null || resourceType != null) {
+            if (postAge != null || resourceType != null) {
                 throw new BusinessException(PostErrorCode.POST_INVALID_CATEGORY_OPTION, "자유게시판은 연령과 자료 유형을 사용할 수 없습니다.");
             }
         }

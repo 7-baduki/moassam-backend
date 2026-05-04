@@ -103,7 +103,7 @@ class PostApiTest extends RestDocsSupport {
 
         PostCreateRequest moaPost = new PostCreateRequest(
                 Category.MOABANG,
-                Age.AGE_3,
+                PostAge.AGE_3,
                 ResourceType.ACTIVITY,
                 null,
                 "활동자료 어쩌구",
@@ -273,7 +273,7 @@ class PostApiTest extends RestDocsSupport {
 
         PostUpdateRequest moaPost = new PostUpdateRequest(
                 Category.MOABANG,
-                Age.AGE_3,
+                PostAge.AGE_3,
                 ResourceType.JOURNAL,
                 null,
                 "수정된 제목",
