@@ -180,4 +180,69 @@
     </attributes>
   </entity>
 
+  <entity class="com.moassam.observation.domain.Observation">
+    <table name="observations"/>
+
+    <attributes>
+      <id name="id">
+        <column name="id"/>
+        <generated-value strategy="IDENTITY"/>
+      </id>
+
+      <basic name="userId">
+        <column name="user_id" nullable="false"/>
+      </basic>
+
+      <basic name="title">
+        <column name="title" nullable="false" length="200"/>
+      </basic>
+
+      <basic name="summary">
+        <column name="summary" nullable="false" column-definition="TEXT"/>
+      </basic>
+
+      <basic name="age">
+        <column name="age" nullable="false" length="20"/>
+        <enumerated>STRING</enumerated>
+      </basic>
+
+      <basic name="curriculumType">
+        <column name="curriculum_type" nullable="false" length="30"/>
+        <enumerated>STRING</enumerated>
+      </basic>
+
+      <basic name="situation">
+        <column name="situation" nullable="false" column-definition="TEXT"/>
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity class="com.moassam.observation.domain.ObservationSection">
+    <table name="observation_sections"/>
+
+    <attributes>
+      <id name="id">
+        <column name="id"/>
+        <generated-value strategy="IDENTITY"/>
+      </id>
+
+      <basic name="observationId">
+        <column name="observation_id" nullable="false"/>
+      </basic>
+
+      <basic name="sectionType">
+        <column name="section_type" nullable="false" length="40"/>
+        <enumerated>STRING</enumerated>
+      </basic>
+
+      <basic name="content">
+        <column name="content" nullable="false"/>
+      </basic>
+
+      <basic name="displayOrder">
+        <column name="display_order" nullable="false"/>
+      </basic>
+    </attributes>
+  </entity>
+
 </entity-mappings>
