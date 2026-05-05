@@ -1,5 +1,6 @@
 package com.moassam.observation.application;
 
+import com.moassam.credit.application.provided.CreditUser;
 import com.moassam.observation.application.required.ObservationGenerator;
 import com.moassam.observation.application.required.ObservationReferenceProvider;
 import com.moassam.observation.application.required.ObservationRepository;
@@ -24,12 +25,14 @@ class ObservationServiceTest {
     private final ObservationSectionRepository observationSectionRepository = mock(ObservationSectionRepository.class);
     private final ObservationReferenceProvider observationReferenceProvider = mock(ObservationReferenceProvider.class);
     private final ObservationGenerator observationGenerator = mock(ObservationGenerator.class);
+    private final CreditUser creditUser = mock(CreditUser.class);
 
     private final ObservationService observationService = new ObservationService(
             observationRepository,
             observationSectionRepository,
             observationReferenceProvider,
-            observationGenerator
+            observationGenerator,
+            creditUser
     );
 
     @Test
@@ -58,6 +61,7 @@ class ObservationServiceTest {
         assertThat(observationId).isEqualTo(1L);
         then(observationRepository).should().save(any(Observation.class));
         then(observationSectionRepository).should().saveAll(anyList());
+        then(creditUser).should().useForCreateObservation(1L, observationId);
     }
 
     @Test
@@ -121,6 +125,7 @@ class ObservationServiceTest {
         assertThat(detail.sections()).hasSize(1);
         then(observationSectionRepository).should().deleteAllByObservationId(1L);
         then(observationSectionRepository).should().saveAll(anyList());
+        then(creditUser).should().useForRegenerateObservation(1L, 1L);
     }
 
     @Test
