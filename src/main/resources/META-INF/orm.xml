@@ -245,4 +245,35 @@
     </attributes>
   </entity>
 
+  <entity class="com.moassam.credit.domain.CreditWallet">
+    <table name="credit_wallets">
+      <unique-constraint name="uk_credit_wallets_user_id">
+        <column-name>user_id</column-name>
+      </unique-constraint>
+    </table>
+
+    <attributes>
+      <id name="id">
+        <column name="id"/>
+        <generated-value strategy="IDENTITY"/>
+      </id>
+
+      <basic name="userId">
+        <column name="user_id" nullable="false"/>
+      </basic>
+
+      <basic name="balance">
+        <column name="balance" nullable="false"/>
+      </basic>
+
+      <basic name="dailyBonusChargedAmount">
+        <column name="daily_bonus_charged_amount" nullable="false"/>
+      </basic>
+
+      <basic name="lastResetDate">
+        <column name="last_reset_date" nullable="false"/>
+      </basic>
+    </attributes>
+  </entity>
+
 </entity-mappings>
