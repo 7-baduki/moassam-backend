@@ -20,6 +20,7 @@ public record PostDetailResponse(
         long viewCount,
         long commentCount,
         long likeCount,
+        boolean isLiked,
         boolean bookmarked,
         LocalDateTime createdAt
 ) {
@@ -48,6 +49,7 @@ public record PostDetailResponse(
                 post.getViewCount(),
                 post.getCommentCount(),
                 post.getLikeCount(),
+                postDetail.isLiked(),
                 postDetail.bookmarked(),
                 post.getCreatedAt()
         );

@@ -2,6 +2,7 @@ package com.moassam.post.application;
 
 import com.moassam.credit.application.provided.CreditCharger;
 import com.moassam.post.application.required.PostFileRepository;
+import com.moassam.post.application.required.PostLikeRepository;
 import com.moassam.post.application.required.PostRepository;
 import com.moassam.post.domain.post.*;
 import com.moassam.post.exception.PostErrorCode;
@@ -25,6 +26,7 @@ class PostServiceTest {
 
     private final PostRepository postRepository = mock(PostRepository.class);
     private final PostFileRepository postFileRepository = mock(PostFileRepository.class);
+    private final PostLikeRepository postLikeRepository = mock(PostLikeRepository.class);
     private final FileStorage fileStorage = mock(FileStorage.class);
     private final UserRepository userRepository = mock(UserRepository.class);
     private final CreditCharger creditCharger = mock(CreditCharger.class);
@@ -33,6 +35,7 @@ class PostServiceTest {
             postRepository,
             postFileRepository,
             userRepository,
+            postLikeRepository,
             fileStorage,
             creditCharger
     );

@@ -6,6 +6,7 @@ public record PostDetail(
         Post post,
         String authorNickName,
         List<PostFile> files,
+        boolean isLiked,
         boolean bookmarked
 ) {
 }

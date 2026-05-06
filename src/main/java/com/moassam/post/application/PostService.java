@@ -5,6 +5,7 @@ import com.moassam.post.application.provided.post.PostDeleter;
 import com.moassam.post.application.provided.post.PostFinder;
 import com.moassam.post.application.provided.post.PostUpdater;
 import com.moassam.post.application.required.PostFileRepository;
+import com.moassam.post.application.required.PostLikeRepository;
 import com.moassam.post.domain.post.*;
 import com.moassam.post.exception.PostErrorCode;
 import com.moassam.shared.adapter.filestorage.FileStorage;
@@ -30,6 +31,7 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
     private final PostRepository postRepository;
     private final PostFileRepository postFileRepository;
     private final UserRepository userRepository;
+    private final PostLikeRepository postLikeRepository;
     private final FileStorage fileStorage;
     private final CreditCharger creditCharger;
 
@@ -77,8 +79,10 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
 
         List<PostFile> files = postFileRepository.findAllByPostId(post.getId());
 
+        boolean isLiked = postLikeRepository.existsByPostIdAndUserId(postId, userId);
+
         //TODO: 북마크 기능 개발 후 적용 필요
-        return new PostDetail(post, author.getNickname(), files, false);
+        return new PostDetail(post, author.getNickname(), files, isLiked, false);
     }
 
     @Override

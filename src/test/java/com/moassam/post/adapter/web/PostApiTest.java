@@ -159,7 +159,7 @@ class PostApiTest extends RestDocsSupport {
         PostFile editorImage = PostFileFixture.createEditorImage(11L, 1L);
 
         given(postFinder.getPost(any(), eq(1L)))
-                .willReturn(new PostDetail(freePost, "햇살선생님",List.of(file, editorImage), false));
+                .willReturn(new PostDetail(freePost, "햇살선생님",List.of(file, editorImage), false, false));
 
         mockMvc.perform(get("/api/v1/posts/{postId}", 1L))
                 .andExpect(status().isOk())
@@ -195,6 +195,7 @@ class PostApiTest extends RestDocsSupport {
                                         fieldWithPath("data.viewCount").type(JsonFieldType.NUMBER).description("조회수"),
                                         fieldWithPath("data.commentCount").type(JsonFieldType.NUMBER).description("댓글 수"),
                                         fieldWithPath("data.likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"),
+                                        fieldWithPath("data.isLiked").type(JsonFieldType.BOOLEAN).description("좋아요 여부"),
                                         fieldWithPath("data.bookmarked").type(JsonFieldType.BOOLEAN).description("북마크 여부"),
                                         fieldWithPath("data.createdAt").type(JsonFieldType.STRING).description("생성 시간")
                                 )
