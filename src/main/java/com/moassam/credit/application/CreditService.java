@@ -28,6 +28,10 @@ public class CreditService implements CreditFinder, CreditUser, CreditCharger {
 
     @Override
     public void createInitialWallet(Long userId) {
+        if (creditWalletRepository.findByUserIdForUpdate(userId).isPresent()) {
+            return;
+        }
+
         CreditWallet wallet = CreditWallet.create(userId, LocalDate.now());
         creditWalletRepository.save(wallet);
     }
