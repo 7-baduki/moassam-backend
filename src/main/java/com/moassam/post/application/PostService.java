@@ -1,5 +1,6 @@
 package com.moassam.post.application;
 
+import com.moassam.credit.application.provided.CreditCharger;
 import com.moassam.post.application.provided.post.PostDeleter;
 import com.moassam.post.application.provided.post.PostFinder;
 import com.moassam.post.application.provided.post.PostUpdater;
@@ -30,6 +31,7 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
     private final PostFileRepository postFileRepository;
     private final UserRepository userRepository;
     private final FileStorage fileStorage;
+    private final CreditCharger creditCharger;
 
     @Override
     @Transactional
@@ -53,6 +55,8 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
         );
 
         Post savedPost = postRepository.save(post);
+
+        creditCharge(userId, savedPost);
 
         List<PostFile> uploadedFiles = new ArrayList<>();
         uploadedFiles.addAll(upload(savedPost.getId(), files, FileType.FILE));
@@ -215,5 +219,12 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
         String lowerName = filename.toLowerCase();
 
         return lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg") || lowerName.endsWith(".png");
+    }
+
+    private void creditCharge(Long userId, Post post) {
+        switch (post.getCategory()) {
+            case FREE -> creditCharger.chargeForFreePost(userId, post.getId());
+            case MOABANG -> creditCharger.chargeForMoabangPost(userId, post.getId());
+        }
     }
 }

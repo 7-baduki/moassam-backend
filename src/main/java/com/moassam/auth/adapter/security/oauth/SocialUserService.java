@@ -3,6 +3,7 @@ package com.moassam.auth.adapter.security.oauth;
 import com.moassam.auth.adapter.integration.oauth.UserInfo;
 import com.moassam.auth.adapter.integration.oauth.parser.ParserFactory;
 import com.moassam.auth.adapter.integration.oauth.parser.UserInfoParser;
+import com.moassam.credit.application.provided.CreditCharger;
 import com.moassam.user.application.ProfileImageProvider;
 import com.moassam.user.application.required.UserRepository;
 import com.moassam.user.domain.Provider;
@@ -23,6 +24,7 @@ public class SocialUserService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
     private final ParserFactory parserFactory;
     private final ProfileImageProvider profileImageProvider;
+    private final CreditCharger creditCharger;
 
     @Override
     @Transactional
@@ -57,14 +59,18 @@ public class SocialUserService extends DefaultOAuth2UserService {
     private User registerNew(UserInfo userInfo) {
         String profileImage = profileImageProvider.getRandomProfileImage();
 
-        return userRepository.save(
-                User.register(new UserRegisterRequest(
-                        userInfo.provider(),
-                        userInfo.providerId(),
-                        userInfo.email(),
-                        userInfo.nickname(),
-                        profileImage
-                ))
-        );
+        User user = User.register(new UserRegisterRequest(
+                userInfo.provider(),
+                userInfo.providerId(),
+                userInfo.email(),
+                userInfo.nickname(),
+                profileImage
+        ));
+
+        User savedUser = userRepository.save(user);
+
+        creditCharger.createInitialWallet(savedUser.getId());
+
+        return savedUser;
     }
 }

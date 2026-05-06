@@ -1,5 +1,6 @@
 package com.moassam.post.application;
 
+import com.moassam.credit.application.provided.CreditCharger;
 import com.moassam.post.application.required.PostFileRepository;
 import com.moassam.post.application.required.PostRepository;
 import com.moassam.post.domain.post.*;
@@ -26,9 +27,15 @@ class PostServiceTest {
     private final PostFileRepository postFileRepository = mock(PostFileRepository.class);
     private final FileStorage fileStorage = mock(FileStorage.class);
     private final UserRepository userRepository = mock(UserRepository.class);
+    private final CreditCharger creditCharger = mock(CreditCharger.class);
 
-    private final PostService postService =
-            new PostService(postRepository, postFileRepository, userRepository, fileStorage);
+    private final PostService postService = new PostService(
+            postRepository,
+            postFileRepository,
+            userRepository,
+            fileStorage,
+            creditCharger
+    );
 
     @Test
     void createPost() {
@@ -63,6 +70,7 @@ class PostServiceTest {
         assertThat(postId).isEqualTo(1L);
         then(postRepository).should().save(any(Post.class));
         then(postFileRepository).should().saveAll(anyList());
+        then(creditCharger).should().chargeForFreePost(1L, postId);
     }
 
     @Test

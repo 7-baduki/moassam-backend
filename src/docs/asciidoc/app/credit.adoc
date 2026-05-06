@@ -1,0 +1,7 @@
+== 횟수 API
+
+=== 횟수 조회
+
+현재 남아있는 횟수를 조회합니다.
+
+operation::credit/get-credit-wallet[snippets='http-request,http-response,response-fields']

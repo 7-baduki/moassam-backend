@@ -1,5 +1,6 @@
 package com.moassam.observation.application;
 
+import com.moassam.credit.application.provided.CreditUser;
 import com.moassam.observation.application.provided.ObservationCreator;
 import com.moassam.observation.application.provided.ObservationDeleter;
 import com.moassam.observation.application.provided.ObservationFinder;
@@ -28,6 +29,7 @@ public class ObservationService implements ObservationCreator, ObservationRegene
     private final ObservationSectionRepository observationSectionRepository;
     private final ObservationReferenceProvider observationReferenceProvider;
     private final ObservationGenerator observationGenerator;
+    private final CreditUser creditUser;
 
     @Override
     @Transactional
@@ -55,6 +57,8 @@ public class ObservationService implements ObservationCreator, ObservationRegene
         );
 
         Observation saved = observationRepository.save(observation);
+
+        creditUser.useForCreateObservation(userId, saved.getId());
 
         List<ObservationSection> sections = result.sections().stream()
                 .map(section -> ObservationSection.create(
@@ -106,6 +110,8 @@ public class ObservationService implements ObservationCreator, ObservationRegene
                         section.content()
                 ))
                 .toList();
+
+        creditUser.useForRegenerateObservation(userId, observationId);
 
         observationSectionRepository.saveAll(newSections);
 
