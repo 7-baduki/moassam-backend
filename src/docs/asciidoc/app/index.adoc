@@ -17,4 +17,5 @@ include::post.adoc[]
 include::comment.adoc[]
 include::observation.adoc[]
 include::credit.adoc[]
+include::like.adoc[]
 
