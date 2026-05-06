@@ -32,6 +32,7 @@ public class SocialUserService extends DefaultOAuth2UserService {
         OAuth2User oauth2User = super.loadUser(userRequest);
         UserInfo userInfo = extractUserInfo(userRequest, oauth2User);
         User user = resolveUser(userInfo);
+        creditCharger.createInitialWallet(user.getId());
         return new SocialUser(user.getId(), user.getRole(), oauth2User.getAttributes());
     }
 
@@ -67,10 +68,6 @@ public class SocialUserService extends DefaultOAuth2UserService {
                 profileImage
         ));
 
-        User savedUser = userRepository.save(user);
-
-        creditCharger.createInitialWallet(savedUser.getId());
-
-        return savedUser;
+        return userRepository.save(user);
     }
 }
