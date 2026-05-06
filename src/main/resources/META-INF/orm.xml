@@ -92,8 +92,8 @@
         <enumerated>STRING</enumerated>
       </basic>
 
-      <basic name="age">
-        <column name="age" length="20"/>
+      <basic name="postAge">
+        <column name="post_age" length="20"/>
         <enumerated>STRING</enumerated>
       </basic>
 
@@ -275,5 +275,26 @@
       </basic>
     </attributes>
   </entity>
+
+  <entity class="com.moassam.post.domain.postlike.PostLike">
+    <table name="post_likes"/>
+
+    <attributes>
+      <id name="id">
+        <column name="id"/>
+        <generated-value strategy="IDENTITY"/>
+      </id>
+
+      <basic name="postId">
+        <column name="post_id"/>
+      </basic>
+
+      <basic name="userId">
+        <column name="user_id"/>
+      </basic>
+    </attributes>
+
+  </entity>
+
 
 </entity-mappings>
