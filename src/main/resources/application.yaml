@@ -59,6 +59,10 @@ ncp:
     bucket: ${NCP_BUCKET}
     region: ${NCP_REGION}
 
+openai:
+  api-key: ${OPENAI_API_KEY}
+  model: gpt-4.1-mini
+
 management:
   endpoints:
     web:

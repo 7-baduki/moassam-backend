@@ -13,7 +13,7 @@ public class PostFixture {
                 "자료 공유 합니다",
                 "가나다라마바사아자차카타파하",
                 Category.MOABANG,
-                Age.AGE_3,
+                PostAge.AGE_3,
                 ResourceType.JOURNAL,
                 null
         );

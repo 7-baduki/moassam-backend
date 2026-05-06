@@ -2,7 +2,7 @@ package com.moassam.post.domain.post;
 
 public record PostCreateRequest(
         Category category,
-        Age age,
+        PostAge postAge,
         ResourceType resourceType,
         HeadTag headTag,
         String title,

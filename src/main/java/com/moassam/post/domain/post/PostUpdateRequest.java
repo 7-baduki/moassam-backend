@@ -4,7 +4,7 @@ import java.util.List;
 
 public record PostUpdateRequest(
         Category category,
-        Age age,
+        PostAge postAge,
         ResourceType resourceType,
         HeadTag headTag,
         String title,

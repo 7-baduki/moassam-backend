@@ -47,7 +47,7 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
                 request.title(),
                 request.content(),
                 request.category(),
-                request.age(),
+                request.postAge(),
                 request.resourceType(),
                 request.headTag()
         );
@@ -96,7 +96,7 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
                 request.title(),
                 request.content(),
                 request.category(),
-                request.age(),
+                request.postAge(),
                 request.resourceType(),
                 request.headTag()
         );

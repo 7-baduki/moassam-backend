@@ -24,7 +24,7 @@ class PostTest {
         assertThat(post.getUserId()).isEqualTo(1L);
         assertThat(post.getCategory()).isEqualTo(Category.FREE);
         assertThat(post.getHeadTag()).isEqualTo(HeadTag.QUESTION);
-        assertThat(post.getAge()).isNull();
+        assertThat(post.getPostAge()).isNull();
         assertThat(post.getResourceType()).isNull();
     }
 
@@ -51,7 +51,7 @@ class PostTest {
                 "제목",
                 "내용",
                 Category.FREE,
-                Age.AGE_3,
+                PostAge.AGE_3,
                 ResourceType.JOURNAL,
                 HeadTag.QUESTION
         ))
@@ -67,13 +67,13 @@ class PostTest {
                 "자료 공유합니다.",
                 "게시글 내용",
                 Category.MOABANG,
-                Age.AGE_3,
+                PostAge.AGE_3,
                 ResourceType.JOURNAL,
                 null
         );
 
         assertThat(post.getCategory()).isEqualTo(Category.MOABANG);
-        assertThat(post.getAge()).isEqualTo(Age.AGE_3);
+        assertThat(post.getPostAge()).isEqualTo(PostAge.AGE_3);
         assertThat(post.getResourceType()).isEqualTo(ResourceType.JOURNAL);
         assertThat(post.getHeadTag()).isNull();
     }
@@ -101,7 +101,7 @@ class PostTest {
                 "제목",
                 "내용",
                 Category.MOABANG,
-                Age.AGE_3,
+                PostAge.AGE_3,
                 ResourceType.JOURNAL,
                 HeadTag.QUESTION
         ))
@@ -126,7 +126,7 @@ class PostTest {
                 "수정 제목",
                 "수정 내용",
                 Category.MOABANG,
-                Age.AGE_3,
+                PostAge.AGE_3,
                 ResourceType.JOURNAL,
                 null
         );
@@ -134,7 +134,7 @@ class PostTest {
         assertThat(post.getTitle()).isEqualTo("수정 제목");
         assertThat(post.getContent()).isEqualTo("수정 내용");
         assertThat(post.getCategory()).isEqualTo(Category.MOABANG);
-        assertThat(post.getAge()).isEqualTo(Age.AGE_3);
+        assertThat(post.getPostAge()).isEqualTo(PostAge.AGE_3);
         assertThat(post.getResourceType()).isEqualTo(ResourceType.JOURNAL);
         assertThat(post.getHeadTag()).isNull();
     }

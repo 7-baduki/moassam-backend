@@ -15,4 +15,5 @@ include::auth.adoc[]
 include::user.adoc[]
 include::post.adoc[]
 include::comment.adoc[]
+include::observation.adoc[]
 
