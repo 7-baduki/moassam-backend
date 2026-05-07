@@ -92,6 +92,18 @@ operation::post/create-moabang[snippets='request-part-request-fields']
 
 operation::post/create-moabang[snippets='http-response']
 
+=== 모아방 대시보드 조회
+
+모아방 게시글 목록을 페이지 단위로 조회합니다. 연령과 자료 유형을 선택적으로 필터링할 수 있습니다.
+
+operation::dashboard/get-moabang[snippets='http-request,query-parameters,response-body,response-fields']
+
+=== 자유게시판 대시보드 조회
+
+자유게시판 게시글 목록을 페이지 단위로 조회합니다. 말머리를 선택적으로 필터링할 수 있습니다.
+
+operation::dashboard/get-free[snippets='http-request,query-parameters,response-body,response-fields']
+
 === 게시글 상세 조회
 
 게시글 상세 정보를 조회합니다.
