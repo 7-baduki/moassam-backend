@@ -1,6 +1,7 @@
 package com.moassam.observation.application.required;
 
 import com.moassam.observation.domain.Observation;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -18,4 +19,5 @@ public interface ObservationRepository extends JpaRepository<Observation, Long> 
             Pageable pageable
     );
 
+    Page<Observation> findAllByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 }
