@@ -81,6 +81,9 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
 
         boolean isLiked = postLikeRepository.existsByPostIdAndUserId(postId, userId);
 
+        // TODO: 추후 동일 사용자의 중복 조회는 조회수 증가에서 제외
+        post.increaseViewCount();
+
         //TODO: 북마크 기능 개발 후 적용 필요
         return new PostDetail(post, author.getNickname(), files, isLiked, false);
     }
