@@ -6,11 +6,14 @@ import com.moassam.docs.RestDocsSupport;
 import com.moassam.observation.domain.Age;
 import com.moassam.observation.domain.CurriculumType;
 import com.moassam.post.domain.post.Category;
+import com.moassam.post.domain.post.HeadTag;
+import com.moassam.post.domain.post.PostAge;
+import com.moassam.post.domain.post.ResourceType;
 import com.moassam.support.UserFixture;
-import com.moassam.user.adapter.web.dto.MyCommentResponse;
-import com.moassam.user.adapter.web.dto.MyObservationResponse;
-import com.moassam.user.adapter.web.dto.MyPostResponse;
-import com.moassam.user.adapter.web.dto.ProfileResponse;
+import com.moassam.user.application.dto.MyCommentResponse;
+import com.moassam.user.application.dto.MyFreePostResponse;
+import com.moassam.user.application.dto.MyMoabangPostResponse;
+import com.moassam.user.application.dto.MyObservationResponse;
 import com.moassam.user.application.provided.UserActivity;
 import com.moassam.user.application.provided.UserProfile;
 import com.moassam.user.domain.User;
@@ -89,30 +92,66 @@ class UserApiTest extends RestDocsSupport {
     }
 
     @Test
-    void getMyPosts() throws Exception {
-        MyPostResponse post = new MyPostResponse(1L, "선생님들 평균퇴근 시간 몇시인가요?", 56L, LocalDateTime.of(2026, 3, 6, 0, 0));
+    void getMyMoabangPosts() throws Exception {
+        MyMoabangPostResponse post = new MyMoabangPostResponse(1L, "5월 가정의달 수업 활동지 공유합니다", PostAge.AGE_5, ResourceType.JOURNAL, 56L, LocalDateTime.of(2026, 3, 6, 0, 0));
 
-        given(userActivity.getMyPosts(any(), eq(Category.FREE), eq(0), eq(10)))
+        given(userActivity.getMyMoabangPosts(any(), eq(0), eq(10)))
                 .willReturn(new PageImpl<>(List.of(post), PageRequest.of(0, 10), 1));
 
-        mockMvc.perform(get("/api/v1/users/posts")
-                        .param("category", "FREE")
+        mockMvc.perform(get("/api/v1/users/posts/moabang")
                         .param("page", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
-                .andDo(document("user/get-my-posts",
+                .andDo(document("user/get-my-moabang-posts",
                         ApiDocumentUtils.getDocumentRequest(),
                         ApiDocumentUtils.getDocumentResponse(),
                         queryParameters(
-                                parameterWithName("category").description("게시판 카테고리: MOABANG, FREE"),
                                 parameterWithName("page").description("페이지 번호, 0부터 시작").optional(),
                                 parameterWithName("size").description("페이지 크기, 기본값 10").optional()
                         ),
                         responseFields(
                                 CommonDocumentation.successResponseFields(
-                                        fieldWithPath("data.data").type(JsonFieldType.ARRAY).description("게시글 목록"),
+                                        fieldWithPath("data.data").type(JsonFieldType.ARRAY).description("모아방 게시글 목록"),
                                         fieldWithPath("data.data[].postId").type(JsonFieldType.NUMBER).description("게시글 ID"),
                                         fieldWithPath("data.data[].title").type(JsonFieldType.STRING).description("게시글 제목"),
+                                        fieldWithPath("data.data[].postAge").type(JsonFieldType.STRING).description("연령"),
+                                        fieldWithPath("data.data[].resourceType").type(JsonFieldType.STRING).description("자료 유형"),
+                                        fieldWithPath("data.data[].viewCount").type(JsonFieldType.NUMBER).description("조회수"),
+                                        fieldWithPath("data.data[].createdAt").type(JsonFieldType.STRING).description("작성일"),
+                                        fieldWithPath("data.page").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),
+                                        fieldWithPath("data.size").type(JsonFieldType.NUMBER).description("페이지 크기"),
+                                        fieldWithPath("data.totalElements").type(JsonFieldType.NUMBER).description("전체 게시글 수"),
+                                        fieldWithPath("data.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
+                                        fieldWithPath("data.hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부")
+                                )
+                        )
+                ));
+    }
+
+    @Test
+    void getMyFreePosts() throws Exception {
+        MyFreePostResponse post = new MyFreePostResponse(1L, "선생님들 평균퇴근 시간 몇시인가요?", HeadTag.QUESTION, 56L, LocalDateTime.of(2026, 3, 6, 0, 0));
+
+        given(userActivity.getMyFreePosts(any(), eq(0), eq(10)))
+                .willReturn(new PageImpl<>(List.of(post), PageRequest.of(0, 10), 1));
+
+        mockMvc.perform(get("/api/v1/users/posts/free")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andDo(document("user/get-my-free-posts",
+                        ApiDocumentUtils.getDocumentRequest(),
+                        ApiDocumentUtils.getDocumentResponse(),
+                        queryParameters(
+                                parameterWithName("page").description("페이지 번호, 0부터 시작").optional(),
+                                parameterWithName("size").description("페이지 크기, 기본값 10").optional()
+                        ),
+                        responseFields(
+                                CommonDocumentation.successResponseFields(
+                                        fieldWithPath("data.data").type(JsonFieldType.ARRAY).description("자유게시판 게시글 목록"),
+                                        fieldWithPath("data.data[].postId").type(JsonFieldType.NUMBER).description("게시글 ID"),
+                                        fieldWithPath("data.data[].title").type(JsonFieldType.STRING).description("게시글 제목"),
+                                        fieldWithPath("data.data[].headTag").type(JsonFieldType.STRING).description("말머리"),
                                         fieldWithPath("data.data[].viewCount").type(JsonFieldType.NUMBER).description("조회수"),
                                         fieldWithPath("data.data[].createdAt").type(JsonFieldType.STRING).description("작성일"),
                                         fieldWithPath("data.page").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),

@@ -6,9 +6,10 @@ import com.moassam.post.application.required.PostRepository;
 import com.moassam.post.domain.post.Category;
 import com.moassam.post.domain.post.Post;
 import com.moassam.shared.exception.BusinessException;
-import com.moassam.user.adapter.web.dto.MyCommentResponse;
-import com.moassam.user.adapter.web.dto.MyObservationResponse;
-import com.moassam.user.adapter.web.dto.MyPostResponse;
+import com.moassam.user.application.dto.MyCommentResponse;
+import com.moassam.user.application.dto.MyFreePostResponse;
+import com.moassam.user.application.dto.MyMoabangPostResponse;
+import com.moassam.user.application.dto.MyObservationResponse;
 import com.moassam.user.application.provided.UserActivity;
 import com.moassam.user.application.provided.UserProfile;
 import com.moassam.user.application.required.UserRepository;
@@ -48,11 +49,17 @@ public class UserService implements UserProfile, UserActivity {
     }
 
     @Override
-    public Page<MyPostResponse> getMyPosts(Long userId, Category category, int page, int size) {
-        PageRequest pageable = PageRequest.of(page, size);
+    public Page<MyMoabangPostResponse> getMyMoabangPosts(Long userId, int page, int size) {
+        return postRepository
+                .findAllByUserIdAndCategoryOrderByCreatedAtDesc(userId, Category.MOABANG, PageRequest.of(page, size))
+                .map(MyMoabangPostResponse::from);
+    }
 
-        return postRepository.findAllByUserIdAndCategoryOrderByCreatedAtDesc(userId, category, pageable)
-                .map(MyPostResponse::from);
+    @Override
+    public Page<MyFreePostResponse> getMyFreePosts(Long userId, int page, int size) {
+        return postRepository
+                .findAllByUserIdAndCategoryOrderByCreatedAtDesc(userId, Category.FREE, PageRequest.of(page, size))
+                .map(MyFreePostResponse::from);
     }
 
     @Override
