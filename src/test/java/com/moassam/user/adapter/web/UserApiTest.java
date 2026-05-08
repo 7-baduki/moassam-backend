@@ -14,7 +14,6 @@ import com.moassam.user.application.dto.MyCommentResponse;
 import com.moassam.user.application.dto.MyFreePostResponse;
 import com.moassam.user.application.dto.MyMoabangPostResponse;
 import com.moassam.user.application.dto.MyObservationResponse;
-import com.moassam.user.adapter.web.dto.MyPostResponse;
 import com.moassam.user.application.provided.UserActivity;
 import com.moassam.user.application.provided.UserProfile;
 import com.moassam.user.domain.User;
