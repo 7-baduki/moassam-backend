@@ -2,13 +2,9 @@ package com.moassam.user.adapter.web;
 
 import com.moassam.auth.adapter.web.annotation.CurrentUserId;
 import com.moassam.auth.adapter.web.annotation.RequireAuth;
-import com.moassam.post.domain.post.Category;
 import com.moassam.shared.web.PageResponse;
 import com.moassam.shared.web.SuccessResponse;
-import com.moassam.user.adapter.web.dto.MyCommentResponse;
-import com.moassam.user.adapter.web.dto.MyObservationResponse;
-import com.moassam.user.adapter.web.dto.MyPostResponse;
-import com.moassam.user.adapter.web.dto.ProfileResponse;
+import com.moassam.user.application.dto.*;
 import com.moassam.user.application.provided.UserActivity;
 import com.moassam.user.application.provided.UserProfile;
 import com.moassam.user.domain.User;
@@ -30,6 +26,7 @@ public class UserApi {
             @CurrentUserId Long userId
     ) {
         User user = userProfile.getProfile(userId);
+
         return SuccessResponse.of(ProfileResponse.from(user));
     }
 
@@ -45,21 +42,27 @@ public class UserApi {
     }
 
     @RequireAuth
-    @GetMapping("/posts")
-    public SuccessResponse<PageResponse<MyPostResponse>> getMyPosts(
+    @GetMapping("/posts/moabang")
+    public SuccessResponse<PageResponse<MyMoabangPostResponse>> getMyMoabangPosts(
             @CurrentUserId Long userId,
-            @RequestParam Category category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<MyPostResponse> result = userActivity.getMyPosts(userId, category, page, size);
+        Page<MyMoabangPostResponse> result = userActivity.getMyMoabangPosts(userId, page, size);
 
-        return SuccessResponse.of(PageResponse.of(
-                result.getContent(),
-                result.getNumber(),
-                result.getSize(),
-                result.getTotalElements()
-        ));
+        return SuccessResponse.of(PageResponse.of(result.getContent(), result.getNumber(), result.getSize(), result.getTotalElements()));
+    }
+
+    @RequireAuth
+    @GetMapping("/posts/free")
+    public SuccessResponse<PageResponse<MyFreePostResponse>> getMyFreePosts(
+            @CurrentUserId Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<MyFreePostResponse> result = userActivity.getMyFreePosts(userId, page, size);
+
+        return SuccessResponse.of(PageResponse.of(result.getContent(), result.getNumber(), result.getSize(), result.getTotalElements()));
     }
 
     @RequireAuth

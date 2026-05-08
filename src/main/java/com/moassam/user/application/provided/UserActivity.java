@@ -1,14 +1,16 @@
 package com.moassam.user.application.provided;
 
-import com.moassam.post.domain.post.Category;
-import com.moassam.user.adapter.web.dto.MyCommentResponse;
-import com.moassam.user.adapter.web.dto.MyObservationResponse;
-import com.moassam.user.adapter.web.dto.MyPostResponse;
+import com.moassam.user.application.dto.MyCommentResponse;
+import com.moassam.user.application.dto.MyFreePostResponse;
+import com.moassam.user.application.dto.MyMoabangPostResponse;
+import com.moassam.user.application.dto.MyObservationResponse;
 import org.springframework.data.domain.Page;
 
 public interface UserActivity {
 
-    Page<MyPostResponse> getMyPosts(Long userId, Category category, int page, int size);
+    Page<MyMoabangPostResponse> getMyMoabangPosts(Long userId, int page, int size);
+
+    Page<MyFreePostResponse> getMyFreePosts(Long userId, int page, int size);
 
     Page<MyCommentResponse> getMyComments(Long userId, int page, int size);
 

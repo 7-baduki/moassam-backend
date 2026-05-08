@@ -1,4 +1,4 @@
-package com.moassam.user.adapter.web.dto;
+package com.moassam.user.application.dto;
 
 import com.moassam.observation.domain.Age;
 import com.moassam.observation.domain.CurriculumType;
