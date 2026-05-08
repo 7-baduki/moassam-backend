@@ -10,3 +10,21 @@ operation::user/get-profile[snippets='http-request,http-response,response-fields
 닉네임을 수정합니다. 응답으로 수정된 프로필 정보를 반환합니다.
 
 operation::user/update-nickname[snippets='http-request,http-response,response-fields']
+
+=== 내 게시글 조회
+
+카테고리(MOABANG, FREE)별로 내가 작성한 게시글을 조회합니다.
+
+operation::user/get-my-posts[snippets='http-request,query-parameters,response-body,response-fields']
+
+=== 내 댓글 조회
+
+내가 작성한 댓글 목록을 조회합니다.
+
+operation::user/get-my-comments[snippets='http-request,query-parameters,response-body,response-fields']
+
+=== 내 관찰일지 조회
+
+내가 작성한 관찰일지 목록을 조회합니다.
+
+operation::user/get-my-observations[snippets='http-request,query-parameters,response-body,response-fields']

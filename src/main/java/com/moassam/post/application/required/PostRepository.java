@@ -36,4 +36,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             HeadTag headTag,
             Pageable pageable
     );
+
+    Page<Post> findAllByCategoryAndTitleContainingIgnoreCase(
+            Category category,
+            String keyword,
+            Pageable pageable
+    );
+
+    Page<Post> findAllByUserIdAndCategoryOrderByCreatedAtDesc(Long userId, Category category, Pageable pageable);
 }

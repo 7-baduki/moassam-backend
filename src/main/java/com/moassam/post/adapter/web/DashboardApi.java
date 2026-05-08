@@ -71,4 +71,44 @@ public class DashboardApi {
                 )
         );
     }
+
+    @RequireAuth
+    @GetMapping("/moabang/search")
+    public SuccessResponse<PageResponse<MoabangDashboardResponse>> searchMoabang(
+            @CurrentUserId Long userId,
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size
+    ) {
+        Page<MoabangDashboardDetail> result = dashboardFinder.searchMoabang(userId, keyword, page, size);
+
+        Page<MoabangDashboardResponse> responsePage = result.map(MoabangDashboardResponse::from);
+
+        return SuccessResponse.of(PageResponse.of(
+                responsePage.getContent(),
+                responsePage.getNumber(),
+                responsePage.getSize(),
+                responsePage.getTotalElements()
+        ));
+    }
+
+    @RequireAuth
+    @GetMapping("/free/search")
+    public SuccessResponse<PageResponse<FreeDashboardResponse>> searchFree(
+            @CurrentUserId Long userId,
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "9") int size
+    ) {
+        Page<FreeDashboardDetail> result = dashboardFinder.searchFree(userId, keyword, page, size);
+
+        Page<FreeDashboardResponse> responsePage = result.map(FreeDashboardResponse::from);
+
+        return SuccessResponse.of(PageResponse.of(
+                responsePage.getContent(),
+                responsePage.getNumber(),
+                responsePage.getSize(),
+                responsePage.getTotalElements()
+        ));
+    }
 }

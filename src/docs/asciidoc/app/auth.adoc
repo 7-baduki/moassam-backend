@@ -1,7 +1,7 @@
 == 인증 API
 === 토큰 갱신
 
-쿠키의 refreshToken으로 새로운 accessToken을 발급받습니다.
+쿠키의 refreshToken으로 새로운 accessToken을 쿠키로 발급받습니다.
 
 operation::auth/refresh[snippets='http-request,http-response']
 
