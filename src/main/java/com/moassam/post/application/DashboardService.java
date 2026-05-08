@@ -80,6 +80,53 @@ public class DashboardService implements DashboardFinder {
         ));
     }
 
+    @Override
+    public Page<MoabangDashboardDetail> searchMoabang(Long userId, String keyword, int page, int size) {
+        Pageable pageable = createPageable(page, size);
+
+        Page<Post> posts = postRepository.findAllByCategoryAndTitleContainingIgnoreCase(
+                Category.MOABANG, keyword, pageable
+        );
+
+        Map<Long, String> authorNicknames = getAuthorNicknames(posts.getContent());
+
+        return posts.map(post -> new MoabangDashboardDetail(
+                post.getId(),
+                post.getTitle(),
+                authorNicknames.get(post.getUserId()),
+                DEFAULT_THUMBNAIL_URL,
+                post.getPostAge(),
+                post.getResourceType(),
+                post.getViewCount(),
+                post.getLikeCount(),
+                post.getCommentCount(),
+                post.getCreatedAt()
+        ));
+    }
+
+    @Override
+    public Page<FreeDashboardDetail> searchFree(Long userId, String keyword, int page, int size) {
+        Pageable pageable = createPageable(page, size);
+
+        Page<Post> posts = postRepository.findAllByCategoryAndTitleContainingIgnoreCase(
+                Category.FREE, keyword, pageable
+        );
+
+        Map<Long, String> authorNicknames = getAuthorNicknames(posts.getContent());
+
+        return posts.map(post -> new FreeDashboardDetail(
+                post.getId(),
+                post.getTitle(),
+                authorNicknames.get(post.getUserId()),
+                createContentPreview(post.getContent()),
+                post.getHeadTag(),
+                post.getViewCount(),
+                post.getLikeCount(),
+                post.getCommentCount(),
+                post.getCreatedAt()
+        ));
+    }
+
     private Pageable createPageable(int page, int size) {
         int pageIndex = Math.max(page, 0);
         int pageSize = Math.clamp(size, 1, 50);

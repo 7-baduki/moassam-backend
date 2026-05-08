@@ -104,6 +104,18 @@ operation::dashboard/get-moabang[snippets='http-request,query-parameters,respons
 
 operation::dashboard/get-free[snippets='http-request,query-parameters,response-body,response-fields']
 
+=== 모아방 키워드 검색
+
+모아방 게시글을 제목 기준으로 검색합니다.
+
+operation::dashboard/search-moabang[snippets='http-request,query-parameters,response-body,response-fields']
+
+=== 자유게시판 키워드 검색
+
+자유게시판 게시글을 제목 기준으로 검색합니다.
+
+operation::dashboard/search-free[snippets='http-request,query-parameters,response-body,response-fields']
+
 === 게시글 상세 조회
 
 게시글 상세 정보를 조회합니다.
