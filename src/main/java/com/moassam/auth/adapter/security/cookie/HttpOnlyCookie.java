@@ -1,22 +1,21 @@
 package com.moassam.auth.adapter.security.cookie;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
-import org.springframework.stereotype.Component;
 
 public class HttpOnlyCookie {
 
     private final String name;
     private final int maxAgeSeconds;
     private final boolean secure;
+    private final String sameSite;
 
-    public HttpOnlyCookie(String name, int maxAgeSeconds, boolean secure) {
+    public HttpOnlyCookie(String name, int maxAgeSeconds, boolean secure, String sameSite) {
         this.name = name;
         this.maxAgeSeconds = maxAgeSeconds;
         this.secure = secure;
+        this.sameSite = sameSite;
     }
 
     public void add(HttpServletResponse response, String value) {
@@ -25,7 +24,7 @@ public class HttpOnlyCookie {
                 .secure(secure)
                 .path("/")
                 .maxAge(maxAgeSeconds)
-                .sameSite("Lax")
+                .sameSite(sameSite)
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
@@ -37,7 +36,7 @@ public class HttpOnlyCookie {
                 .secure(secure)
                 .path("/")
                 .maxAge(0)
-                .sameSite("Lax")
+                .sameSite(sameSite)
                 .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());

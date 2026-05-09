@@ -21,6 +21,7 @@ app:
   oauth:
     success-redirect-uri: ${OAUTH_SUCCESS_REDIRECT_URI}
   cookie:
+    same-site: None
     refresh-token:
       name: refreshToken
       max-age-days: 14
