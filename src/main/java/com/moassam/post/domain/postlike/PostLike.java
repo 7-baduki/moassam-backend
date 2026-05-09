@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 public class PostLike extends BaseEntity {
 
     private Long id;
-    private Long userId;
     private Long postId;
+    private Long userId;
 
     public static PostLike create(Long userId, Long postId) {
         PostLike postLike = new PostLike();
