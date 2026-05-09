@@ -18,6 +18,7 @@ app:
   oauth:
     success-redirect-uri: http://localhost:3000/oauth/callback
   cookie:
+    same-site: Lax
     refresh-token:
       name: refreshToken
       max-age-days: 14
