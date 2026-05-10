@@ -17,14 +17,4 @@ public class CookieConfig {
     ) {
         return new HttpOnlyCookie(name, maxAgeDays * 24 * 60 * 60, secure, sameSite);
     }
-
-    @Bean
-    public HttpOnlyCookie accessTokenCookie(
-            @Value("${app.cookie.access-token.name}") String name,
-            @Value("${app.cookie.access-token.max-age-seconds}") int maxAgeSeconds,
-            @Value("${app.cookie.access-token.secure}") boolean secure,
-            @Value("${app.cookie.same-site}") String sameSite
-    ) {
-        return new HttpOnlyCookie(name, maxAgeSeconds, secure, sameSite);
-    }
 }

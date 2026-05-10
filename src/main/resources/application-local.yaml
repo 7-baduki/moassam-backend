@@ -23,7 +23,3 @@ app:
       name: refreshToken
       max-age-days: 14
       secure: false
-    access-token:
-      name: accessToken
-      max-age-seconds: 1800
-      secure: false
