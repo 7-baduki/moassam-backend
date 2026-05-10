@@ -85,7 +85,6 @@ public class Post extends BaseEntity {
         }
     }
 
-    // TODO: 추후 동일 사용자의 중복 조회는 조회수 증가에서 제외
     public void increaseViewCount() {this.viewCount++;}
 
     private static void validateCategoryOptions(
