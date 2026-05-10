@@ -296,5 +296,25 @@
 
   </entity>
 
+  <entity class="com.moassam.post.domain.bookmark.PostBookmark">
+    <table name="post_bookmarks"/>
+
+    <attributes>
+      <id name="id">
+        <column name="id"/>
+        <generated-value strategy="IDENTITY"/>
+      </id>
+
+      <basic name="postId">
+        <column name="post_id"/>
+      </basic>
+
+      <basic name="userId">
+        <column name="user_id"/>
+      </basic>
+    </attributes>
+
+  </entity>
+
 
 </entity-mappings>
