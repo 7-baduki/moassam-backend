@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 
@@ -20,7 +21,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final HttpOnlyCookie refreshTokenCookie;
-    private final HttpOnlyCookie accessTokenCookie;
 
     @Value("${app.oauth.success-redirect-uri}")
     private String redirectUri;
@@ -28,13 +28,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public OAuth2SuccessHandler(
             TokenProvider tokenProvider,
             RefreshTokenRepository refreshTokenRepository,
-            @Qualifier("refreshTokenCookie") HttpOnlyCookie refreshTokenCookie,
-            @Qualifier("accessTokenCookie") HttpOnlyCookie accessTokenCookie
+            @Qualifier("refreshTokenCookie") HttpOnlyCookie refreshTokenCookie
     ) {
         this.tokenProvider = tokenProvider;
         this.refreshTokenRepository = refreshTokenRepository;
         this.refreshTokenCookie = refreshTokenCookie;
-        this.accessTokenCookie = accessTokenCookie;
     }
 
     @Override
@@ -49,10 +47,16 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String accessToken = tokenProvider.generateAccessToken(userId);
         String refreshToken = issueRefreshToken(userId);
 
-        accessTokenCookie.add(response, accessToken);
         refreshTokenCookie.add(response, refreshToken);
 
-        getRedirectStrategy().sendRedirect(request, response, redirectUri);
+        getRedirectStrategy().sendRedirect(request, response, createRedirectUri(accessToken));
+    }
+
+    private String createRedirectUri(String accessToken) {
+        return UriComponentsBuilder.fromUriString(redirectUri)
+                .queryParam("accessToken", accessToken)
+                .build()
+                .toUriString();
     }
 
     private String issueRefreshToken(Long userId) {
