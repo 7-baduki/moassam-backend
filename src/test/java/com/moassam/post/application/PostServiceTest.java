@@ -1,15 +1,15 @@
 package com.moassam.post.application;
 
 import com.moassam.credit.application.provided.CreditCharger;
-import com.moassam.post.application.required.BookmarkRepository;
-import com.moassam.post.application.required.PostFileRepository;
-import com.moassam.post.application.required.PostLikeRepository;
-import com.moassam.post.application.required.PostRepository;
+import com.moassam.post.application.required.*;
 import com.moassam.post.domain.post.*;
 import com.moassam.post.exception.PostErrorCode;
 import com.moassam.shared.adapter.filestorage.FileStorage;
 import com.moassam.shared.exception.BusinessException;
+import com.moassam.support.UserFixture;
+import com.moassam.support.post.PostFixture;
 import com.moassam.user.application.required.UserRepository;
+import com.moassam.user.domain.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -29,6 +29,7 @@ class PostServiceTest {
     private final PostFileRepository postFileRepository = mock(PostFileRepository.class);
     private final PostLikeRepository postLikeRepository = mock(PostLikeRepository.class);
     private final BookmarkRepository bookmarkRepository = mock(BookmarkRepository.class);
+    private final PostViewRepository postViewRepository = mock(PostViewRepository.class);
     private final FileStorage fileStorage = mock(FileStorage.class);
     private final UserRepository userRepository = mock(UserRepository.class);
     private final CreditCharger creditCharger = mock(CreditCharger.class);
@@ -39,6 +40,7 @@ class PostServiceTest {
             userRepository,
             postLikeRepository,
             bookmarkRepository,
+            postViewRepository,
             fileStorage,
             creditCharger
     );
@@ -201,6 +203,49 @@ class PostServiceTest {
     }
 
     @Test
+    void getPost_firstView_increaseViewCount() {
+        Post post = PostFixture.createFreePost(10L);
+
+        User user = UserFixture.createWithNickname("author");
+        ReflectionTestUtils.setField(user, "id", 1L);
+
+        given(postRepository.findById(10L)).willReturn(Optional.of(post));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(postFileRepository.findAllByPostId(10L)).willReturn(List.of());
+        given(postLikeRepository.existsByPostIdAndUserId(10L, 2L)).willReturn(false);
+        given(bookmarkRepository.existsByPostIdAndUserId(10L, 2L)).willReturn(false);
+        given(postViewRepository.insertIgnore(10L, 2L)).willReturn(1);
+
+        PostDetail result = postService.getPost(2L, 10L);
+
+        assertThat(result.post().getViewCount()).isEqualTo(1);
+
+        then(postViewRepository).should().insertIgnore(10L, 2L);
+    }
+
+    @Test
+    void getPost_alreadyViewed_doesNotIncreaseViewCount() {
+        Post post = PostFixture.createFreePost(10L);
+        post.increaseViewCount();
+
+        User user = UserFixture.createWithNickname("author");
+        ReflectionTestUtils.setField(user, "id", 1L);
+
+        given(postRepository.findById(10L)).willReturn(Optional.of(post));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(postFileRepository.findAllByPostId(10L)).willReturn(List.of());
+        given(postLikeRepository.existsByPostIdAndUserId(10L, 2L)).willReturn(false);
+        given(bookmarkRepository.existsByPostIdAndUserId(10L, 2L)).willReturn(false);
+        given(postViewRepository.insertIgnore(10L, 2L)).willReturn(0);
+
+        PostDetail result = postService.getPost(2L, 10L);
+
+        assertThat(result.post().getViewCount()).isEqualTo(1);
+
+        then(postViewRepository).should().insertIgnore(10L, 2L);
+    }
+
+    @Test
     void updatePost() {
         Post post = Post.create(
                 1L,
@@ -299,8 +344,8 @@ class PostServiceTest {
         postService.deletePost(1L, 1L);
 
         then(fileStorage).should().delete("https://example.com/test.pdf");
-        then(postFileRepository).should().deleteAll(List.of(file));
         then(postRepository).should().delete(post);
+        then(postFileRepository).should(never()).deleteAll(anyList());
     }
 
     @Test

@@ -4,14 +4,11 @@ import com.moassam.credit.application.provided.CreditCharger;
 import com.moassam.post.application.provided.post.PostDeleter;
 import com.moassam.post.application.provided.post.PostFinder;
 import com.moassam.post.application.provided.post.PostUpdater;
-import com.moassam.post.application.required.BookmarkRepository;
-import com.moassam.post.application.required.PostFileRepository;
-import com.moassam.post.application.required.PostLikeRepository;
+import com.moassam.post.application.required.*;
 import com.moassam.post.domain.post.*;
 import com.moassam.post.exception.PostErrorCode;
 import com.moassam.shared.adapter.filestorage.FileStorage;
 import com.moassam.post.application.provided.post.PostCreator;
-import com.moassam.post.application.required.PostRepository;
 import com.moassam.shared.exception.BusinessException;
 import com.moassam.user.application.required.UserRepository;
 import com.moassam.user.domain.User;
@@ -34,6 +31,7 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
     private final UserRepository userRepository;
     private final PostLikeRepository postLikeRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final PostViewRepository postViewRepository;
     private final FileStorage fileStorage;
     private final CreditCharger creditCharger;
 
@@ -72,6 +70,7 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
     }
 
     @Override
+    @Transactional
     public PostDetail getPost(Long userId, Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND));
@@ -85,8 +84,11 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
 
         boolean isBookmarked = bookmarkRepository.existsByPostIdAndUserId(postId, userId);
 
-        // TODO: 추후 동일 사용자의 중복 조회는 조회수 증가에서 제외
-        post.increaseViewCount();
+        int inserted = postViewRepository.insertIgnore(postId, userId);
+
+        if (inserted == 1) {
+            post.increaseViewCount();
+        }
 
         return new PostDetail(post, author.getNickname(), files, isLiked, isBookmarked);
     }
@@ -138,7 +140,6 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
 
         List<PostFile> postFiles = postFileRepository.findAllByPostId(postId);
         postFiles.forEach(file -> fileStorage.delete(file.getUrl()));
-        postFileRepository.deleteAll(postFiles);
 
         postRepository.delete(post);
     }
