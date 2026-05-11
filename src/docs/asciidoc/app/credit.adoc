@@ -5,3 +5,9 @@
 현재 남아있는 횟수를 조회합니다.
 
 operation::credit/get-credit-wallet[snippets='http-request,http-response,response-fields']
+
+=== 개발용 횟수 충전
+
+현재 로그인한 사용자의 횟수를 20회 강제로 충전합니다.
+
+operation::credit/dev-charge-credit[snippets='http-request,http-response,response-fields']

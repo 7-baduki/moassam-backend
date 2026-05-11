@@ -56,4 +56,8 @@ public class CreditWallet extends BaseEntity {
     public boolean shouldReset(LocalDate today) {
         return this.lastResetDate == null || this.lastResetDate.isBefore(today);
     }
+
+    public void devCharge(int amount) {
+        this.balance += amount;
+    }
 }

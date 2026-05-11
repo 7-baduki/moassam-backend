@@ -91,4 +91,14 @@ class CreditWalletTest {
         assertThat(wallet.shouldReset(LocalDate.of(2026, 5, 6))).isTrue();
         assertThat(wallet.shouldReset(LocalDate.of(2026, 5, 5))).isFalse();
     }
+
+    @Test
+    void devCharge() {
+        CreditWallet wallet = CreditWallet.create(1L, LocalDate.of(2026, 5, 6));
+
+        wallet.devCharge(20);
+
+        assertThat(wallet.getBalance()).isEqualTo(30);
+        assertThat(wallet.getDailyBonusChargedAmount()).isZero();
+    }
 }
