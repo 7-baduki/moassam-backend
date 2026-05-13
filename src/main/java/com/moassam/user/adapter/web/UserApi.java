@@ -98,4 +98,29 @@ public class UserApi {
                 result.getTotalElements()
         ));
     }
+
+    @RequireAuth
+    @GetMapping("/posts/bookmarked")
+    public SuccessResponse<PageResponse<MyBookmarkedResponse>> getMyBookmarkedPosts(
+            @CurrentUserId Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<MyBookmarkedResponse> result = userActivity.getMyBookmarkedPosts(userId, page, size);
+
+        return SuccessResponse.of(PageResponse.of(
+                result.getContent(),
+                result.getNumber(),
+                result.getSize(),
+                result.getTotalElements()
+        ));
+    }
+
+    @RequireAuth
+    @GetMapping("/activity-summary")
+    public SuccessResponse<MyActivityCountsResponse> getMyActivityCounts(
+            @CurrentUserId Long userId
+    ) {
+        return SuccessResponse.of(userActivity.getMyActivityCounts(userId));
+    }
 }

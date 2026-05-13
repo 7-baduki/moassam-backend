@@ -1,9 +1,6 @@
 package com.moassam.user.application.provided;
 
-import com.moassam.user.application.dto.MyCommentResponse;
-import com.moassam.user.application.dto.MyFreePostResponse;
-import com.moassam.user.application.dto.MyMoabangPostResponse;
-import com.moassam.user.application.dto.MyObservationResponse;
+import com.moassam.user.application.dto.*;
 import org.springframework.data.domain.Page;
 
 public interface UserActivity {
@@ -15,4 +12,8 @@ public interface UserActivity {
     Page<MyCommentResponse> getMyComments(Long userId, int page, int size);
 
     Page<MyObservationResponse> getMyObservations(Long userId, int page, int size);
+
+    Page<MyBookmarkedResponse> getMyBookmarkedPosts(Long userId, int page, int size);
+
+    MyActivityCountsResponse getMyActivityCounts(Long userId);
 }
