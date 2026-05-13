@@ -30,6 +30,7 @@ class PostServiceTest {
     private final PostLikeRepository postLikeRepository = mock(PostLikeRepository.class);
     private final BookmarkRepository bookmarkRepository = mock(BookmarkRepository.class);
     private final PostViewRepository postViewRepository = mock(PostViewRepository.class);
+    private final CommentRepository commentRepository = mock(CommentRepository.class);
     private final FileStorage fileStorage = mock(FileStorage.class);
     private final UserRepository userRepository = mock(UserRepository.class);
     private final CreditCharger creditCharger = mock(CreditCharger.class);
@@ -42,7 +43,8 @@ class PostServiceTest {
             bookmarkRepository,
             postViewRepository,
             fileStorage,
-            creditCharger
+            creditCharger,
+            commentRepository
     );
 
     @Test

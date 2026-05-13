@@ -7,7 +7,9 @@ import com.moassam.post.application.provided.post.PostCreator;
 import com.moassam.post.application.provided.post.PostDeleter;
 import com.moassam.post.application.provided.post.PostFinder;
 import com.moassam.post.application.provided.post.PostUpdater;
+import com.moassam.post.domain.comment.Comment;
 import com.moassam.post.domain.post.*;
+import com.moassam.support.CommentFixture;
 import com.moassam.support.post.PostFileFixture;
 import com.moassam.support.post.PostFixture;
 import org.junit.jupiter.api.Test;
@@ -157,9 +159,11 @@ class PostApiTest extends RestDocsSupport {
         Post freePost = PostFixture.createFreePost(1L);
         PostFile file = PostFileFixture.createFile(10L, 1L);
         PostFile editorImage = PostFileFixture.createEditorImage(11L, 1L);
+        Comment comment1 = CommentFixture.createComment1(10L, 1L, 1L);
+        Comment comment2 = CommentFixture.createComment2(11L, 1L, 2L);
 
         given(postFinder.getPost(any(), eq(1L)))
-                .willReturn(new PostDetail(freePost, "햇살선생님",List.of(file, editorImage), false, false));
+                .willReturn(new PostDetail(freePost, "햇살선생님",List.of(file, editorImage), List.of(comment1, comment2), false, false));
 
         mockMvc.perform(get("/api/v1/posts/{postId}", 1L))
                 .andExpect(status().isOk())
@@ -191,6 +195,13 @@ class PostApiTest extends RestDocsSupport {
                                         fieldWithPath("data.editorFiles[].url").type(JsonFieldType.STRING).description("이미지 URL"),
                                         fieldWithPath("data.editorFiles[].size").type(JsonFieldType.NUMBER).description("이미지 크기"),
                                         fieldWithPath("data.editorFiles[].fileType").type(JsonFieldType.STRING).description("파일 유형"),
+
+                                        fieldWithPath("data.comments").type(JsonFieldType.ARRAY).description("댓글 목록"),
+                                        fieldWithPath("data.comments[].commentId").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                                        fieldWithPath("data.comments[].postId").type(JsonFieldType.NUMBER).description("게시물 ID"),
+                                        fieldWithPath("data.comments[].authorNickname").type(JsonFieldType.STRING).description("댓글 작성자 닉네임"),
+                                        fieldWithPath("data.comments[].content").type(JsonFieldType.STRING).description("댓글 내용"),
+                                        fieldWithPath("data.comments[].createdAt").type(JsonFieldType.STRING).description("댓글 작성 날짜"),
 
                                         fieldWithPath("data.viewCount").type(JsonFieldType.NUMBER).description("조회수"),
                                         fieldWithPath("data.commentCount").type(JsonFieldType.NUMBER).description("댓글 수"),

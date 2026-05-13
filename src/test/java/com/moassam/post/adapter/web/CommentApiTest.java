@@ -59,7 +59,7 @@ class CommentApiTest extends RestDocsSupport {
 
     @Test
     void getComment() throws Exception {
-        Comment comment = CommentFixture.create(10L, 1L, 1L);
+        Comment comment = CommentFixture.createComment1(10L, 1L, 1L);
         given(commentFinder.getComment(1L, 10L)).willReturn(comment);
 
         mockMvc.perform(get("/api/v1/posts/{postId}/comments/{commentId}", 1L, 10L))

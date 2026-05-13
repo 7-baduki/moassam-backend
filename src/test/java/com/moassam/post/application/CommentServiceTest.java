@@ -56,7 +56,7 @@ class CommentServiceTest {
 
     @Test
     void getComment() {
-        Comment comment = CommentFixture.create(100L, 10L, 1L);
+        Comment comment = CommentFixture.createComment1(100L, 10L, 1L);
         given(commentRepository.findById(100L)).willReturn(Optional.of(comment));
 
         Comment found = commentService.getComment(10L, 100L);
@@ -66,7 +66,7 @@ class CommentServiceTest {
 
     @Test
     void updateComment() {
-        Comment comment = CommentFixture.create(100L, 10L, 1L);
+        Comment comment = CommentFixture.createComment1(100L, 10L, 1L);
         given(commentRepository.findById(100L)).willReturn(Optional.of(comment));
 
         Long commentId = commentService.updateComment(1L, 10L, 100L, "수정 댓글");
@@ -77,7 +77,7 @@ class CommentServiceTest {
 
     @Test
     void updateComment_notOwner() {
-        Comment comment = CommentFixture.create(100L, 10L, 1L);
+        Comment comment = CommentFixture.createComment1(100L, 10L, 1L);
         given(commentRepository.findById(100L)).willReturn(Optional.of(comment));
 
         assertThatThrownBy(() -> commentService.updateComment(2L, 10L, 100L, "수정 댓글"))
@@ -88,7 +88,7 @@ class CommentServiceTest {
 
     @Test
     void deleteComment() {
-        Comment comment = CommentFixture.create(100L, 10L, 1L);
+        Comment comment = CommentFixture.createComment1(100L, 10L, 1L);
         Post post = Post.create(1L, "제목", "내용", Category.FREE, null, null, HeadTag.QUESTION);
         post.increaseCommentCount();
 

@@ -8,8 +8,19 @@ import java.time.LocalDateTime;
 
 public class CommentFixture {
 
-    public static Comment create(Long id, Long postId, Long userId) {
+    public static Comment createComment1(Long id, Long postId, Long userId) {
         User user = UserFixture.createWithNickname("나미리선생님");
+        ReflectionTestUtils.setField(user, "id", userId);
+
+        Comment comment = Comment.create(postId, user, "댓글 내용");
+        ReflectionTestUtils.setField(comment, "id", id);
+        ReflectionTestUtils.setField(comment, "createdAt", LocalDateTime.now());
+
+        return comment;
+    }
+
+    public static Comment createComment2(Long id, Long postId, Long userId) {
+        User user = UserFixture.createWithNickname("햇살선생님");
         ReflectionTestUtils.setField(user, "id", userId);
 
         Comment comment = Comment.create(postId, user, "댓글 내용");
