@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query("""
@@ -16,4 +18,13 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
         order by c.createdAt desc
     """)
     Page<Comment> findAllByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+
+    @Query("""
+        select c
+        from Comment c
+        join Post p on p.id = c.postId
+        where c.postId = :postId
+        order by c.createdAt desc
+    """)
+    List<Comment> findAllByPostIdOrderByCreatedAtDesc(Long postId);
 }

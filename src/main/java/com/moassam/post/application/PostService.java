@@ -5,6 +5,7 @@ import com.moassam.post.application.provided.post.PostDeleter;
 import com.moassam.post.application.provided.post.PostFinder;
 import com.moassam.post.application.provided.post.PostUpdater;
 import com.moassam.post.application.required.*;
+import com.moassam.post.domain.comment.Comment;
 import com.moassam.post.domain.post.*;
 import com.moassam.post.exception.PostErrorCode;
 import com.moassam.shared.adapter.filestorage.FileStorage;
@@ -34,6 +35,7 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
     private final PostViewRepository postViewRepository;
     private final FileStorage fileStorage;
     private final CreditCharger creditCharger;
+    private final CommentRepository commentRepository;
 
     @Override
     @Transactional
@@ -80,6 +82,8 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
 
         List<PostFile> files = postFileRepository.findAllByPostId(post.getId());
 
+        List<Comment> comments = commentRepository.findAllByPostIdOrderByCreatedAtDesc(postId);
+
         boolean isLiked = postLikeRepository.existsByPostIdAndUserId(postId, userId);
 
         boolean isBookmarked = bookmarkRepository.existsByPostIdAndUserId(postId, userId);
@@ -90,7 +94,7 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
             post.increaseViewCount();
         }
 
-        return new PostDetail(post, author.getNickname(), files, isLiked, isBookmarked);
+        return new PostDetail(post, author.getNickname(), files, comments, isLiked, isBookmarked);
     }
 
     @Override

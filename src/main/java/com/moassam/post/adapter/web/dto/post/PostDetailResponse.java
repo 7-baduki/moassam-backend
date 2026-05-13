@@ -1,5 +1,7 @@
 package com.moassam.post.adapter.web.dto.post;
 
+import com.moassam.post.adapter.web.dto.comment.CommentResponse;
+import com.moassam.post.domain.comment.Comment;
 import com.moassam.post.domain.post.*;
 
 import java.time.LocalDateTime;
@@ -17,6 +19,7 @@ public record PostDetailResponse(
         String content,
         List<PostFileResponse> files,
         List<PostFileResponse> editorFiles,
+        List<CommentResponse> comments,
         long viewCount,
         long commentCount,
         long likeCount,
@@ -27,6 +30,7 @@ public record PostDetailResponse(
     public static PostDetailResponse from(PostDetail postDetail) {
         Post post = postDetail.post();
         List<PostFile> postFiles = postDetail.files();
+        List<Comment> comments = postDetail.comments();
 
         return new PostDetailResponse(
                 post.getId(),
@@ -45,6 +49,9 @@ public record PostDetailResponse(
                 postFiles.stream()
                         .filter(PostFile::isEditorImage)
                         .map(PostFileResponse::from)
+                        .toList(),
+                comments.stream()
+                        .map(CommentResponse::from)
                         .toList(),
                 post.getViewCount(),
                 post.getCommentCount(),
