@@ -24,7 +24,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
         from Comment c
         join Post p on p.id = c.postId
         where c.postId = :postId
-        order by c.createdAt desc
+        order by c.createdAt asc
     """)
-    List<Comment> findAllByPostIdOrderByCreatedAtDesc(Long postId);
+    List<Comment> findAllByPostIdOrderByCreatedAtAsc(Long postId);
 }

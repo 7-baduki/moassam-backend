@@ -82,7 +82,7 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
 
         List<PostFile> files = postFileRepository.findAllByPostId(post.getId());
 
-        List<Comment> comments = commentRepository.findAllByPostIdOrderByCreatedAtDesc(postId);
+        List<Comment> comments = commentRepository.findAllByPostIdOrderByCreatedAtAsc(postId);
 
         boolean isLiked = postLikeRepository.existsByPostIdAndUserId(postId, userId);
 
