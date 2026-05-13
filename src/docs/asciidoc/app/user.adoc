@@ -34,3 +34,15 @@ operation::user/get-my-comments[snippets='http-request,query-parameters,response
 내가 작성한 관찰일지 목록을 조회합니다.
 
 operation::user/get-my-observations[snippets='http-request,query-parameters,response-body,response-fields']
+
+=== 북마크 한 게시글 조회
+
+내가 북마크한 게시글 목록을 조회합니다.
+
+operation::user/get-my-bookmarked-posts[snippets='http-request,query-parameters,response-body,response-fields']
+
+=== 관찰일지 및 북마크 통계 조회
+
+내가 생성한 관찰일지 총 갯수와 북마크한 게시글 총 갯수를 조회합니다.
+
+operation::user/get-my-activity-counts[snippets='http-request,response-body,response-fields']

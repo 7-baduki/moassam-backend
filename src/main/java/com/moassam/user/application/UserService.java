@@ -1,15 +1,14 @@
 package com.moassam.user.application;
 
+import com.moassam.observation.application.provided.ObservationStatsFinder;
 import com.moassam.observation.application.required.ObservationRepository;
+import com.moassam.post.application.provided.bookmark.BookmarkFinder;
 import com.moassam.post.application.required.CommentRepository;
 import com.moassam.post.application.required.PostRepository;
 import com.moassam.post.domain.post.Category;
 import com.moassam.post.domain.post.Post;
 import com.moassam.shared.exception.BusinessException;
-import com.moassam.user.application.dto.MyCommentResponse;
-import com.moassam.user.application.dto.MyFreePostResponse;
-import com.moassam.user.application.dto.MyMoabangPostResponse;
-import com.moassam.user.application.dto.MyObservationResponse;
+import com.moassam.user.application.dto.*;
 import com.moassam.user.application.provided.UserActivity;
 import com.moassam.user.application.provided.UserProfile;
 import com.moassam.user.application.required.UserRepository;
@@ -30,6 +29,8 @@ public class UserService implements UserProfile, UserActivity {
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final ObservationRepository observationRepository;
+    private final ObservationStatsFinder observationStatsFinder;
+    private final BookmarkFinder bookmarkFinder;
 
     @Override
     @Transactional
@@ -87,4 +88,19 @@ public class UserService implements UserProfile, UserActivity {
         return observationRepository.findAllByUserIdOrderByCreatedAtDesc(userId, pageable)
                 .map(MyObservationResponse::from);
     }
+
+    @Override
+    public Page<MyBookmarkedResponse> getMyBookmarkedPosts(Long userId, int page, int size) {
+        return bookmarkFinder.getBookmarkedPosts(userId, page, size)
+                .map(MyBookmarkedResponse::from);
+    }
+
+    @Override
+    public MyActivityCountsResponse getMyActivityCounts(Long userId) {
+        return MyActivityCountsResponse.from(
+                observationStatsFinder.countByUserId(userId),
+                bookmarkFinder.countByUserId(userId)
+        );
+    }
+
 }

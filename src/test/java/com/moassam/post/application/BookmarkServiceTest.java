@@ -10,7 +10,11 @@ import com.moassam.post.exception.PostErrorCode;
 import com.moassam.shared.exception.BusinessException;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
@@ -98,5 +102,38 @@ class BookmarkServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(PostErrorCode.POST_NOT_FOUND);
+    }
+
+    @Test
+    void getBookmarkedPosts() {
+        Post post = Post.create(
+                99L,
+                "title",
+                "content",
+                Category.FREE,
+                null,
+                null,
+                HeadTag.QUESTION
+        );
+
+        PageRequest pageable = PageRequest.of(0, 10);
+
+        given(bookmarkRepository.findBookmarkedPostsByUserId(1L, pageable))
+                .willReturn(new PageImpl<>(List.of(post), pageable, 1));
+
+        Page<Post> result = bookmarkService.getBookmarkedPosts(1L, 0, 10);
+
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().getFirst().getTitle()).isEqualTo("title");
+        assertThat(result.getTotalElements()).isEqualTo(1);
+    }
+
+    @Test
+    void countByUserId() {
+        given(bookmarkRepository.countByUserId(1L)).willReturn(3L);
+
+        long result = bookmarkService.countByUserId(1L);
+
+        assertThat(result).isEqualTo(3L);
     }
 }

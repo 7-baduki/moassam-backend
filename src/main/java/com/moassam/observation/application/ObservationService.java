@@ -1,10 +1,7 @@
 package com.moassam.observation.application;
 
 import com.moassam.credit.application.provided.CreditUser;
-import com.moassam.observation.application.provided.ObservationCreator;
-import com.moassam.observation.application.provided.ObservationDeleter;
-import com.moassam.observation.application.provided.ObservationFinder;
-import com.moassam.observation.application.provided.ObservationRegenerator;
+import com.moassam.observation.application.provided.*;
 import com.moassam.observation.application.required.ObservationGenerator;
 import com.moassam.observation.application.required.ObservationReferenceProvider;
 import com.moassam.observation.application.required.ObservationRepository;
@@ -23,7 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ObservationService implements ObservationCreator, ObservationRegenerator, ObservationFinder, ObservationDeleter {
+public class ObservationService implements ObservationCreator, ObservationRegenerator, ObservationFinder, ObservationDeleter, ObservationStatsFinder {
 
     private final ObservationRepository observationRepository;
     private final ObservationSectionRepository observationSectionRepository;
@@ -158,6 +155,11 @@ public class ObservationService implements ObservationCreator, ObservationRegene
 
         observationSectionRepository.deleteAllByObservationId(observationId);
         observationRepository.delete(observation);
+    }
+
+    @Override
+    public long countByUserId(Long userId) {
+        return observationRepository.countByUserId(userId);
     }
 
     private void validateCreateRequest(ObservationCreateRequest request) {
