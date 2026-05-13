@@ -20,4 +20,6 @@ public interface ObservationRepository extends JpaRepository<Observation, Long> 
     );
 
     Page<Observation> findAllByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+
+    long countByUserId(Long userId);
 }
