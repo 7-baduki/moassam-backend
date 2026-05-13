@@ -10,10 +10,7 @@ import com.moassam.post.domain.post.HeadTag;
 import com.moassam.post.domain.post.PostAge;
 import com.moassam.post.domain.post.ResourceType;
 import com.moassam.support.UserFixture;
-import com.moassam.user.application.dto.MyCommentResponse;
-import com.moassam.user.application.dto.MyFreePostResponse;
-import com.moassam.user.application.dto.MyMoabangPostResponse;
-import com.moassam.user.application.dto.MyObservationResponse;
+import com.moassam.user.application.dto.*;
 import com.moassam.user.application.provided.UserActivity;
 import com.moassam.user.application.provided.UserProfile;
 import com.moassam.user.domain.User;
@@ -230,6 +227,67 @@ class UserApiTest extends RestDocsSupport {
                                         fieldWithPath("data.totalElements").type(JsonFieldType.NUMBER).description("전체 관찰일지 수"),
                                         fieldWithPath("data.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
                                         fieldWithPath("data.hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부")
+                                )
+                        )
+                ));
+    }
+
+    @Test
+    void getMyBookmarkedPosts() throws Exception {
+        MyBookmarkedResponse post = new MyBookmarkedResponse(
+                1L,
+                "북마크한 게시글 제목",
+                Category.FREE,
+                56L,
+                LocalDateTime.of(2026, 3, 6, 0, 0)
+        );
+
+        given(userActivity.getMyBookmarkedPosts(any(), eq(0), eq(10)))
+                .willReturn(new PageImpl<>(List.of(post), PageRequest.of(0, 10), 1));
+
+        mockMvc.perform(get("/api/v1/users/posts/bookmarked")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andDo(document("user/get-my-bookmarked-posts",
+                        ApiDocumentUtils.getDocumentRequest(),
+                        ApiDocumentUtils.getDocumentResponse(),
+                        queryParameters(
+                                parameterWithName("page").description("페이지 번호, 0부터 시작").optional(),
+                                parameterWithName("size").description("페이지 크기, 기본값 10").optional()
+                        ),
+                        responseFields(
+                                CommonDocumentation.successResponseFields(
+                                        fieldWithPath("data.data").type(JsonFieldType.ARRAY).description("북마크한 게시글 목록"),
+                                        fieldWithPath("data.data[].postId").type(JsonFieldType.NUMBER).description("게시글 ID"),
+                                        fieldWithPath("data.data[].title").type(JsonFieldType.STRING).description("게시글 제목"),
+                                        fieldWithPath("data.data[].category").type(JsonFieldType.STRING).description("게시글 카테고리"),
+                                        fieldWithPath("data.data[].viewCount").type(JsonFieldType.NUMBER).description("조회수"),
+                                        fieldWithPath("data.data[].createdAt").type(JsonFieldType.STRING).description("작성일"),
+                                        fieldWithPath("data.page").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),
+                                        fieldWithPath("data.size").type(JsonFieldType.NUMBER).description("페이지 크기"),
+                                        fieldWithPath("data.totalElements").type(JsonFieldType.NUMBER).description("전체 게시글 수"),
+                                        fieldWithPath("data.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
+                                        fieldWithPath("data.hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부")
+                                )
+                        )
+                ));
+    }
+
+    @Test
+    void getMyActivityCounts() throws Exception {
+        given(userActivity.getMyActivityCounts(any()))
+                .willReturn(new MyActivityCountsResponse(5L, 3L));
+
+        mockMvc.perform(get("/api/v1/users/activity-summary"))
+                .andExpect(status().isOk())
+                .andDo(document("user/get-my-activity-counts",
+                        ApiDocumentUtils.getDocumentRequest(),
+                        ApiDocumentUtils.getDocumentResponse(),
+                        responseFields(
+                                CommonDocumentation.successResponseFields(
+                                        fieldWithPath("data.observationCount").type(JsonFieldType.NUMBER).description("총 관찰일지 수"),
+                                        fieldWithPath("data.bookmarkedPostCount").type(JsonFieldType.NUMBER).description("총 북마크한 게시글 수")
                                 )
                         )
                 ));
