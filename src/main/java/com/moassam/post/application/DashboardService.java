@@ -1,6 +1,7 @@
 package com.moassam.post.application;
 
 import com.moassam.post.application.provided.dashboard.DashboardFinder;
+import com.moassam.post.application.required.PostFileRepository;
 import com.moassam.post.application.required.PostRepository;
 import com.moassam.post.domain.post.*;
 import com.moassam.post.domain.dashboard.FreeDashboardDetail;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,6 +28,7 @@ public class DashboardService implements DashboardFinder {
     private final static String DEFAULT_THUMBNAIL_URL = "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/moabang_default.png";
 
     private final PostRepository postRepository;
+    private final PostFileRepository postFileRepository;
     private final UserRepository userRepository;
 
     @Override
@@ -41,11 +44,13 @@ public class DashboardService implements DashboardFinder {
 
         Map<Long, String> authorNicknames = getAuthorNicknames(moabangPosts.getContent());
 
+        Map<Long, String> thumbnailUrls = getThumbnailUrls(moabangPosts.getContent());
+
         return moabangPosts.map(post -> new MoabangDashboardDetail(
                 post.getId(),
                 post.getTitle(),
                 authorNicknames.get(post.getUserId()),
-                DEFAULT_THUMBNAIL_URL,
+                thumbnailUrls.getOrDefault(post.getId(), DEFAULT_THUMBNAIL_URL),
                 post.getPostAge(),
                 post.getResourceType(),
                 post.getViewCount(),
@@ -90,11 +95,13 @@ public class DashboardService implements DashboardFinder {
 
         Map<Long, String> authorNicknames = getAuthorNicknames(posts.getContent());
 
+        Map<Long, String> thumbnailUrls = getThumbnailUrls(posts.getContent());
+
         return posts.map(post -> new MoabangDashboardDetail(
                 post.getId(),
                 post.getTitle(),
                 authorNicknames.get(post.getUserId()),
-                DEFAULT_THUMBNAIL_URL,
+                thumbnailUrls.getOrDefault(post.getId(), DEFAULT_THUMBNAIL_URL),
                 post.getPostAge(),
                 post.getResourceType(),
                 post.getViewCount(),
@@ -125,6 +132,49 @@ public class DashboardService implements DashboardFinder {
                 post.getCommentCount(),
                 post.getCreatedAt()
         ));
+    }
+
+    private Map<Long, String> getThumbnailUrls(List<Post> posts) {
+        List<Long> postIds = posts.stream()
+                .map(Post::getId)
+                .toList();
+
+        if(postIds.isEmpty()) {
+            return Map.of();
+        }
+
+        return postFileRepository.findAllByPostIdIn(postIds).stream()
+                .filter(this::isThumbnailCandidate)
+                .collect(Collectors.groupingBy(
+                        PostFile::getPostId,
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                files -> files.stream()
+                                        .sorted(Comparator.comparing(file -> file.getFileType() != FileType.IMAGE))
+                                        .findFirst()
+                                        .map(PostFile::getUrl)
+                                        .orElse(DEFAULT_THUMBNAIL_URL)
+                        )
+                ));
+    }
+
+    private boolean isThumbnailCandidate(PostFile file) {
+        if (file.getFileType() == FileType.IMAGE) {
+            return true;
+        }
+
+        String originalName = file.getOriginalName();
+        if (originalName == null) {
+            return false;
+        }
+
+        String lowerName = originalName.toLowerCase();
+
+        return lowerName.endsWith(".png")
+                || lowerName.endsWith(".jpg")
+                || lowerName.endsWith(".jpeg")
+                || lowerName.endsWith(".webp")
+                || lowerName.endsWith(".gif");
     }
 
     private Pageable createPageable(int page, int size) {
