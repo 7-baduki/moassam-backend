@@ -1,7 +1,9 @@
 package com.moassam.shared.adapter.filestorage;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -28,7 +30,10 @@ public class NcpFileStorage implements FileStorage {
         metadata.setContentType(file.getContentType());
 
         try {
-            amazonS3.putObject(bucket, key, file.getInputStream(), metadata);
+            PutObjectRequest request = new PutObjectRequest(bucket, key, file.getInputStream(), metadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead);
+
+            amazonS3.putObject(request);
         } catch (IOException e) {
             throw new RuntimeException("파일 업로드에 실패했습니다: " + key, e);
         }
