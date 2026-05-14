@@ -10,7 +10,7 @@ import com.moassam.post.adapter.web.dto.post.PostCreateResponse;
 import com.moassam.post.adapter.web.dto.post.PostDetailResponse;
 import com.moassam.post.application.provided.post.PostCreator;
 import com.moassam.post.application.provided.post.PostFinder;
-import com.moassam.post.domain.post.PostDetail;
+import com.moassam.post.application.dto.PostDetail;
 import com.moassam.post.domain.post.PostUpdateRequest;
 import com.moassam.shared.web.SuccessResponse;
 import lombok.RequiredArgsConstructor;

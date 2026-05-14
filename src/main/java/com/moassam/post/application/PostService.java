@@ -1,11 +1,12 @@
 package com.moassam.post.application;
 
 import com.moassam.credit.application.provided.CreditCharger;
+import com.moassam.post.application.dto.CommentDetail;
+import com.moassam.post.application.dto.PostDetail;
 import com.moassam.post.application.provided.post.PostDeleter;
 import com.moassam.post.application.provided.post.PostFinder;
 import com.moassam.post.application.provided.post.PostUpdater;
 import com.moassam.post.application.required.*;
-import com.moassam.post.domain.comment.Comment;
 import com.moassam.post.domain.post.*;
 import com.moassam.post.exception.PostErrorCode;
 import com.moassam.shared.adapter.filestorage.FileStorage;
@@ -82,7 +83,10 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
 
         List<PostFile> files = postFileRepository.findAllByPostId(post.getId());
 
-        List<Comment> comments = commentRepository.findAllByPostIdOrderByCreatedAtAsc(postId);
+        List<CommentDetail> comments = commentRepository.findAllByPostIdOrderByCreatedAtAsc(postId)
+                .stream()
+                .map(comment -> new CommentDetail(comment, comment.isOwner(userId)))
+                .toList();
 
         boolean isLiked = postLikeRepository.existsByPostIdAndUserId(postId, userId);
 
@@ -90,11 +94,13 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
 
         int inserted = postViewRepository.insertIgnore(postId, userId);
 
+        boolean isMine = post.isOwner(userId);
+
         if (inserted == 1) {
             post.increaseViewCount();
         }
 
-        return new PostDetail(post, author.getNickname(), files, comments, isLiked, isBookmarked);
+        return new PostDetail(post, author.getNickname(), files, comments, isLiked, isBookmarked, isMine);
     }
 
     @Override

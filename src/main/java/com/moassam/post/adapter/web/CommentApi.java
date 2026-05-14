@@ -5,11 +5,11 @@ import com.moassam.auth.adapter.web.annotation.RequireAuth;
 import com.moassam.post.adapter.web.dto.comment.CommentCreateResponse;
 import com.moassam.post.adapter.web.dto.comment.CommentResponse;
 import com.moassam.post.adapter.web.dto.comment.CommentUpdateResponse;
+import com.moassam.post.application.dto.CommentDetail;
 import com.moassam.post.application.provided.comment.CommentCreator;
 import com.moassam.post.application.provided.comment.CommentDeleter;
 import com.moassam.post.application.provided.comment.CommentFinder;
 import com.moassam.post.application.provided.comment.CommentUpdater;
-import com.moassam.post.domain.comment.Comment;
 import com.moassam.post.domain.comment.CommentCreateRequest;
 import com.moassam.post.domain.comment.CommentUpdateRequest;
 import com.moassam.shared.web.SuccessResponse;
@@ -41,10 +41,11 @@ public class CommentApi {
     @RequireAuth
     @GetMapping("/{commentId}")
     public SuccessResponse<CommentResponse> getComment(
+            @CurrentUserId Long userId,
             @PathVariable Long postId,
             @PathVariable Long commentId
     ) {
-        Comment comment = commentFinder.getComment(postId, commentId);
+        CommentDetail comment = commentFinder.getComment(userId, postId, commentId);
 
         return SuccessResponse.of(CommentResponse.from(comment));
     }

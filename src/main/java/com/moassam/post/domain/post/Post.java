@@ -87,6 +87,10 @@ public class Post extends BaseEntity {
 
     public void increaseViewCount() {this.viewCount++;}
 
+    public boolean isOwner(Long userId) {
+        return this.userId.equals(userId);
+    }
+
     private static void validateCategoryOptions(
             Category category,
             PostAge postAge,
