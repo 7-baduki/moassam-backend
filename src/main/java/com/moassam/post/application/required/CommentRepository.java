@@ -11,13 +11,20 @@ import java.util.List;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query("""
-        select c
+        select new com.moassam.post.application.required.MyCommentProjection(
+            c.id,
+            p.id,
+            p.category,
+            c.content,
+            p.title,
+            c.createdAt
+        )
         from Comment c
         join Post p on p.id = c.postId
         where c.userId = :userId
         order by c.createdAt desc
     """)
-    Page<Comment> findAllByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+    Page<MyCommentProjection> findMyCommentsByUserId(Long userId, Pageable pageable);
 
     @Query("""
         select c

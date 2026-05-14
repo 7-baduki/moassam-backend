@@ -163,7 +163,14 @@ class UserApiTest extends RestDocsSupport {
 
     @Test
     void getMyComments() throws Exception {
-        MyCommentResponse comment = new MyCommentResponse(1L, "CD를 활용해 자동차를 표현하는 아이디어가 참신해요", "[활동자료] 나만의 자동차 그리기", LocalDateTime.of(2026, 3, 6, 0, 0));
+        MyCommentResponse comment = new MyCommentResponse(
+                1L,
+                10L,
+                Category.MOABANG,
+                "CD를 활용해 자동차를 표현하는 아이디어가 참신해요",
+                "[활동자료] 나만의 자동차 그리기",
+                LocalDateTime.of(2026, 3, 6, 0, 0)
+        );
 
         given(userActivity.getMyComments(any(), eq(0), eq(10)))
                 .willReturn(new PageImpl<>(List.of(comment), PageRequest.of(0, 10), 1));
@@ -183,6 +190,8 @@ class UserApiTest extends RestDocsSupport {
                                 CommonDocumentation.successResponseFields(
                                         fieldWithPath("data.data").type(JsonFieldType.ARRAY).description("댓글 목록"),
                                         fieldWithPath("data.data[].commentId").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                                        fieldWithPath("data.data[].postId").type(JsonFieldType.NUMBER).description("게시글 ID"),
+                                        fieldWithPath("data.data[].category").type(JsonFieldType.STRING).description("게시글 유형"),
                                         fieldWithPath("data.data[].content").type(JsonFieldType.STRING).description("댓글 내용"),
                                         fieldWithPath("data.data[].postTitle").type(JsonFieldType.STRING).description("게시글 제목"),
                                         fieldWithPath("data.data[].createdAt").type(JsonFieldType.STRING).description("작성일"),

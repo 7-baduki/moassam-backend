@@ -6,7 +6,6 @@ import com.moassam.post.application.provided.bookmark.BookmarkFinder;
 import com.moassam.post.application.required.CommentRepository;
 import com.moassam.post.application.required.PostRepository;
 import com.moassam.post.domain.post.Category;
-import com.moassam.post.domain.post.Post;
 import com.moassam.shared.exception.BusinessException;
 import com.moassam.user.application.dto.*;
 import com.moassam.user.application.provided.UserActivity;
@@ -67,18 +66,8 @@ public class UserService implements UserProfile, UserActivity {
     public Page<MyCommentResponse> getMyComments(Long userId, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
 
-        return commentRepository.findAllByUserIdOrderByCreatedAtDesc(userId, pageable)
-                .map(comment -> {
-                    Post post = postRepository.findById(comment.getPostId())
-                            .orElse(null);
-                    String postTitle = post != null ? post.getTitle() : "(삭제된 게시글)";
-                    return new MyCommentResponse(
-                            comment.getId(),
-                            comment.getContent(),
-                            postTitle,
-                            comment.getCreatedAt()
-                    );
-                });
+        return commentRepository.findMyCommentsByUserId(userId, pageable)
+                .map(MyCommentResponse::from);
     }
 
     @Override
