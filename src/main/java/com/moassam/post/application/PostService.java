@@ -81,6 +81,8 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
         User author = userRepository.findById(post.getUserId())
                 .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
 
+        String authorNickname = author.isDeleted() ? "탈퇴한 사용자" : author.getNickname();
+
         List<PostFile> files = postFileRepository.findAllByPostId(post.getId());
 
         List<CommentDetail> comments = commentRepository.findAllByPostIdOrderByCreatedAtAsc(postId)
@@ -100,7 +102,7 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
             post.increaseViewCount();
         }
 
-        return new PostDetail(post, author.getNickname(), files, comments, isLiked, isBookmarked, isMine);
+        return new PostDetail(post, authorNickname, files, comments, isLiked, isBookmarked, isMine);
     }
 
     @Override

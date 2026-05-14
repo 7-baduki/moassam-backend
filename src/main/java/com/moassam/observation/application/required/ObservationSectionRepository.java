@@ -9,4 +9,6 @@ public interface ObservationSectionRepository extends JpaRepository<ObservationS
     List<ObservationSection> findAllByObservationIdOrderByDisplayOrderAsc(Long observationId);
 
     void deleteAllByObservationId(Long observationId);
+
+    void deleteByObservationIdIn(List<Long> observationIds);
 }

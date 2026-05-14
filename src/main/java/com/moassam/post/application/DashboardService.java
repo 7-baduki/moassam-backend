@@ -193,7 +193,7 @@ public class DashboardService implements DashboardFinder {
         return userRepository.findAllByIdIn(userIdList).stream()
                 .collect(Collectors.toMap(
                         User::getId,
-                        User::getNickname
+                        user -> user.isDeleted() ? "탈퇴한 사용자" : user.getNickname()
                 ));
     }
 
