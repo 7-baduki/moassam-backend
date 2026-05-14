@@ -2,6 +2,8 @@ package com.moassam.user.application;
 
 import com.moassam.observation.application.provided.ObservationStatsFinder;
 import com.moassam.post.application.provided.bookmark.BookmarkFinder;
+import com.moassam.post.application.required.CommentRepository;
+import com.moassam.post.application.required.MyCommentProjection;
 import com.moassam.post.domain.post.Category;
 import com.moassam.post.domain.post.HeadTag;
 import com.moassam.post.domain.post.Post;
@@ -9,6 +11,7 @@ import com.moassam.shared.exception.BusinessException;
 import com.moassam.support.UserFixture;
 import com.moassam.user.application.dto.MyActivityCountsResponse;
 import com.moassam.user.application.dto.MyBookmarkedResponse;
+import com.moassam.user.application.dto.MyCommentResponse;
 import com.moassam.user.application.required.UserRepository;
 import com.moassam.user.domain.User;
 import com.moassam.user.exception.UserErrorCode;
@@ -21,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +43,9 @@ class UserServiceTest {
 
     @Mock
     private BookmarkFinder bookmarkFinder;
+
+    @Mock
+    private CommentRepository commentRepository;
 
     @InjectMocks
     private UserService userService;
@@ -83,6 +90,37 @@ class UserServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(UserErrorCode.USER_NOT_FOUND);
+    }
+
+    @Test
+    void getMyComments() {
+        PageRequest pageable = PageRequest.of(0, 10);
+
+        MyCommentProjection projection = new MyCommentProjection(
+                1L,
+                10L,
+                Category.MOABANG,
+                "댓글 내용",
+                "게시글 제목",
+                LocalDateTime.of(2026, 3, 6, 0, 0)
+        );
+
+        given(commentRepository.findMyCommentsByUserId(1L, pageable))
+                .willReturn(new PageImpl<>(List.of(projection), pageable, 1));
+
+        Page<MyCommentResponse> result = userService.getMyComments(1L, 0, 10);
+
+        assertThat(result.getContent()).hasSize(1);
+
+        MyCommentResponse comment = result.getContent().getFirst();
+        assertThat(comment.commentId()).isEqualTo(1L);
+        assertThat(comment.postId()).isEqualTo(10L);
+        assertThat(comment.category()).isEqualTo(Category.MOABANG);
+        assertThat(comment.content()).isEqualTo("댓글 내용");
+        assertThat(comment.postTitle()).isEqualTo("게시글 제목");
+        assertThat(comment.createdAt()).isEqualTo(LocalDateTime.of(2026, 3, 6, 0, 0));
+        assertThat(result.getTotalElements()).isEqualTo(1);
+
     }
 
     @Test
