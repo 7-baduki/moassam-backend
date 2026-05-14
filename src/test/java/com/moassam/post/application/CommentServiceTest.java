@@ -1,5 +1,6 @@
 package com.moassam.post.application;
 
+import com.moassam.post.application.dto.CommentDetail;
 import com.moassam.post.application.required.CommentRepository;
 import com.moassam.post.application.required.PostRepository;
 import com.moassam.post.domain.comment.Comment;
@@ -55,13 +56,25 @@ class CommentServiceTest {
     }
 
     @Test
-    void getComment() {
+    void getComment_byAuthor_returnsIsMineTrue() {
         Comment comment = CommentFixture.createComment1(100L, 10L, 1L);
         given(commentRepository.findById(100L)).willReturn(Optional.of(comment));
 
-        Comment found = commentService.getComment(10L, 100L);
+        CommentDetail found = commentService.getComment(1L, 10L, 100L);
 
-        assertThat(found).isEqualTo(comment);
+        assertThat(found.comment()).isEqualTo(comment);
+        assertThat(found.isMine()).isTrue();
+    }
+
+    @Test
+    void getComment_byOtherUser_returnsIsMineFalse() {
+        Comment comment = CommentFixture.createComment1(100L, 10L, 1L);
+        given(commentRepository.findById(100L)).willReturn(Optional.of(comment));
+
+        CommentDetail found = commentService.getComment(2L, 10L, 100L);
+
+        assertThat(found.comment()).isEqualTo(comment);
+        assertThat(found.isMine()).isFalse();
     }
 
     @Test
