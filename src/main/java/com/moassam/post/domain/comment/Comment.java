@@ -40,6 +40,10 @@ public class Comment extends BaseEntity {
         this.content = content;
     }
 
+    public boolean isOwner(Long userId) {
+        return this.userId.equals(userId);
+    }
+
     private static void validateContent(String content) {
         if (content == null || content.isBlank()) {
             throw new BusinessException(CommentErrorCode.COMMENT_CONTENT_REQUIRED);

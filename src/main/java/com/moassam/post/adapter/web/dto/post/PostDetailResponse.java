@@ -1,7 +1,8 @@
 package com.moassam.post.adapter.web.dto.post;
 
 import com.moassam.post.adapter.web.dto.comment.CommentResponse;
-import com.moassam.post.domain.comment.Comment;
+import com.moassam.post.application.dto.CommentDetail;
+import com.moassam.post.application.dto.PostDetail;
 import com.moassam.post.domain.post.*;
 
 import java.time.LocalDateTime;
@@ -25,12 +26,13 @@ public record PostDetailResponse(
         long likeCount,
         boolean isLiked,
         boolean bookmarked,
+        boolean isMine,
         LocalDateTime createdAt
 ) {
     public static PostDetailResponse from(PostDetail postDetail) {
         Post post = postDetail.post();
         List<PostFile> postFiles = postDetail.files();
-        List<Comment> comments = postDetail.comments();
+        List<CommentDetail> comments = postDetail.comments();
 
         return new PostDetailResponse(
                 post.getId(),
@@ -58,6 +60,7 @@ public record PostDetailResponse(
                 post.getLikeCount(),
                 postDetail.isLiked(),
                 postDetail.bookmarked(),
+                postDetail.isMine(),
                 post.getCreatedAt()
         );
     }

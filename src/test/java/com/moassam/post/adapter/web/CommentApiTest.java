@@ -4,6 +4,7 @@ package com.moassam.post.adapter.web;
 import com.moassam.docs.ApiDocumentUtils;
 import com.moassam.docs.CommonDocumentation;
 import com.moassam.docs.RestDocsSupport;
+import com.moassam.post.application.dto.CommentDetail;
 import com.moassam.post.application.provided.comment.*;
 import com.moassam.post.domain.comment.Comment;
 import com.moassam.post.domain.comment.CommentCreateRequest;
@@ -60,7 +61,9 @@ class CommentApiTest extends RestDocsSupport {
     @Test
     void getComment() throws Exception {
         Comment comment = CommentFixture.createComment1(10L, 1L, 1L);
-        given(commentFinder.getComment(1L, 10L)).willReturn(comment);
+
+        CommentDetail commentDetail = new CommentDetail(comment, true);
+        given(commentFinder.getComment(any(), eq(1L), eq(10L))).willReturn(commentDetail);
 
         mockMvc.perform(get("/api/v1/posts/{postId}/comments/{commentId}", 1L, 10L))
                 .andExpect(status().isOk())
@@ -73,6 +76,7 @@ class CommentApiTest extends RestDocsSupport {
                                         fieldWithPath("data.postId").type(JsonFieldType.NUMBER).description("게시글 ID"),
                                         fieldWithPath("data.authorNickname").type(JsonFieldType.STRING).description("작성자 닉네임"),
                                         fieldWithPath("data.content").type(JsonFieldType.STRING).description("댓글 내용"),
+                                        fieldWithPath("data.isMine").type(JsonFieldType.BOOLEAN).description("댓글 작성자 여부"),
                                         fieldWithPath("data.createdAt").type(JsonFieldType.STRING).description("생성 시간")
                                 )
                         )

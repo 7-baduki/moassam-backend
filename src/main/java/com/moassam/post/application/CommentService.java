@@ -1,5 +1,6 @@
 package com.moassam.post.application;
 
+import com.moassam.post.application.dto.CommentDetail;
 import com.moassam.post.application.provided.comment.CommentCreator;
 import com.moassam.post.application.provided.comment.CommentDeleter;
 import com.moassam.post.application.provided.comment.CommentFinder;
@@ -46,13 +47,16 @@ public class CommentService implements CommentCreator, CommentFinder, CommentUpd
     }
 
     @Override
-    public Comment getComment(Long postId, Long commentId) {
+    public CommentDetail getComment(Long userId, Long postId, Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new BusinessException(CommentErrorCode.COMMENT_NOT_FOUND));
 
         validateCommentBelongsToPost(comment, postId);
 
-        return comment;
+        return new CommentDetail(
+                comment,
+                comment.isOwner(userId)
+        );
     }
 
     @Override

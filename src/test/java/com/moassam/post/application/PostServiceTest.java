@@ -1,11 +1,14 @@
 package com.moassam.post.application;
 
 import com.moassam.credit.application.provided.CreditCharger;
+import com.moassam.post.application.dto.PostDetail;
 import com.moassam.post.application.required.*;
+import com.moassam.post.domain.comment.Comment;
 import com.moassam.post.domain.post.*;
 import com.moassam.post.exception.PostErrorCode;
 import com.moassam.shared.adapter.filestorage.FileStorage;
 import com.moassam.shared.exception.BusinessException;
+import com.moassam.support.CommentFixture;
 import com.moassam.support.UserFixture;
 import com.moassam.support.post.PostFixture;
 import com.moassam.user.application.required.UserRepository;
@@ -245,6 +248,74 @@ class PostServiceTest {
         assertThat(result.post().getViewCount()).isEqualTo(1);
 
         then(postViewRepository).should().insertIgnore(10L, 2L);
+    }
+
+    @Test
+    void getPost_byAuthor_returnsIsMineTrue() {
+        Post post = PostFixture.createFreePost(10L);
+
+        User user = UserFixture.createWithNickname("author");
+        ReflectionTestUtils.setField(user, "id", 1L);
+
+        given(postRepository.findById(10L)).willReturn(Optional.of(post));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(postFileRepository.findAllByPostId(10L)).willReturn(List.of());
+        given(commentRepository.findAllByPostIdOrderByCreatedAtAsc(10L)).willReturn(List.of());
+        given(postLikeRepository.existsByPostIdAndUserId(10L, 1L)).willReturn(false);
+        given(bookmarkRepository.existsByPostIdAndUserId(10L, 1L)).willReturn(false);
+        given(postViewRepository.insertIgnore(10L, 1L)).willReturn(1);
+
+        PostDetail result = postService.getPost(1L, 10L);
+
+        assertThat(result.isMine()).isTrue();
+    }
+
+    @Test
+    void getPost_byOtherUser_returnsIsMineFalse() {
+        Post post = PostFixture.createFreePost(10L);
+
+        User user = UserFixture.createWithNickname("author");
+        ReflectionTestUtils.setField(user, "id", 1L);
+
+        given(postRepository.findById(10L)).willReturn(Optional.of(post));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(postFileRepository.findAllByPostId(10L)).willReturn(List.of());
+        given(commentRepository.findAllByPostIdOrderByCreatedAtAsc(10L)).willReturn(List.of());
+        given(postLikeRepository.existsByPostIdAndUserId(10L, 2L)).willReturn(false);
+        given(bookmarkRepository.existsByPostIdAndUserId(10L, 2L)).willReturn(false);
+        given(postViewRepository.insertIgnore(10L, 2L)).willReturn(1);
+
+        PostDetail result = postService.getPost(2L, 10L);
+
+        assertThat(result.isMine()).isFalse();
+    }
+
+    @Test
+    void getPost_returnsCommentIsMineByCurrentUser() {
+        Post post = PostFixture.createFreePost(10L);
+
+        User user = UserFixture.createWithNickname("author");
+        ReflectionTestUtils.setField(user, "id", 1L);
+
+        Comment myComment = CommentFixture.createComment1(100L, 10L, 2L);
+        Comment otherComment = CommentFixture.createComment2(101L, 10L, 3L);
+
+        given(postRepository.findById(10L)).willReturn(Optional.of(post));
+        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(postFileRepository.findAllByPostId(10L)).willReturn(List.of());
+        given(commentRepository.findAllByPostIdOrderByCreatedAtAsc(10L))
+                .willReturn(List.of(myComment, otherComment));
+        given(postLikeRepository.existsByPostIdAndUserId(10L, 2L)).willReturn(false);
+        given(bookmarkRepository.existsByPostIdAndUserId(10L, 2L)).willReturn(false);
+        given(postViewRepository.insertIgnore(10L, 2L)).willReturn(1);
+
+        PostDetail result = postService.getPost(2L, 10L);
+
+        assertThat(result.comments()).hasSize(2);
+        assertThat(result.comments().get(0).comment()).isEqualTo(myComment);
+        assertThat(result.comments().get(0).isMine()).isTrue();
+        assertThat(result.comments().get(1).comment()).isEqualTo(otherComment);
+        assertThat(result.comments().get(1).isMine()).isFalse();
     }
 
     @Test
