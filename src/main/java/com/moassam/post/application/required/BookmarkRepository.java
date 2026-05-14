@@ -29,4 +29,6 @@ public interface BookmarkRepository extends Repository<PostBookmark, Long> {
     Page<Post> findBookmarkedPostsByUserId(Long userId, Pageable pageable);
 
     long countByUserId(Long userId);
+
+    void deleteByUserId(Long userId);
 }

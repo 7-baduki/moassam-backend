@@ -4,7 +4,10 @@ import com.moassam.post.domain.post.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     Post save(Post post);
@@ -44,4 +47,28 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     );
 
     Page<Post> findAllByUserIdAndCategoryOrderByCreatedAtDesc(Long userId, Category category, Pageable pageable);
+
+    @Modifying
+    @Query("""
+    update Post p
+    set p.commentCount = (
+        select count(c)
+        from Comment c
+        where c.postId = p.id
+    )
+    where p.id in :postIds
+""")
+    void recalculateCommentCounts(List<Long> postIds);
+
+    @Modifying
+    @Query("""
+    update Post p
+    set p.likeCount = (
+        select count(l)
+        from PostLike l
+        where l.postId = p.id
+    )
+    where p.id in :postIds
+""")
+    void recalculateLikeCounts(List<Long> postIds);
 }

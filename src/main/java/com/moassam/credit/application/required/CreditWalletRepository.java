@@ -15,4 +15,6 @@ public interface CreditWalletRepository extends Repository<CreditWallet, Long>{
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select w from CreditWallet w where w.userId = :userId")
     Optional<CreditWallet> findByUserIdForUpdate(Long userId);
+
+    void deleteByUserId(Long userId);
 }

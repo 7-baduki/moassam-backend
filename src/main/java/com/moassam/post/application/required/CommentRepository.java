@@ -34,4 +34,13 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
         order by c.createdAt asc
     """)
     List<Comment> findAllByPostIdOrderByCreatedAtAsc(Long postId);
+
+    @Query("""
+    select distinct c.postId
+    from Comment c
+    where c.userId = :userId
+""")
+    List<Long> findPostIdsByUserId(Long userId);
+
+    void deleteByUserId(Long userId);
 }

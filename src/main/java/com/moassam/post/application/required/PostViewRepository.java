@@ -15,4 +15,8 @@ public interface PostViewRepository extends Repository<PostView, Long> {
         ON CONFLICT (post_id, user_id) DO NOTHING
         """, nativeQuery = true)
     int insertIgnore(@Param("postId") Long postId, @Param("userId") Long userId);
+
+    @Modifying
+    @Query(value = "DELETE FROM post_views WHERE user_id = :userId", nativeQuery = true)
+    void deleteByUserId(@Param("userId") Long userId);
 }
