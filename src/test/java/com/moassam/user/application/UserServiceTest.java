@@ -13,6 +13,7 @@ import com.moassam.user.application.dto.MyActivityCountsResponse;
 import com.moassam.user.application.dto.MyBookmarkedResponse;
 import com.moassam.user.application.dto.MyCommentResponse;
 import com.moassam.user.application.required.UserRepository;
+import com.moassam.user.domain.NicknameUpdateRequest;
 import com.moassam.user.domain.User;
 import com.moassam.user.exception.UserErrorCode;
 import org.junit.jupiter.api.Test;
@@ -77,16 +78,16 @@ class UserServiceTest {
         User user = UserFixture.create();
         given(userRepository.findById(1L)).willReturn(Optional.of(user));
 
-        User result = userService.updateNickname(1L, "새닉네임");
+        User result = userService.updateNickname(1L, new NicknameUpdateRequest("수정된 닉네임"));
 
-        assertThat(result.getNickname()).isEqualTo("새닉네임");
+        assertThat(result.getNickname()).isEqualTo("수정된 닉네임");
     }
 
     @Test
     void updateNickname_userNotFound() {
         given(userRepository.findById(999L)).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.updateNickname(999L, "새닉네임"))
+        assertThatThrownBy(() -> userService.updateNickname(999L, new NicknameUpdateRequest("수정된 닉네임")))
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(UserErrorCode.USER_NOT_FOUND);

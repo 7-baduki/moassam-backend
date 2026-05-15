@@ -11,6 +11,7 @@ import com.moassam.user.application.dto.*;
 import com.moassam.user.application.provided.UserActivity;
 import com.moassam.user.application.provided.UserProfile;
 import com.moassam.user.application.required.UserRepository;
+import com.moassam.user.domain.NicknameUpdateRequest;
 import com.moassam.user.domain.User;
 import com.moassam.user.exception.UserErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -33,11 +34,11 @@ public class UserService implements UserProfile, UserActivity {
 
     @Override
     @Transactional
-    public User updateNickname(Long userId, String nickname) {
+    public User updateNickname(Long userId, NicknameUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
 
-        user.updateNickname(nickname);
+        user.updateNickname(request.nickname());
 
         return user;
     }

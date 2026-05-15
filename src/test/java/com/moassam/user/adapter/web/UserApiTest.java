@@ -13,6 +13,7 @@ import com.moassam.support.UserFixture;
 import com.moassam.user.application.dto.*;
 import com.moassam.user.application.provided.UserActivity;
 import com.moassam.user.application.provided.UserProfile;
+import com.moassam.user.domain.NicknameUpdateRequest;
 import com.moassam.user.domain.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageImpl;
@@ -68,12 +69,17 @@ class UserApiTest extends RestDocsSupport {
 
     @Test
     void updateNickname() throws Exception {
-        User user = UserFixture.createWithNickname("새닉네임");
-        given(userProfile.updateNickname(any(), eq("새닉네임"))).willReturn(user);
+        NicknameUpdateRequest request = new NicknameUpdateRequest("수정된 닉네임");
+        User user = UserFixture.createWithNickname("수정된 닉네임");
+        given(userProfile.updateNickname(any(), eq(request))).willReturn(user);
 
         mockMvc.perform(patch("/api/v1/users/profile")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("\"새닉네임\""))
+                        .content("""
+                            {
+                                "nickname": "수정된 닉네임"
+                            }
+                            """))
                 .andExpect(status().isOk())
                 .andDo(document("user/update-nickname",
                         ApiDocumentUtils.getDocumentRequest(),
