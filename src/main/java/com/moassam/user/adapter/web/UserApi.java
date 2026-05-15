@@ -7,6 +7,7 @@ import com.moassam.shared.web.SuccessResponse;
 import com.moassam.user.application.dto.*;
 import com.moassam.user.application.provided.UserActivity;
 import com.moassam.user.application.provided.UserProfile;
+import com.moassam.user.domain.NicknameUpdateRequest;
 import com.moassam.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,9 +35,9 @@ public class UserApi {
     @PatchMapping("/profile")
     public SuccessResponse<ProfileResponse> updateNickname(
             @CurrentUserId Long userId,
-            @RequestBody String nickname
+            @RequestBody NicknameUpdateRequest request
     ) {
-        User user = userProfile.updateNickname(userId, nickname);
+        User user = userProfile.updateNickname(userId, request);
 
         return SuccessResponse.of(ProfileResponse.from(user));
     }
