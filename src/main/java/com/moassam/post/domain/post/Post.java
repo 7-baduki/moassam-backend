@@ -23,6 +23,7 @@ public class Post extends BaseEntity {
     private long viewCount;
     private long likeCount;
     private long commentCount;
+    private long bookmarkCount;
 
     public static Post create(
             Long userId,
@@ -82,6 +83,14 @@ public class Post extends BaseEntity {
     public void decreaseLikeCount() {
         if (this.likeCount > 0) {
             this.likeCount--;
+        }
+    }
+
+    public void increaseBookmarkCount() {this.bookmarkCount++;}
+
+    public void decreaseBookmarkCount() {
+        if (this.bookmarkCount > 0) {
+            this.bookmarkCount--;
         }
     }
 

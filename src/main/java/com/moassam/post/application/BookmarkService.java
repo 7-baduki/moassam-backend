@@ -24,23 +24,28 @@ public class BookmarkService implements BookmarkRegister, BookmarkFinder {
 
     @Override
     public void bookmark(Long userId, Long postId) {
-        postRepository.findById(postId)
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND));
 
         if (bookmarkRepository.existsByPostIdAndUserId(postId, userId)) {
             return;
         }
 
+        post.increaseBookmarkCount();
+
         bookmarkRepository.save(PostBookmark.create(userId, postId));
     }
 
     @Override
     public void unbookmark(Long userId, Long postId) {
-        postRepository.findById(postId)
+        Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND));
 
         bookmarkRepository.findByPostIdAndUserId(postId, userId)
-                .ifPresent(bookmarkRepository::delete);
+                .ifPresent(bookmark -> {
+                    post.decreaseBookmarkCount();
+                    bookmarkRepository.delete(bookmark);
+                });
     }
 
     @Override

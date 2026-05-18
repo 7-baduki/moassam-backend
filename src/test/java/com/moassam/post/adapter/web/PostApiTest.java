@@ -212,6 +212,7 @@ class PostApiTest extends RestDocsSupport {
                                         fieldWithPath("data.viewCount").type(JsonFieldType.NUMBER).description("조회수"),
                                         fieldWithPath("data.commentCount").type(JsonFieldType.NUMBER).description("댓글 수"),
                                         fieldWithPath("data.likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"),
+                                        fieldWithPath("data.bookmarkCount").type(JsonFieldType.NUMBER).description("북마크 수"),
                                         fieldWithPath("data.isLiked").type(JsonFieldType.BOOLEAN).description("좋아요 여부"),
                                         fieldWithPath("data.bookmarked").type(JsonFieldType.BOOLEAN).description("북마크 여부"),
                                         fieldWithPath("data.isMine").type(JsonFieldType.BOOLEAN).description("게시글 작성자 여부"),
