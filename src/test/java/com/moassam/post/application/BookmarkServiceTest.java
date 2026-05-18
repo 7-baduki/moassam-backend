@@ -136,4 +136,59 @@ class BookmarkServiceTest {
 
         assertThat(result).isEqualTo(3L);
     }
+
+    @Test
+    void bookmark_increaseBookmarkCount() {
+        Post post = Post.create(99L, "title", "content", Category.FREE, null, null, HeadTag.QUESTION);
+
+        given(postRepository.findById(10L)).willReturn(Optional.of(post));
+        given(bookmarkRepository.existsByPostIdAndUserId(10L, 1L)).willReturn(false);
+
+        bookmarkService.bookmark(1L, 10L);
+
+        assertThat(post.getBookmarkCount()).isEqualTo(1);
+    }
+
+    @Test
+    void bookmark_alreadyBookmarked_doesNotIncreaseBookmarkCount() {
+        Post post = Post.create(99L, "title", "content", Category.FREE, null, null, HeadTag.QUESTION);
+        post.increaseBookmarkCount();
+
+        given(postRepository.findById(10L)).willReturn(Optional.of(post));
+        given(bookmarkRepository.existsByPostIdAndUserId(10L, 1L)).willReturn(true);
+
+        bookmarkService.bookmark(1L, 10L);
+
+        assertThat(post.getBookmarkCount()).isEqualTo(1);
+        then(bookmarkRepository).should(never()).save(any(PostBookmark.class));
+    }
+
+    @Test
+    void unbookmark_decreaseBookmarkCount() {
+        Post post = Post.create(99L, "title", "content", Category.FREE, null, null, HeadTag.QUESTION);
+        post.increaseBookmarkCount();
+        PostBookmark bookmark = PostBookmark.create(1L, 10L);
+
+        given(postRepository.findById(10L)).willReturn(Optional.of(post));
+        given(bookmarkRepository.findByPostIdAndUserId(10L, 1L)).willReturn(Optional.of(bookmark));
+
+        bookmarkService.unbookmark(1L, 10L);
+
+        assertThat(post.getBookmarkCount()).isZero();
+        then(bookmarkRepository).should().delete(bookmark);
+    }
+
+    @Test
+    void unbookmark_notBookmarked_doesNotDecreaseBookmarkCount() {
+        Post post = Post.create(99L, "title", "content", Category.FREE, null, null, HeadTag.QUESTION);
+        post.increaseBookmarkCount();
+
+        given(postRepository.findById(10L)).willReturn(Optional.of(post));
+        given(bookmarkRepository.findByPostIdAndUserId(10L, 1L)).willReturn(Optional.empty());
+
+        bookmarkService.unbookmark(1L, 10L);
+
+        assertThat(post.getBookmarkCount()).isEqualTo(1);
+        then(bookmarkRepository).should(never()).delete(any(PostBookmark.class));
+    }
 }

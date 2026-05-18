@@ -4,6 +4,7 @@ import com.moassam.post.domain.comment.Comment;
 
 public record CommentDetail(
         Comment comment,
+        String profileImageUrl,
         boolean isMine
 ) {
 }

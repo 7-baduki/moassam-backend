@@ -118,6 +118,10 @@
       <basic name="commentCount">
         <column name="comment_count" nullable="false"/>
       </basic>
+
+      <basic name="bookmarkCount">
+        <column name="bookmark_count" nullable="false"/>
+      </basic>
     </attributes>
   </entity>
 
