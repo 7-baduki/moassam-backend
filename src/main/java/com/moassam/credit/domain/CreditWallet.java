@@ -57,6 +57,10 @@ public class CreditWallet extends BaseEntity {
         return this.lastResetDate == null || this.lastResetDate.isBefore(today);
     }
 
+    public int getTotal() {
+        return CreditPolicy.DAILY_BASE_CREDITS + this.dailyBonusChargedAmount;
+    }
+
     public void devCharge(int amount) {
         this.balance += amount;
     }

@@ -61,14 +61,14 @@ class CreditWalletTest {
     @Test
     void chargeWithDailyBonus_limit() {
         CreditWallet wallet = CreditWallet.create(1L, LocalDate.of(2026, 5, 6));
-        ReflectionTestUtils.setField(wallet, "balance", 18);
-        ReflectionTestUtils.setField(wallet, "dailyBonusChargedAmount", 8);
+        ReflectionTestUtils.setField(wallet, "balance", 98);
+        ReflectionTestUtils.setField(wallet, "dailyBonusChargedAmount", 88);
 
         int chargedAmount = wallet.chargeWithDailyBonus(CreditPolicy.MOABANG_POST_REWARD);
 
         assertThat(chargedAmount).isEqualTo(2);
-        assertThat(wallet.getBalance()).isEqualTo(20);
-        assertThat(wallet.getDailyBonusChargedAmount()).isEqualTo(10);
+        assertThat(wallet.getBalance()).isEqualTo(100);
+        assertThat(wallet.getDailyBonusChargedAmount()).isEqualTo(90);
     }
 
     @Test
@@ -90,6 +90,17 @@ class CreditWalletTest {
 
         assertThat(wallet.shouldReset(LocalDate.of(2026, 5, 6))).isTrue();
         assertThat(wallet.shouldReset(LocalDate.of(2026, 5, 5))).isFalse();
+    }
+
+    @Test
+    void getTotal() {
+        CreditWallet wallet = CreditWallet.create(1L, LocalDate.of(2026, 5, 6));
+
+        wallet.use(1);
+        wallet.chargeWithDailyBonus(3);
+        wallet.chargeWithDailyBonus(1);
+
+        assertThat(wallet.getTotal()).isEqualTo(14);
     }
 
     @Test

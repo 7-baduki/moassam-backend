@@ -111,15 +111,15 @@ public class CreditServiceTest {
 
     @Test
     void chargeForMoabangPost_limit() {
-        CreditWallet wallet = wallet(1L, 1L, 18, 8, LocalDate.now());
+        CreditWallet wallet = wallet(1L, 1L, 98, 88, LocalDate.now());
 
         given(creditWalletRepository.findByUserIdForUpdate(1L))
                 .willReturn(Optional.of(wallet));
 
         creditService.chargeForMoabangPost(1L, 10L);
 
-        assertThat(wallet.getBalance()).isEqualTo(20);
-        assertThat(wallet.getDailyBonusChargedAmount()).isEqualTo(10);
+        assertThat(wallet.getBalance()).isEqualTo(100);
+        assertThat(wallet.getDailyBonusChargedAmount()).isEqualTo(90);
     }
 
     @Test
