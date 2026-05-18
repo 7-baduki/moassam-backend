@@ -42,6 +42,7 @@ class CreditApiTest extends RestDocsSupport {
                                 CommonDocumentation.successResponseFields(
                                         fieldWithPath("data.userId").type(JsonFieldType.NUMBER).description("사용자 ID"),
                                         fieldWithPath("data.balance").type(JsonFieldType.NUMBER).description("현재 남은 횟수"),
+                                        fieldWithPath("data.total").type(JsonFieldType.NUMBER).description("전체 횟수"),
                                         fieldWithPath("data.dailyBonusChargedAmount").type(JsonFieldType.NUMBER).description("오늘 보상으로 충전된 횟수"),
                                         fieldWithPath("data.lastResetDate").type(JsonFieldType.STRING).description("마지막 일일 리셋 날짜")
                                 )
