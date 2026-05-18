@@ -53,8 +53,12 @@ public class CommentService implements CommentCreator, CommentFinder, CommentUpd
 
         validateCommentBelongsToPost(comment, postId);
 
+        User commentAuthor = userRepository.findById(comment.getUserId())
+                .orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));
+
         return new CommentDetail(
                 comment,
+                commentAuthor.getProfileImageUrl(),
                 comment.isOwner(userId)
         );
     }

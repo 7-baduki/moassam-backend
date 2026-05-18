@@ -7,6 +7,7 @@ import com.moassam.post.application.provided.post.PostDeleter;
 import com.moassam.post.application.provided.post.PostFinder;
 import com.moassam.post.application.provided.post.PostUpdater;
 import com.moassam.post.application.required.*;
+import com.moassam.post.domain.comment.Comment;
 import com.moassam.post.domain.post.*;
 import com.moassam.post.exception.PostErrorCode;
 import com.moassam.shared.adapter.filestorage.FileStorage;
@@ -21,7 +22,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -85,9 +88,25 @@ public class PostService implements PostCreator, PostFinder, PostUpdater, PostDe
 
         List<PostFile> files = postFileRepository.findAllByPostId(post.getId());
 
-        List<CommentDetail> comments = commentRepository.findAllByPostIdOrderByCreatedAtAsc(postId)
-                .stream()
-                .map(comment -> new CommentDetail(comment, comment.isOwner(userId)))
+        List<Comment> postComments = commentRepository.findAllByPostIdOrderByCreatedAtAsc(postId);
+
+        Map<Long, String> profileImageUrls = new HashMap<>();
+
+        if (!postComments.isEmpty()) {
+            userRepository.findAllByIdIn(
+                    postComments.stream()
+                            .map(Comment::getUserId)
+                            .distinct()
+                            .toList()
+            ).forEach(user -> profileImageUrls.put(user.getId(), user.getProfileImageUrl()));
+        }
+
+        List<CommentDetail> comments = postComments.stream()
+                .map(comment -> new CommentDetail(
+                        comment,
+                        profileImageUrls.get(comment.getUserId()),
+                        comment.isOwner(userId)
+                ))
                 .toList();
 
         boolean isLiked = postLikeRepository.existsByPostIdAndUserId(postId, userId);

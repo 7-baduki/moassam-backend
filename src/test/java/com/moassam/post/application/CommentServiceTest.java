@@ -58,22 +58,34 @@ class CommentServiceTest {
     @Test
     void getComment_byAuthor_returnsIsMineTrue() {
         Comment comment = CommentFixture.createComment1(100L, 10L, 1L);
+
+        User author = UserFixture.create();
+        ReflectionTestUtils.setField(author, "id", 1L);
+
         given(commentRepository.findById(100L)).willReturn(Optional.of(comment));
+        given(userRepository.findById(1L)).willReturn(Optional.of(author));
 
         CommentDetail found = commentService.getComment(1L, 10L, 100L);
 
         assertThat(found.comment()).isEqualTo(comment);
+        assertThat(found.profileImageUrl()).isEqualTo(author.getProfileImageUrl());
         assertThat(found.isMine()).isTrue();
     }
 
     @Test
     void getComment_byOtherUser_returnsIsMineFalse() {
         Comment comment = CommentFixture.createComment1(100L, 10L, 1L);
+
+        User author = UserFixture.create();
+        ReflectionTestUtils.setField(author, "id", 1L);
+
         given(commentRepository.findById(100L)).willReturn(Optional.of(comment));
+        given(userRepository.findById(1L)).willReturn(Optional.of(author));
 
         CommentDetail found = commentService.getComment(2L, 10L, 100L);
 
         assertThat(found.comment()).isEqualTo(comment);
+        assertThat(found.profileImageUrl()).isEqualTo(author.getProfileImageUrl());
         assertThat(found.isMine()).isFalse();
     }
 

@@ -9,6 +9,7 @@ public record CommentResponse(
         Long commentId,
         Long postId,
         String authorNickname,
+        String profileImageUrl,
         String content,
         boolean isMine,
         LocalDateTime createdAt
@@ -20,6 +21,7 @@ public record CommentResponse(
                 comment.getId(),
                 comment.getPostId(),
                 comment.getNickname(),
+                detail.profileImageUrl(),
                 comment.getContent(),
                 detail.isMine(),
                 comment.getCreatedAt()

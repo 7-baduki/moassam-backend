@@ -164,8 +164,8 @@ class PostApiTest extends RestDocsSupport {
         Comment comment1 = CommentFixture.createComment1(10L, 1L, 1L);
         Comment comment2 = CommentFixture.createComment2(11L, 1L, 2L);
 
-        CommentDetail detail1 = new CommentDetail(comment1, false);
-        CommentDetail detail2 = new CommentDetail(comment2, false);
+        CommentDetail detail1 = new CommentDetail(comment1, "https://example.com/profile1.jpg",false);
+        CommentDetail detail2 = new CommentDetail(comment2, "https://example.com/profile2.jpg",false);
 
         given(postFinder.getPost(any(), eq(1L)))
                 .willReturn(new PostDetail(freePost, "햇살선생님",List.of(file, editorImage), List.of(detail1, detail2), false, false, true));
@@ -205,6 +205,7 @@ class PostApiTest extends RestDocsSupport {
                                         fieldWithPath("data.comments[].commentId").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                         fieldWithPath("data.comments[].postId").type(JsonFieldType.NUMBER).description("게시물 ID"),
                                         fieldWithPath("data.comments[].authorNickname").type(JsonFieldType.STRING).description("댓글 작성자 닉네임"),
+                                        fieldWithPath("data.comments[].profileImageUrl").type(JsonFieldType.STRING).optional().description("댓글 작성자 프로필 URL"),
                                         fieldWithPath("data.comments[].content").type(JsonFieldType.STRING).description("댓글 내용"),
                                         fieldWithPath("data.comments[].isMine").type(JsonFieldType.BOOLEAN).description("댓글 작성자 여부"),
                                         fieldWithPath("data.comments[].createdAt").type(JsonFieldType.STRING).description("댓글 작성 날짜"),

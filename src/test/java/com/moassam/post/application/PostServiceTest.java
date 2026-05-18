@@ -220,6 +220,7 @@ class PostServiceTest {
         given(postLikeRepository.existsByPostIdAndUserId(10L, 2L)).willReturn(false);
         given(bookmarkRepository.existsByPostIdAndUserId(10L, 2L)).willReturn(false);
         given(postViewRepository.insertIgnore(10L, 2L)).willReturn(1);
+        given(commentRepository.findAllByPostIdOrderByCreatedAtAsc(10L)).willReturn(List.of());
 
         PostDetail result = postService.getPost(2L, 10L);
 
@@ -242,6 +243,7 @@ class PostServiceTest {
         given(postLikeRepository.existsByPostIdAndUserId(10L, 2L)).willReturn(false);
         given(bookmarkRepository.existsByPostIdAndUserId(10L, 2L)).willReturn(false);
         given(postViewRepository.insertIgnore(10L, 2L)).willReturn(0);
+        given(commentRepository.findAllByPostIdOrderByCreatedAtAsc(10L)).willReturn(List.of());
 
         PostDetail result = postService.getPost(2L, 10L);
 
@@ -294,17 +296,25 @@ class PostServiceTest {
     void getPost_returnsCommentIsMineByCurrentUser() {
         Post post = PostFixture.createFreePost(10L);
 
-        User user = UserFixture.createWithNickname("author");
-        ReflectionTestUtils.setField(user, "id", 1L);
+        User postAuthor = UserFixture.createWithNickname("author");
+        ReflectionTestUtils.setField(postAuthor, "id", 1L);
 
         Comment myComment = CommentFixture.createComment1(100L, 10L, 2L);
         Comment otherComment = CommentFixture.createComment2(101L, 10L, 3L);
 
+        User myCommentAuthor = UserFixture.create();
+        ReflectionTestUtils.setField(myCommentAuthor, "id", 2L);
+
+        User otherCommentAuthor = UserFixture.create();
+        ReflectionTestUtils.setField(otherCommentAuthor, "id", 3L);
+
         given(postRepository.findById(10L)).willReturn(Optional.of(post));
-        given(userRepository.findById(1L)).willReturn(Optional.of(user));
+        given(userRepository.findById(1L)).willReturn(Optional.of(postAuthor));
         given(postFileRepository.findAllByPostId(10L)).willReturn(List.of());
         given(commentRepository.findAllByPostIdOrderByCreatedAtAsc(10L))
                 .willReturn(List.of(myComment, otherComment));
+        given(userRepository.findAllByIdIn(anyCollection()))
+                .willReturn(List.of(myCommentAuthor, otherCommentAuthor));
         given(postLikeRepository.existsByPostIdAndUserId(10L, 2L)).willReturn(false);
         given(bookmarkRepository.existsByPostIdAndUserId(10L, 2L)).willReturn(false);
         given(postViewRepository.insertIgnore(10L, 2L)).willReturn(1);
@@ -313,8 +323,11 @@ class PostServiceTest {
 
         assertThat(result.comments()).hasSize(2);
         assertThat(result.comments().get(0).comment()).isEqualTo(myComment);
+        assertThat(result.comments().get(0).profileImageUrl()).isEqualTo(myCommentAuthor.getProfileImageUrl());
         assertThat(result.comments().get(0).isMine()).isTrue();
+
         assertThat(result.comments().get(1).comment()).isEqualTo(otherComment);
+        assertThat(result.comments().get(1).profileImageUrl()).isEqualTo(otherCommentAuthor.getProfileImageUrl());
         assertThat(result.comments().get(1).isMine()).isFalse();
     }
 
