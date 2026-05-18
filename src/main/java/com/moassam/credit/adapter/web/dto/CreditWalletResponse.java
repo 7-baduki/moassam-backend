@@ -7,6 +7,7 @@ import java.time.LocalDate;
 public record CreditWalletResponse(
         Long userId,
         int balance,
+        int total,
         int dailyBonusChargedAmount,
         LocalDate lastResetDate
 ) {
@@ -14,6 +15,7 @@ public record CreditWalletResponse(
         return new CreditWalletResponse(
                 wallet.getUserId(),
                 wallet.getBalance(),
+                wallet.getTotal(),
                 wallet.getDailyBonusChargedAmount(),
                 wallet.getLastResetDate()
         );
