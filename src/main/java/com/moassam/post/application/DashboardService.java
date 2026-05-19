@@ -25,7 +25,10 @@ import java.util.stream.Collectors;
 @Service
 public class DashboardService implements DashboardFinder {
 
-    private final static String DEFAULT_THUMBNAIL_URL = "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/moabang_default.png";
+    private final static String ALL_INFANT_DEFAULT_THUMBNAIL_URL = "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_all_infant.png";
+    private final static String AGE3_DEFAULT_THUMBNAIL_URL = "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_age3.png";
+    private final static String AGE4_DEFAULT_THUMBNAIL_URL = "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_age4.png";
+    private final static String AGE5_DEFAULT_THUMBNAIL_URL = "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_age5.png";
 
     private final PostRepository postRepository;
     private final PostFileRepository postFileRepository;
@@ -50,7 +53,7 @@ public class DashboardService implements DashboardFinder {
                 post.getId(),
                 post.getTitle(),
                 authorNicknames.get(post.getUserId()),
-                thumbnailUrls.getOrDefault(post.getId(), DEFAULT_THUMBNAIL_URL),
+                thumbnailUrls.getOrDefault(post.getId(), defineThumbnailUrl(post)),
                 post.getPostAge(),
                 post.getResourceType(),
                 post.getViewCount(),
@@ -101,7 +104,7 @@ public class DashboardService implements DashboardFinder {
                 post.getId(),
                 post.getTitle(),
                 authorNicknames.get(post.getUserId()),
-                thumbnailUrls.getOrDefault(post.getId(), DEFAULT_THUMBNAIL_URL),
+                thumbnailUrls.getOrDefault(post.getId(), defineThumbnailUrl(post)),
                 post.getPostAge(),
                 post.getResourceType(),
                 post.getViewCount(),
@@ -153,7 +156,7 @@ public class DashboardService implements DashboardFinder {
                                         .sorted(Comparator.comparing(file -> file.getFileType() != FileType.IMAGE))
                                         .findFirst()
                                         .map(PostFile::getUrl)
-                                        .orElse(DEFAULT_THUMBNAIL_URL)
+                                        .orElse(null)
                         )
                 ));
     }
@@ -204,5 +207,15 @@ public class DashboardService implements DashboardFinder {
 
         return content.length() > 100 ? content.substring(0, 100) + "..." : content;
     }
+
+    private String defineThumbnailUrl(Post post) {
+        return switch (post.getPostAge()) {
+            case INFANT, ALL -> ALL_INFANT_DEFAULT_THUMBNAIL_URL;
+            case AGE_3 -> AGE3_DEFAULT_THUMBNAIL_URL;
+            case AGE_4 -> AGE4_DEFAULT_THUMBNAIL_URL;
+            case AGE_5 -> AGE5_DEFAULT_THUMBNAIL_URL;
+        };
+    }
+
 
 }

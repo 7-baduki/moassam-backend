@@ -11,6 +11,9 @@ import com.moassam.support.post.PostFixture;
 import com.moassam.user.application.required.UserRepository;
 import com.moassam.user.domain.User;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
@@ -26,8 +30,17 @@ import static org.mockito.Mockito.mock;
 
 class DashboardServiceTest {
 
-    private static final String DEFAULT_THUMBNAIL_URL =
-            "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/moabang_default.png";
+    private static final String ALL_INFANT_DEFAULT_THUMBNAIL_URL =
+            "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_all_infant.png";
+
+    private static final String AGE3_DEFAULT_THUMBNAIL_URL =
+            "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_age3.png";
+
+    private static final String AGE4_DEFAULT_THUMBNAIL_URL =
+            "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_age4.png";
+
+    private static final String AGE5_DEFAULT_THUMBNAIL_URL =
+            "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_age5.png";
 
     private final PostRepository postRepository = mock(PostRepository.class);
     private final PostFileRepository postFileRepository = mock(PostFileRepository.class);
@@ -89,16 +102,21 @@ class DashboardServiceTest {
         then(postFileRepository).should().findAllByPostIdIn(List.of(post.getId()));
     }
 
-    @Test
-    void getMoabangDashboardUsesDefaultThumbnailWhenNoImageExists() {
+    @ParameterizedTest
+    @MethodSource("postAgeDefaultThumbnailUrls")
+    void getMoabangDashboardUsesPostAgeDefaultThumbnailWhenNoImageExists(
+            PostAge postAge,
+            String expectedThumbnailUrl
+    ) {
         Post post = PostFixture.createMoabangPost(1L);
+        ReflectionTestUtils.setField(post, "postAge", postAge);
 
         User user = UserFixture.createWithNickname("햇살선생님");
         ReflectionTestUtils.setField(user, "id", 1L);
 
         given(postRepository.findMoabangDashboard(
                 eq(Category.MOABANG),
-                eq(PostAge.AGE_3),
+                eq(postAge),
                 eq(ResourceType.JOURNAL),
                 any(Pageable.class)
         )).willReturn(new PageImpl<>(List.of(post)));
@@ -111,7 +129,7 @@ class DashboardServiceTest {
 
         Page<MoabangDashboardDetail> result = dashboardService.getMoabangDashboard(
                 1L,
-                PostAge.AGE_3,
+                postAge,
                 ResourceType.JOURNAL,
                 0,
                 9
@@ -119,7 +137,7 @@ class DashboardServiceTest {
 
         MoabangDashboardDetail detail = result.getContent().get(0);
 
-        assertThat(detail.thumbnailUrl()).isEqualTo(DEFAULT_THUMBNAIL_URL);
+        assertThat(detail.thumbnailUrl()).isEqualTo(expectedThumbnailUrl);
 
         then(postFileRepository).should().findAllByPostIdIn(List.of(post.getId()));
     }
@@ -190,5 +208,15 @@ class DashboardServiceTest {
         assertThat(detail.headTag()).isEqualTo(HeadTag.QUESTION);
 
         then(userRepository).should().findAllByIdIn(List.of(1L));
+    }
+
+    private static Stream<Arguments> postAgeDefaultThumbnailUrls() {
+        return Stream.of(
+                Arguments.of(PostAge.ALL, ALL_INFANT_DEFAULT_THUMBNAIL_URL),
+                Arguments.of(PostAge.INFANT, ALL_INFANT_DEFAULT_THUMBNAIL_URL),
+                Arguments.of(PostAge.AGE_3, AGE3_DEFAULT_THUMBNAIL_URL),
+                Arguments.of(PostAge.AGE_4, AGE4_DEFAULT_THUMBNAIL_URL),
+                Arguments.of(PostAge.AGE_5, AGE5_DEFAULT_THUMBNAIL_URL)
+        );
     }
 }
