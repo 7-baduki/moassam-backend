@@ -60,6 +60,7 @@ class UserApiTest extends RestDocsSupport {
                         responseFields(
                                 CommonDocumentation.successResponseFields(
                                         fieldWithPath("data.email").type(JsonFieldType.STRING).description("이메일"),
+                                        fieldWithPath("data.provider").type(JsonFieldType.STRING).description("소셜 로그인 제공자 정보 (KAKAO, NAVER)"),
                                         fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("닉네임"),
                                         fieldWithPath("data.profileImageUrl").type(JsonFieldType.STRING).description("프로필 이미지 URL")
                                 )
@@ -87,6 +88,7 @@ class UserApiTest extends RestDocsSupport {
                         responseFields(
                                 CommonDocumentation.successResponseFields(
                                         fieldWithPath("data.email").type(JsonFieldType.STRING).description("이메일"),
+                                        fieldWithPath("data.provider").type(JsonFieldType.STRING).description("소셜 로그인 제공자 정보 (KAKAO, NAVER)"),
                                         fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("닉네임"),
                                         fieldWithPath("data.profileImageUrl").type(JsonFieldType.STRING).description("프로필 이미지 URL")
                                 )
