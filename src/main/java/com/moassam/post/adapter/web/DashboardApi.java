@@ -1,7 +1,5 @@
 package com.moassam.post.adapter.web;
 
-import com.moassam.auth.adapter.web.annotation.CurrentUserId;
-import com.moassam.auth.adapter.web.annotation.RequireAuth;
 import com.moassam.post.adapter.web.dto.dashboard.FreeDashboardResponse;
 import com.moassam.post.adapter.web.dto.dashboard.MoabangDashboardResponse;
 import com.moassam.post.application.provided.dashboard.DashboardFinder;
@@ -26,16 +24,14 @@ public class DashboardApi {
 
     private final DashboardFinder dashboardFinder;
 
-    @RequireAuth
     @GetMapping("/moabang")
     public SuccessResponse<PageResponse<MoabangDashboardResponse>> getMoabangDashboard(
-            @CurrentUserId Long userId,
             @RequestParam(required = false) PostAge postAge,
             @RequestParam(required = false) ResourceType resourceType,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "9") int size
     ) {
-        Page<MoabangDashboardDetail> moabangDashboard = dashboardFinder.getMoabangDashboard(userId, postAge, resourceType, page, size);
+        Page<MoabangDashboardDetail> moabangDashboard = dashboardFinder.getMoabangDashboard(postAge, resourceType, page, size);
 
         Page<MoabangDashboardResponse> responsePage = moabangDashboard.map(MoabangDashboardResponse::from);
 
@@ -50,15 +46,13 @@ public class DashboardApi {
         );
     }
 
-    @RequireAuth
     @GetMapping("/free")
     public SuccessResponse<PageResponse<FreeDashboardResponse>> getFreeDashboard(
-            @CurrentUserId Long userId,
             @RequestParam(required = false) HeadTag headTag,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "9") int size
     ) {
-        Page<FreeDashboardDetail> freeDashboard = dashboardFinder.getFreeDashboard(userId, headTag, page, size);
+        Page<FreeDashboardDetail> freeDashboard = dashboardFinder.getFreeDashboard(headTag, page, size);
 
         Page<FreeDashboardResponse> responsePage = freeDashboard.map(FreeDashboardResponse::from);
 
@@ -72,15 +66,13 @@ public class DashboardApi {
         );
     }
 
-    @RequireAuth
     @GetMapping("/moabang/search")
     public SuccessResponse<PageResponse<MoabangDashboardResponse>> searchMoabang(
-            @CurrentUserId Long userId,
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "9") int size
     ) {
-        Page<MoabangDashboardDetail> result = dashboardFinder.searchMoabang(userId, keyword, page, size);
+        Page<MoabangDashboardDetail> result = dashboardFinder.searchMoabang(keyword, page, size);
 
         Page<MoabangDashboardResponse> responsePage = result.map(MoabangDashboardResponse::from);
 
@@ -92,15 +84,13 @@ public class DashboardApi {
         ));
     }
 
-    @RequireAuth
     @GetMapping("/free/search")
     public SuccessResponse<PageResponse<FreeDashboardResponse>> searchFree(
-            @CurrentUserId Long userId,
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "9") int size
     ) {
-        Page<FreeDashboardDetail> result = dashboardFinder.searchFree(userId, keyword, page, size);
+        Page<FreeDashboardDetail> result = dashboardFinder.searchFree(keyword, page, size);
 
         Page<FreeDashboardResponse> responsePage = result.map(FreeDashboardResponse::from);
 
