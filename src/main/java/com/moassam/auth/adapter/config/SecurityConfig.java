@@ -40,7 +40,11 @@ public class SecurityConfig {
                                 "/actuator/health",
                                 "/oauth2/**",
                                 "/login/**",
-                                "/api/v1/auth/**"
+                                "/api/v1/auth/**",
+                                "/api/v1/posts/moabang",
+                                "/api/v1/posts/free",
+                                "/api/v1/posts/moabang/search",
+                                "/api/v1/posts/free/search"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
