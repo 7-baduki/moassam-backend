@@ -35,7 +35,7 @@ public class DashboardService implements DashboardFinder {
     private final UserRepository userRepository;
 
     @Override
-    public Page<MoabangDashboardDetail> getMoabangDashboard(Long userId, PostAge postAge, ResourceType resourceType, int page, int size) {
+    public Page<MoabangDashboardDetail> getMoabangDashboard(PostAge postAge, ResourceType resourceType, int page, int size) {
         Pageable pageable = createPageable(page, size);
 
         Page<Post> moabangPosts = postRepository.findMoabangDashboard(
@@ -64,7 +64,7 @@ public class DashboardService implements DashboardFinder {
     }
 
     @Override
-    public Page<FreeDashboardDetail> getFreeDashboard(Long userId, HeadTag headTag, int page, int size) {
+    public Page<FreeDashboardDetail> getFreeDashboard(HeadTag headTag, int page, int size) {
         Pageable pageable = createPageable(page, size);
 
         Page<Post> freePosts = postRepository.findFreeDashboard(
@@ -89,7 +89,7 @@ public class DashboardService implements DashboardFinder {
     }
 
     @Override
-    public Page<MoabangDashboardDetail> searchMoabang(Long userId, String keyword, int page, int size) {
+    public Page<MoabangDashboardDetail> searchMoabang(String keyword, int page, int size) {
         Pageable pageable = createPageable(page, size);
 
         Page<Post> posts = postRepository.findAllByCategoryAndTitleContainingIgnoreCase(
@@ -115,7 +115,7 @@ public class DashboardService implements DashboardFinder {
     }
 
     @Override
-    public Page<FreeDashboardDetail> searchFree(Long userId, String keyword, int page, int size) {
+    public Page<FreeDashboardDetail> searchFree(String keyword, int page, int size) {
         Pageable pageable = createPageable(page, size);
 
         Page<Post> posts = postRepository.findAllByCategoryAndTitleContainingIgnoreCase(

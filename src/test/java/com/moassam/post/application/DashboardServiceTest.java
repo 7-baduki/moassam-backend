@@ -70,7 +70,6 @@ class DashboardServiceTest {
                 .willReturn(List.of(editorImage));
 
         Page<MoabangDashboardDetail> result = dashboardService.getMoabangDashboard(
-                1L,
                 PostAge.AGE_3,
                 ResourceType.JOURNAL,
                 0,
@@ -128,7 +127,6 @@ class DashboardServiceTest {
                 .willReturn(List.of());
 
         Page<MoabangDashboardDetail> result = dashboardService.getMoabangDashboard(
-                1L,
                 postAge,
                 ResourceType.JOURNAL,
                 0,
@@ -163,7 +161,6 @@ class DashboardServiceTest {
                 .willReturn(List.of(editorImage));
 
         Page<MoabangDashboardDetail> result = dashboardService.searchMoabang(
-                1L,
                 "활동지",
                 0,
                 9
@@ -193,7 +190,6 @@ class DashboardServiceTest {
                 .willReturn(List.of(user));
 
         Page<FreeDashboardDetail> result = dashboardService.getFreeDashboard(
-                1L,
                 HeadTag.QUESTION,
                 0,
                 9

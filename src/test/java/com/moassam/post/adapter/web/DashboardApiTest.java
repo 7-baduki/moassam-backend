@@ -51,7 +51,6 @@ class DashboardApiTest extends RestDocsSupport {
         );
 
         given(dashboardFinder.getMoabangDashboard(
-                any(),
                 eq(PostAge.AGE_5),
                 eq(ResourceType.JOURNAL),
                 eq(0),
@@ -115,7 +114,6 @@ class DashboardApiTest extends RestDocsSupport {
         );
 
         given(dashboardFinder.getFreeDashboard(
-                any(),
                 eq(HeadTag.QUESTION),
                 eq(0),
                 eq(9)
@@ -176,7 +174,6 @@ class DashboardApiTest extends RestDocsSupport {
         );
 
         given(dashboardFinder.searchMoabang(
-                any(),
                 eq("활동지"),
                 eq(0),
                 eq(9)
@@ -237,7 +234,6 @@ class DashboardApiTest extends RestDocsSupport {
         );
 
         given(dashboardFinder.searchFree(
-                any(),
                 eq("안녕"),
                 eq(0),
                 eq(9)
