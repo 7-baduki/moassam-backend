@@ -116,25 +116,25 @@ class DashboardApiTest extends RestDocsSupport {
         given(dashboardFinder.getFreeDashboard(
                 eq(HeadTag.QUESTION),
                 eq(0),
-                eq(9)
-        )).willReturn(new PageImpl<>(List.of(detail), PageRequest.of(0, 9), 1));
+                eq(8)
+        )).willReturn(new PageImpl<>(List.of(detail), PageRequest.of(0, 8), 1));
 
         mockMvc.perform(get("/api/v1/posts/free")
                         .param("headTag", "QUESTION")
                         .param("page", "0")
-                        .param("size", "9"))
+                        .param("size", "8"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.data[0].postId").value(1L))
                 .andExpect(jsonPath("$.data.data[0].title").value("안녕하세요"))
                 .andExpect(jsonPath("$.data.page").value(0))
-                .andExpect(jsonPath("$.data.size").value(9))
+                .andExpect(jsonPath("$.data.size").value(8))
                 .andDo(document("dashboard/get-free",
                         ApiDocumentUtils.getDocumentRequest(),
                         ApiDocumentUtils.getDocumentResponse(),
                         queryParameters(
                                 parameterWithName("headTag").description("말머리 필터: WORRY, QUESTION, CHAT").optional(),
                                 parameterWithName("page").description("페이지 번호, 0부터 시작").optional(),
-                                parameterWithName("size").description("페이지 크기, 기본값 9").optional()
+                                parameterWithName("size").description("페이지 크기, 기본값 8").optional()
                         ),
                         responseFields(
                                 CommonDocumentation.successResponseFields(
@@ -236,25 +236,25 @@ class DashboardApiTest extends RestDocsSupport {
         given(dashboardFinder.searchFree(
                 eq("안녕"),
                 eq(0),
-                eq(9)
-        )).willReturn(new PageImpl<>(List.of(detail), PageRequest.of(0, 9), 1));
+                eq(8)
+        )).willReturn(new PageImpl<>(List.of(detail), PageRequest.of(0, 8), 1));
 
         mockMvc.perform(get("/api/v1/posts/free/search")
                         .param("keyword", "안녕")
                         .param("page", "0")
-                        .param("size", "9"))
+                        .param("size", "8"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.data[0].postId").value(1L))
                 .andExpect(jsonPath("$.data.data[0].title").value("안녕하세요"))
                 .andExpect(jsonPath("$.data.page").value(0))
-                .andExpect(jsonPath("$.data.size").value(9))
+                .andExpect(jsonPath("$.data.size").value(8))
                 .andDo(document("dashboard/search-free",
                         ApiDocumentUtils.getDocumentRequest(),
                         ApiDocumentUtils.getDocumentResponse(),
                         queryParameters(
                                 parameterWithName("keyword").description("검색 키워드 (제목 기준)"),
                                 parameterWithName("page").description("페이지 번호, 0부터 시작").optional(),
-                                parameterWithName("size").description("페이지 크기, 기본값 9").optional()
+                                parameterWithName("size").description("페이지 크기, 기본값 8").optional()
                         ),
                         responseFields(
                                 CommonDocumentation.successResponseFields(

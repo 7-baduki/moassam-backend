@@ -50,7 +50,7 @@ public class DashboardApi {
     public SuccessResponse<PageResponse<FreeDashboardResponse>> getFreeDashboard(
             @RequestParam(required = false) HeadTag headTag,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size
+            @RequestParam(defaultValue = "8") int size
     ) {
         Page<FreeDashboardDetail> freeDashboard = dashboardFinder.getFreeDashboard(headTag, page, size);
 
@@ -88,7 +88,7 @@ public class DashboardApi {
     public SuccessResponse<PageResponse<FreeDashboardResponse>> searchFree(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "9") int size
+            @RequestParam(defaultValue = "8") int size
     ) {
         Page<FreeDashboardDetail> result = dashboardFinder.searchFree(keyword, page, size);
 

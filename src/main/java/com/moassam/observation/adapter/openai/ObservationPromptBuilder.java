@@ -23,6 +23,12 @@ public class ObservationPromptBuilder {
                 본 관찰일지는 누리과정 및 표준보육과정의 발달 영역 기준을 기반으로 작성합니다.
                 영아 및 유아의 발달 수준과 특성을 고려하여 연령에 적합한 행동으로 해석하세요.
                 
+                연령 기준 기본 호칭:
+                - 만 0~2세: 영아
+                - 만 3~5세: 유아
+                
+                연령에 따른 일반적인 발달 특성을 고려하여 적절한 용어와 맥락으로 작성하세요.
+                
                 다음 요소를 고려해 해석하세요.
                 - 또래 상호작용, 놀이 참여도, 감정 표현, 의사소통 방식
                 - 신체 활동, 언어 발달, 사회성 발달, 정서 발달
@@ -40,6 +46,20 @@ public class ObservationPromptBuilder {
                 8. 문장은 "행동 관찰 > 행동에 대한 해석 > 발달 맥락 연결" 구조를 따르세요.
                 9. 단순 행동 나열이 아니라, 행동의 의미와 맥락을 함께 해석하세요.
                 10. 발달 영역과 연결하여 해석하세요.
+                11. 부족함이나 어려움을 강조하기보다 성장 과정과 발달 가능성을 중심으로 서술하세요.
+                12. 관찰되지 않은 행동이나 발화를 새롭게 만들지 마세요.
+                13. 부정적 표현이나 문제 행동으로 단정하는 표현은 사용하지 마세요.
+                예:
+                - "어려움을 보인다" → "도움을 받아 시도하는 모습이 나타난다"
+                - "잘 하지 못한다" → "경험을 통해 익혀 가는 과정이 관찰된다"
+                - "또래와 잘 어울리지 못한다" → "또래와 상호작용을 시도하며 관계를 형성해 가는 모습이 나타난다"
+                - "집중하지 못한다" → "다양한 자극과 환경에 관심을 보이는 모습이 관찰된다"
+                - "거부한다" → "익숙해지는 과정을 경험하는 모습이 관찰된다"
+                - "울음을 보인다" → "감정을 표현하며 안정감을 형성해 가는 과정이 관찰된다"
+                - "갈등을 일으킨다" → "또래와 상호작용 과정에서 다양한 관계 경험을 시도하는 모습이 나타난다"
+                
+                14. 갈등 상황이나 도전 행동이 포함되더라도 성장과 지원의 맥락을 함께 서술하세요.
+                15. 입력된 관찰 내용에 없는 행동, 감정, 발화를 새롭게 생성하지 마세요.
                 
                 출력 기준:
                 - 불필요한 설명 없이 관찰일지 내용만 작성하세요.
@@ -73,6 +93,7 @@ public class ObservationPromptBuilder {
         return """
                 입력 데이터:
                 - 대상 연령: %s
+                - 기본 호칭: %s
                 - 교육과정: %s
                 - 관찰 영역: %s
                 - 관찰 내용:
@@ -87,11 +108,13 @@ public class ObservationPromptBuilder {
                 - sections는 요청된 관찰 영역마다 1개씩 작성하세요.
                 - sectionType은 반드시 요청된 enum 값을 그대로 사용하세요.
                 - content는 해당 영역의 관찰일지 내용만 하나의 문단으로 작성하세요.
+                - content는 긍정적·성장 중심 관점을 유지하되 과도한 미화는 하지 마세요.
                 - 관찰 사실, 행동 해석, 발달 맥락 연결이 자연스럽게 포함되도록 작성하세요.
                 - 교사가 입력한 원문에 없는 행동이나 발화를 새로 만들지 마세요.
                 """.formatted(
-                age.name(),
-                curriculumType.name(),
+                ageDisplay(age),
+                getChildLabel(age),
+                curriculumDisplay(curriculumType),
                 requestedSections,
                 situation,
                 referenceType
@@ -105,6 +128,30 @@ public class ObservationPromptBuilder {
             case SOCIAL_RELATIONSHIP -> "사회관계";
             case ART_EXPERIENCE -> "예술경험";
             case NATURE_EXPLORATION -> "자연탐구";
+        };
+    }
+
+    private String ageDisplay(Age age) {
+        return switch (age) {
+            case AGE_0 -> "만 0세";
+            case AGE_1 -> "만 1세";
+            case AGE_2 -> "만 2세";
+            case AGE_3 -> "만 3세";
+            case AGE_4 -> "만 4세";
+            case AGE_5 -> "만 5세";
+        };
+    }
+
+    private String getChildLabel(Age age) {
+        return age.getValue() <= 2
+                ? "영아"
+                : "유아";
+    }
+
+    private String curriculumDisplay(CurriculumType curriculumType) {
+        return switch (curriculumType) {
+            case NURI -> "누리과정";
+            case STANDARD -> "표준보육과정";
         };
     }
 }
