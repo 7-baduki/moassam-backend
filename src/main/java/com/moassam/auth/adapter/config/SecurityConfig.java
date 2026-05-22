@@ -1,6 +1,7 @@
 package com.moassam.auth.adapter.config;
 
 import com.moassam.auth.adapter.security.jwt.JwtAuthenticationFilter;
+import com.moassam.auth.adapter.security.oauth.OAuth2FailureHandler;
 import com.moassam.auth.adapter.security.oauth.OAuth2SuccessHandler;
 import com.moassam.auth.adapter.security.oauth.SocialUserService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,6 +24,7 @@ public class SecurityConfig {
 
     private final SocialUserService socialUserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2FailureHandler oAuth2FailureHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CorsConfigurationSource corsConfigurationSource;
 
@@ -51,6 +53,7 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(socialUserService))
                         .successHandler(oAuth2SuccessHandler)
+                        .failureHandler(oAuth2FailureHandler)
                 )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) ->
