@@ -72,7 +72,7 @@ class DashboardApiTest extends RestDocsSupport {
                         ApiDocumentUtils.getDocumentResponse(),
                         queryParameters(
                                 parameterWithName("postAge").description("연령 필터: ALL, INFANT, AGE_3, AGE_4, AGE_5").optional(),
-                                parameterWithName("resourceType").description("자료 유형 필터: ACTIVITY, PLAN, JOURNAL, NOTICE").optional(),
+                                parameterWithName("resourceType").description("자료 유형 필터: ACTIVITY, PLAN, JOURNAL, NOTICE, ENVIRONMENT").optional(),
                                 parameterWithName("page").description("페이지 번호, 0부터 시작").optional(),
                                 parameterWithName("size").description("페이지 크기, 기본값 9").optional()
                         ),
