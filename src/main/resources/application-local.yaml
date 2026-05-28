@@ -16,7 +16,8 @@ app:
   cors:
     allowed-origins: http://localhost:3000
   oauth:
-    success-redirect-uri: http://localhost:3000/oauth/callback
+    success-redirect-uris: http://localhost:3000/oauth/callback
+    default-success-redirect-uri: http://localhost:3000/oauth/callback
     failure-redirect-uri: http://localhost:3000/oauth/callback
   cookie:
     same-site: Lax

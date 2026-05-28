@@ -19,7 +19,8 @@ app:
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS}
   oauth:
-    success-redirect-uri: ${OAUTH_SUCCESS_REDIRECT_URI}
+    success-redirect-uris: ${OAUTH_SUCCESS_REDIRECT_URIS}
+    default-success-redirect-uri: ${OAUTH_DEFAULT_SUCCESS_REDIRECT_URI}
     failure-redirect-uri: ${OAUTH_FAILURE_REDIRECT_URI}
   cookie:
     same-site: None
