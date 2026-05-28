@@ -14,7 +14,7 @@ public class PostFixture {
                 "가나다라마바사아자차카타파하",
                 Category.MOABANG,
                 PostAge.AGE_3,
-                ResourceType.JOURNAL,
+                ResourceType.ACTIVITY,
                 null
         );
 

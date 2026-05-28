@@ -350,7 +350,7 @@ class PostServiceTest {
         PostUpdateRequest request = new PostUpdateRequest(
                 Category.MOABANG,
                 PostAge.AGE_3,
-                ResourceType.JOURNAL,
+                ResourceType.ACTIVITY,
                 null,
                 "수정 제목",
                 "수정 내용",

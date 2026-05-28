@@ -144,7 +144,7 @@ class PostApiTest extends RestDocsSupport {
                         requestPartFields("request",
                                 fieldWithPath("category").type(JsonFieldType.STRING).description("게시판 카테고리: MOABANG"),
                                 fieldWithPath("postAge").type(JsonFieldType.STRING).description("연령: ALL, INFANT, AGE_3, AGE_4, AGE_5"),
-                                fieldWithPath("resourceType").type(JsonFieldType.STRING).description("자료 유형: ACTIVITY, PLAN, JOURNAL, NOTICE, ENVIRONMENT"),
+                                fieldWithPath("resourceType").type(JsonFieldType.STRING).description("자료 유형: ACTIVITY, PLAN, DOCUMENT_FORM, ENVIRONMENT"),
                                 fieldWithPath("headTag").type(JsonFieldType.NULL).description("모아방에서는 사용 X"),
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("게시글 제목"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("게시글 내용")
@@ -295,7 +295,7 @@ class PostApiTest extends RestDocsSupport {
         PostUpdateRequest moaPost = new PostUpdateRequest(
                 Category.MOABANG,
                 PostAge.AGE_3,
-                ResourceType.JOURNAL,
+                ResourceType.ACTIVITY,
                 null,
                 "수정된 제목",
                 "수정된 내용",
@@ -336,7 +336,7 @@ class PostApiTest extends RestDocsSupport {
                         requestPartFields("request",
                                 fieldWithPath("category").type(JsonFieldType.STRING).description("게시판 카테고리: MOABANG"),
                                 fieldWithPath("postAge").type(JsonFieldType.STRING).description("연령: ALL, INFANT, AGE_3, AGE_4, AGE_5"),
-                                fieldWithPath("resourceType").type(JsonFieldType.STRING).description("자료 유형: ACTIVITY, PLAN, JOURNAL, NOTICE, ENVIRONMENT"),
+                                fieldWithPath("resourceType").type(JsonFieldType.STRING).description("자료 유형: ACTIVITY, PLAN, DOCUMENT_FORM, ENVIRONMENT"),
                                 fieldWithPath("headTag").type(JsonFieldType.NULL).description("모아방에서는 사용 X"),
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("게시글 제목"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("게시글 내용"),

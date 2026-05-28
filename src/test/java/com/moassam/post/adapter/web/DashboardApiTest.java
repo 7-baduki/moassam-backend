@@ -43,7 +43,7 @@ class DashboardApiTest extends RestDocsSupport {
                 "햇살선생님",
                 "https://example.com/default.png",
                 PostAge.AGE_5,
-                ResourceType.JOURNAL,
+                ResourceType.ACTIVITY,
                 1230L,
                 46L,
                 119L,
@@ -52,14 +52,14 @@ class DashboardApiTest extends RestDocsSupport {
 
         given(dashboardFinder.getMoabangDashboard(
                 eq(PostAge.AGE_5),
-                eq(ResourceType.JOURNAL),
+                eq(ResourceType.ACTIVITY),
                 eq(0),
                 eq(9)
         )).willReturn(new PageImpl<>(List.of(detail), PageRequest.of(0, 9), 1));
 
         mockMvc.perform(get("/api/v1/posts/moabang")
                         .param("postAge", "AGE_5")
-                        .param("resourceType", "JOURNAL")
+                        .param("resourceType", "ACTIVITY")
                         .param("page", "0")
                         .param("size", "9"))
                 .andExpect(status().isOk())
@@ -72,7 +72,7 @@ class DashboardApiTest extends RestDocsSupport {
                         ApiDocumentUtils.getDocumentResponse(),
                         queryParameters(
                                 parameterWithName("postAge").description("연령 필터: ALL, INFANT, AGE_3, AGE_4, AGE_5").optional(),
-                                parameterWithName("resourceType").description("자료 유형 필터: ACTIVITY, PLAN, JOURNAL, NOTICE, ENVIRONMENT").optional(),
+                                parameterWithName("resourceType").description("자료 유형 필터: ACTIVITY, PLAN, DOCUMENT_FORM, ENVIRONMENT").optional(),
                                 parameterWithName("page").description("페이지 번호, 0부터 시작").optional(),
                                 parameterWithName("size").description("페이지 크기, 기본값 9").optional()
                         ),
@@ -166,7 +166,7 @@ class DashboardApiTest extends RestDocsSupport {
                 "햇살선생님",
                 "https://example.com/default.png",
                 PostAge.AGE_5,
-                ResourceType.JOURNAL,
+                ResourceType.ACTIVITY,
                 1230L,
                 46L,
                 119L,

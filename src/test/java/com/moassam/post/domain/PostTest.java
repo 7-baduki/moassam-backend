@@ -52,7 +52,7 @@ class PostTest {
                 "내용",
                 Category.FREE,
                 PostAge.AGE_3,
-                ResourceType.JOURNAL,
+                ResourceType.ACTIVITY,
                 HeadTag.QUESTION
         ))
                 .isInstanceOf(BusinessException.class)
@@ -68,13 +68,13 @@ class PostTest {
                 "게시글 내용",
                 Category.MOABANG,
                 PostAge.AGE_3,
-                ResourceType.JOURNAL,
+                ResourceType.ACTIVITY,
                 null
         );
 
         assertThat(post.getCategory()).isEqualTo(Category.MOABANG);
         assertThat(post.getPostAge()).isEqualTo(PostAge.AGE_3);
-        assertThat(post.getResourceType()).isEqualTo(ResourceType.JOURNAL);
+        assertThat(post.getResourceType()).isEqualTo(ResourceType.ACTIVITY);
         assertThat(post.getHeadTag()).isNull();
     }
 
@@ -102,7 +102,7 @@ class PostTest {
                 "내용",
                 Category.MOABANG,
                 PostAge.AGE_3,
-                ResourceType.JOURNAL,
+                ResourceType.ACTIVITY,
                 HeadTag.QUESTION
         ))
                 .isInstanceOf(BusinessException.class)
@@ -127,7 +127,7 @@ class PostTest {
                 "수정 내용",
                 Category.MOABANG,
                 PostAge.AGE_3,
-                ResourceType.JOURNAL,
+                ResourceType.ACTIVITY,
                 null
         );
 
@@ -135,7 +135,7 @@ class PostTest {
         assertThat(post.getContent()).isEqualTo("수정 내용");
         assertThat(post.getCategory()).isEqualTo(Category.MOABANG);
         assertThat(post.getPostAge()).isEqualTo(PostAge.AGE_3);
-        assertThat(post.getResourceType()).isEqualTo(ResourceType.JOURNAL);
+        assertThat(post.getResourceType()).isEqualTo(ResourceType.ACTIVITY);
         assertThat(post.getHeadTag()).isNull();
     }
 }
