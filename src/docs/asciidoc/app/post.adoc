@@ -196,7 +196,7 @@ Content-Type: application/json
 {
   "category": "MOABANG",
   "postAge": "AGE_3",
-  "resourceType": "JOURNAL",
+  "resourceType": "ENVIRONMENT",
   "headTag": null,
   "title": "수정된 제목",
   "content": "수정된 내용",

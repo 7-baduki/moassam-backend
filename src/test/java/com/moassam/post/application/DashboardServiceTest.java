@@ -59,7 +59,7 @@ class DashboardServiceTest {
         given(postRepository.findMoabangDashboard(
                 eq(Category.MOABANG),
                 eq(PostAge.AGE_3),
-                eq(ResourceType.JOURNAL),
+                eq(ResourceType.ACTIVITY),
                 any(Pageable.class)
         )).willReturn(new PageImpl<>(List.of(post)));
 
@@ -71,7 +71,7 @@ class DashboardServiceTest {
 
         Page<MoabangDashboardDetail> result = dashboardService.getMoabangDashboard(
                 PostAge.AGE_3,
-                ResourceType.JOURNAL,
+                ResourceType.ACTIVITY,
                 0,
                 9
         );
@@ -83,14 +83,14 @@ class DashboardServiceTest {
         assertThat(detail.authorNickName()).isEqualTo("햇살선생님");
         assertThat(detail.thumbnailUrl()).isEqualTo("https://example.com/image.png");
         assertThat(detail.postAge()).isEqualTo(PostAge.AGE_3);
-        assertThat(detail.resourceType()).isEqualTo(ResourceType.JOURNAL);
+        assertThat(detail.resourceType()).isEqualTo(ResourceType.ACTIVITY);
 
         ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
 
         then(postRepository).should().findMoabangDashboard(
                 eq(Category.MOABANG),
                 eq(PostAge.AGE_3),
-                eq(ResourceType.JOURNAL),
+                eq(ResourceType.ACTIVITY),
                 pageableCaptor.capture()
         );
 
@@ -116,7 +116,7 @@ class DashboardServiceTest {
         given(postRepository.findMoabangDashboard(
                 eq(Category.MOABANG),
                 eq(postAge),
-                eq(ResourceType.JOURNAL),
+                eq(ResourceType.ACTIVITY),
                 any(Pageable.class)
         )).willReturn(new PageImpl<>(List.of(post)));
 
@@ -128,7 +128,7 @@ class DashboardServiceTest {
 
         Page<MoabangDashboardDetail> result = dashboardService.getMoabangDashboard(
                 postAge,
-                ResourceType.JOURNAL,
+                ResourceType.ACTIVITY,
                 0,
                 9
         );

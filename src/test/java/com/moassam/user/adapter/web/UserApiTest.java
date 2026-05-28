@@ -98,7 +98,7 @@ class UserApiTest extends RestDocsSupport {
 
     @Test
     void getMyMoabangPosts() throws Exception {
-        MyMoabangPostResponse post = new MyMoabangPostResponse(1L, "5월 가정의달 수업 활동지 공유합니다", PostAge.AGE_5, ResourceType.JOURNAL, 56L, LocalDateTime.of(2026, 3, 6, 0, 0));
+        MyMoabangPostResponse post = new MyMoabangPostResponse(1L, "5월 가정의달 수업 활동지 공유합니다", PostAge.AGE_5, ResourceType.ACTIVITY, 56L, LocalDateTime.of(2026, 3, 6, 0, 0));
 
         given(userActivity.getMyMoabangPosts(any(), eq(0), eq(10)))
                 .willReturn(new PageImpl<>(List.of(post), PageRequest.of(0, 10), 1));
