@@ -129,7 +129,8 @@ jobs:
             NCP_ENDPOINT=https://kr.object.ncloudstorage.com
             NCP_REGION=kr-standard
             CORS_ALLOWED_ORIGINS=${{ secrets.CORS_ALLOWED_ORIGINS }}
-            OAUTH_SUCCESS_REDIRECT_URI=${{ secrets.OAUTH_SUCCESS_REDIRECT_URI }}
+            OAUTH_SUCCESS_REDIRECT_URIS=${{ secrets.OAUTH_SUCCESS_REDIRECT_URIS }}
+            OAUTH_DEFAULT_SUCCESS_REDIRECT_URI=${{ secrets.OAUTH_DEFAULT_SUCCESS_REDIRECT_URI }}
             OAUTH_FAILURE_REDIRECT_URI=${{ secrets.OAUTH_FAILURE_REDIRECT_URI }}
             OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
             ENVEOF

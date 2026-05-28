@@ -3,6 +3,7 @@ package com.moassam.auth.adapter.config;
 import com.moassam.auth.adapter.security.jwt.JwtAuthenticationFilter;
 import com.moassam.auth.adapter.security.oauth.OAuth2FailureHandler;
 import com.moassam.auth.adapter.security.oauth.OAuth2SuccessHandler;
+import com.moassam.auth.adapter.security.oauth.OAuthSuccessRedirectUriFilter;
 import com.moassam.auth.adapter.security.oauth.SocialUserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -27,6 +29,7 @@ public class SecurityConfig {
     private final OAuth2FailureHandler oAuth2FailureHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CorsConfigurationSource corsConfigurationSource;
+    private final OAuthSuccessRedirectUriFilter oauthSuccessRedirectUriFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -59,6 +62,10 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) ->
                                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
                         )
+                )
+                .addFilterBefore(
+                        oauthSuccessRedirectUriFilter,
+                        OAuth2AuthorizationRequestRedirectFilter.class
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
