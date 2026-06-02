@@ -7,7 +7,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 REGISTRY="ghcr.io/7-baduki/moassam-backend"
-DEPLOY_DIR="/root/moassam/deploy"
+DEPLOY_DIR="/home/abcd010531/moassam/deploy"
 HEALTH_CHECK_URL="http://localhost:8080/actuator/health"
 MAX_RETRY=6
 RETRY_INTERVAL=10
