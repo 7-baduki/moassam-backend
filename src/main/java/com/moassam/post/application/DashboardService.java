@@ -25,12 +25,11 @@ import java.util.stream.Collectors;
 @Service
 public class DashboardService implements DashboardFinder {
 
-    private final static String ALL_INFANT_DEFAULT_THUMBNAIL_URL = "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_all_infant.png";
-    private final static String AGE3_DEFAULT_THUMBNAIL_URL = "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_age3.png";
-    private final static String AGE4_DEFAULT_THUMBNAIL_URL = "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_age4.png";
-    private final static String AGE5_DEFAULT_THUMBNAIL_URL = "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_age5.png";
     private final static String ALL_DEFAULT_THUMBNAIL_URL = "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_all.png";
     private final static String INFANT_DEFAULT_THUMBNAIL_URL = "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_infant.png";
+    private final static String AGE3_DEFAULT_THUMBNAIL_URL = "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_age3.png";
+    private final static String AGE4_DEFAULT_THUMBNAIL_URL = "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_age4.png";
+    private final static String AGE5_DEFAULT_THUMBNAIL_URL = "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_age5.png";
 
     private final PostRepository postRepository;
     private final PostFileRepository postFileRepository;

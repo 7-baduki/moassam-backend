@@ -9,9 +9,9 @@ import java.util.Random;
 public class ProfileImageProvider {
 
     private static final List<String> DEFAULT_PROFILE_IMAGES = List.of(
-            "https://kr.object.ncloudstorage.com/moassam-storage/profile/a.png",
-            "https://kr.object.ncloudstorage.com/moassam-storage/profile/mo.png",
-            "https://kr.object.ncloudstorage.com/moassam-storage/profile/ssam.png"
+            "https://storage.googleapis.com/moassam-storage/profile/a.png",
+            "https://storage.googleapis.com/moassam-storage/profile/mo.png",
+            "https://storage.googleapis.com/moassam-storage/profile/ssam.png"
     );
 
     private final Random random = new Random();

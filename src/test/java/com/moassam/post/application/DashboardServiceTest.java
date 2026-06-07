@@ -30,20 +30,20 @@ import static org.mockito.Mockito.mock;
 
 class DashboardServiceTest {
 
-    private static final String ALL_INFANT_DEFAULT_THUMBNAIL_URL =
-            "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_all_infant.png";
     private static final String ALL_DEFAULT_THUMBNAIL_URL =
+            "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_all.png";
 
     private static final String INFANT_DEFAULT_THUMBNAIL_URL =
+            "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_infant.png";
 
     private static final String AGE3_DEFAULT_THUMBNAIL_URL =
-            "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_age3.png";
+            "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_age3.png";
 
     private static final String AGE4_DEFAULT_THUMBNAIL_URL =
-            "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_age4.png";
+            "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_age4.png";
 
     private static final String AGE5_DEFAULT_THUMBNAIL_URL =
-            "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_age5.png";
+            "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_age5.png";
 
     private final PostRepository postRepository = mock(PostRepository.class);
     private final PostFileRepository postFileRepository = mock(PostFileRepository.class);
