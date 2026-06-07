@@ -32,6 +32,9 @@ class DashboardServiceTest {
 
     private static final String ALL_INFANT_DEFAULT_THUMBNAIL_URL =
             "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_all_infant.png";
+    private static final String ALL_DEFAULT_THUMBNAIL_URL =
+
+    private static final String INFANT_DEFAULT_THUMBNAIL_URL =
 
     private static final String AGE3_DEFAULT_THUMBNAIL_URL =
             "https://kr.object.ncloudstorage.com/moassam-storage/posts/dashboard/default_age3.png";
@@ -208,8 +211,8 @@ class DashboardServiceTest {
 
     private static Stream<Arguments> postAgeDefaultThumbnailUrls() {
         return Stream.of(
-                Arguments.of(PostAge.ALL, ALL_INFANT_DEFAULT_THUMBNAIL_URL),
-                Arguments.of(PostAge.INFANT, ALL_INFANT_DEFAULT_THUMBNAIL_URL),
+                Arguments.of(PostAge.ALL, ALL_DEFAULT_THUMBNAIL_URL),
+                Arguments.of(PostAge.INFANT, INFANT_DEFAULT_THUMBNAIL_URL),
                 Arguments.of(PostAge.AGE_3, AGE3_DEFAULT_THUMBNAIL_URL),
                 Arguments.of(PostAge.AGE_4, AGE4_DEFAULT_THUMBNAIL_URL),
                 Arguments.of(PostAge.AGE_5, AGE5_DEFAULT_THUMBNAIL_URL)
