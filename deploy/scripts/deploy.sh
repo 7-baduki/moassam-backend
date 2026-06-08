@@ -6,34 +6,46 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-REGISTRY="ghcr.io/7-baduki/moassam-backend"
 WORK_DIR="/home/abcd010531/moassam"
 DEPLOY_DIR="$WORK_DIR/deploy"
+ENV_FILE="$DEPLOY_DIR/.env"
 HEALTH_CHECK_URL="http://localhost:8080/actuator/health"
-MAX_RETRY=6
+MAX_RETRY=30
 RETRY_INTERVAL=10
+
+get_env_value() {
+  local key="$1"
+
+  if [ -f "$ENV_FILE" ]; then
+    grep -E "^${key}=" "$ENV_FILE" | tail -n 1 | cut -d '=' -f 2-
+  fi
+}
+
+IMAGE_NAME="${IMAGE_NAME:-$(get_env_value IMAGE_NAME)}"
+IMAGE_NAME="${IMAGE_NAME:-ghcr.io/7-baduki/moassam-backend:latest}"
+
+PREVIOUS_IMAGE_NAME="${PREVIOUS_IMAGE_NAME:-$(get_env_value PREVIOUS_IMAGE_NAME)}"
+PREVIOUS_IMAGE_NAME="${PREVIOUS_IMAGE_NAME:-ghcr.io/7-baduki/moassam-backend:previous}"
+
 
 cd "$WORK_DIR" || exit 1
 
 echo -e "${YELLOW}[1/8] 현재 이미지 롤백용 보관${NC}"
-CURRENT_IMAGE=$(docker images ${REGISTRY}:latest -q || true)
+CURRENT_IMAGE=$(docker images "$IMAGE_NAME" -q || true)
 if [ ! -z "${CURRENT_IMAGE:-}" ]; then
-  docker rmi ${REGISTRY}:previous 2>/dev/null || true
-  docker tag ${REGISTRY}:latest ${REGISTRY}:previous
-  echo -e "${GREEN}[SUCCESS] 롤백용 이미지 준비 완료${NC}"
+  docker rmi "$PREVIOUS_IMAGE_NAME" 2>/dev/null || true
+  docker tag "$IMAGE_NAME" "$PREVIOUS_IMAGE_NAME"
+  echo -e "${GREEN}[SUCCESS] 롤백용 이미지 준비 완료 $PREVIOUS_IMAGE_NAME${NC}"
 else
   echo -e "${YELLOW}[INFO] 기존 이미지 없음 (첫 배포)${NC}"
 fi
 
 echo -e "${YELLOW}[2/8] 오래된 이미지 정리${NC}"
-OLD_IMAGES=$(docker images ${REGISTRY} -q | tail -n +3 || true)
-if [ ! -z "${OLD_IMAGES:-}" ]; then
-  echo "$OLD_IMAGES" | xargs docker rmi -f 2>/dev/null || true
-fi
+docker image prune -f || true
 
-echo -e "${YELLOW}[3/8] 최신 이미지 다운로드${NC}"
-docker pull ${REGISTRY}:latest
-NEW_IMAGE=$(docker images ${REGISTRY}:latest -q || true)
+echo -e "${YELLOW}[3/8] 최신 이미지 다운로드 $IMAGE_NAME${NC}"
+docker pull "$IMAGE_NAME"
+NEW_IMAGE=$(docker images "$IMAGE_NAME" -q || true)
 echo -e "${GREEN}[SUCCESS] 새 이미지: ${NEW_IMAGE}${NC}"
 
 cd "$DEPLOY_DIR" || exit 1

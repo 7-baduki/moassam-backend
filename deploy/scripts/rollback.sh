@@ -6,14 +6,28 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-REGISTRY="ghcr.io/7-baduki/moassam-backend"
 DEPLOY_DIR="/home/abcd010531/moassam/deploy"
+ENV_FILE="$DEPLOY_DIR/.env"
 HEALTH_CHECK_URL="http://localhost:8080/actuator/health"
-MAX_RETRY=6
+MAX_RETRY=30
 RETRY_INTERVAL=10
 
+get_env_value() {
+  local key="$1"
+
+  if [ -f "$ENV_FILE" ]; then
+    grep -E "^${key}=" "$ENV_FILE" | tail -n 1 | cut -d '=' -f 2-
+  fi
+}
+
+IMAGE_NAME="${IMAGE_NAME:-$(get_env_value IMAGE_NAME)}"
+IMAGE_NAME="${IMAGE_NAME:-ghcr.io/7-baduki/moassam-backend:latest}"
+
+PREVIOUS_IMAGE_NAME="${PREVIOUS_IMAGE_NAME:-$(get_env_value PREVIOUS_IMAGE_NAME)}"
+PREVIOUS_IMAGE_NAME="${PREVIOUS_IMAGE_NAME:-ghcr.io/7-baduki/moassam-backend:previous}"
+
 echo -e "${YELLOW}[1/5] 롤백 이미지 확인${NC}"
-PREVIOUS_IMAGE=$(docker images ${REGISTRY}:previous -q || true)
+PREVIOUS_IMAGE=$(docker images "$PREVIOUS_IMAGE_NAME" -q || true)
 if [ -z "${PREVIOUS_IMAGE:-}" ]; then
   echo -e "${RED}[ERROR] 롤백할 이미지 없음${NC}"
   exit 1
@@ -24,7 +38,7 @@ cd "$DEPLOY_DIR"
 docker compose -f docker-compose.app.yaml down 2>/dev/null || docker rm -f moassam-api 2>/dev/null || true
 
 echo -e "${YELLOW}[3/5] 이전 버전으로 태그 변경${NC}"
-docker tag ${REGISTRY}:previous ${REGISTRY}:latest
+docker tag "$PREVIOUS_IMAGE_NAME" "$IMAGE_NAME"
 
 echo -e "${YELLOW}[4/5] 이전 버전 시작${NC}"
 docker compose -f docker-compose.app.yaml up -d

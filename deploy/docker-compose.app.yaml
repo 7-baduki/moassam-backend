@@ -1,6 +1,6 @@
 services:
   moassam-api:
-    image: ghcr.io/7-baduki/moassam-backend:latest
+    image: ${IMAGE_NAME}
     container_name: moassam-api
     restart: always
     networks:
@@ -10,7 +10,7 @@ services:
     env_file:
       - .env
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
       TZ: Asia/Seoul
     volumes:
       - /root/logs/moassam:/logs

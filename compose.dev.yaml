@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: moassam-db
+    restart: always
+    environment:
+      POSTGRES_DB: moassam_dev
+      POSTGRES_USER: moassam
+      POSTGRES_PASSWORD: moassam
+      TZ: Asia/Seoul
+    ports:
+      - "5437:5432"
+    volumes:
+      - postgres-dev-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-dev-data:
