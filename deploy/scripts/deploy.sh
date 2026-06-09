@@ -59,6 +59,16 @@ else
   echo -e "${GREEN}[SUCCESS] DB 이미 실행 중${NC}"
 fi
 
+set -a
+source "$DEPLOY_DIR/.env"
+set +a
+
+: "${NGINX_SERVER_NAME:?NGINX_SERVER_NAME is required}"
+
+envsubst '${NGINX_SERVER_NAME}' \
+  < "$DEPLOY_DIR/nginx.conf.template" \
+  > "$DEPLOY_DIR/nginx.conf"
+
 echo -e "${YELLOW}[5/8] Nginx 컨테이너 확인${NC}"
 if ! docker ps --format '{{.Names}}' | grep -q '^moassam-nginx$'; then
   docker compose -f docker-compose.nginx.yaml up -d
