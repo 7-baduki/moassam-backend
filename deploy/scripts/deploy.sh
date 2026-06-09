@@ -66,16 +66,12 @@ set +a
 : "${NGINX_SERVER_NAME:?NGINX_SERVER_NAME is required}"
 
 envsubst '${NGINX_SERVER_NAME}' \
-  < "$DEPLOY_DIR/nginx.conf.template" \
-  > "$DEPLOY_DIR/nginx.conf"
+  < "$DEPLOY_DIR/nginx.conf" \
+  > "$DEPLOY_DIR/nginx.rendered.conf"
 
-echo -e "${YELLOW}[5/8] Nginx 컨테이너 확인${NC}"
-if ! docker ps --format '{{.Names}}' | grep -q '^moassam-nginx$'; then
-  docker compose -f docker-compose.nginx.yaml up -d
-  echo -e "${GREEN}[SUCCESS] Nginx 시작${NC}"
-else
-  echo -e "${GREEN}[SUCCESS] Nginx 이미 실행 중${NC}"
-fi
+echo -e "${YELLOW}[5/8] Nginx 컨테이너 시작/갱신${NC}"
+docker compose -f docker-compose.nginx.yaml up -d --force-recreate
+echo -e "${GREEN}[SUCCESS] Nginx 시작/갱신${NC}"
 
 echo -e "${YELLOW}[6/8] 기존 앱 컨테이너 중지${NC}"
 docker compose -f docker-compose.app.yaml down 2>/dev/null || docker rm -f moassam-api 2>/dev/null || true
