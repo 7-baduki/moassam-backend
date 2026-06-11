@@ -13,13 +13,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Post save(Post post);
 
     @Query("""
-        select p
-        from Post p
-        where p.category = :category
-            and (:postAge is null or p.postAge = :postAge)
-            and (:resourceType is null or p.resourceType = :resourceType)
-        order by p.createdAt desc
-    """)
+                select p
+                from Post p
+                where p.category = :category
+                    and (:postAge is null or p.postAge = :postAge)
+                    and (:resourceType is null or p.resourceType = :resourceType)
+                order by p.createdAt desc
+            """)
     Page<Post> findMoabangDashboard(
             Category category,
             PostAge postAge,
@@ -28,12 +28,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     );
 
     @Query("""
-        select p
-        from Post p
-        where p.category = :category
-            and (:headTag is null or p.headTag = :headTag)
-        order by p.createdAt desc
-    """)
+                select p
+                from Post p
+                where p.category = :category
+                    and (:headTag is null or p.headTag = :headTag)
+                order by p.createdAt desc
+            """)
     Page<Post> findFreeDashboard(
             Category category,
             HeadTag headTag,
@@ -50,25 +50,63 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Modifying
     @Query("""
-    update Post p
-    set p.commentCount = (
-        select count(c)
-        from Comment c
-        where c.postId = p.id
-    )
-    where p.id in :postIds
-""")
+                update Post p
+                set p.commentCount = (
+                    select count(c)
+                    from Comment c
+                    where c.postId = p.id
+                )
+                where p.id in :postIds
+            """)
     void recalculateCommentCounts(List<Long> postIds);
 
     @Modifying
     @Query("""
-    update Post p
-    set p.likeCount = (
-        select count(l)
-        from PostLike l
-        where l.postId = p.id
-    )
-    where p.id in :postIds
-""")
+                update Post p
+                set p.likeCount = (
+                    select count(l)
+                    from PostLike l
+                    where l.postId = p.id
+                )
+                where p.id in :postIds
+            """)
     void recalculateLikeCounts(List<Long> postIds);
+
+    @Modifying
+    @Query("""
+                update Post p
+                set p.likeCount = p.likeCount + 1
+                where p.id = :postId
+            """)
+    int increaseLikeCount(Long postId);
+
+    @Modifying
+    @Query("""
+                update Post p
+                set p.likeCount = case
+                    when p.likeCount > 0 then p.likeCount - 1
+                    else 0
+                end
+                where p.id = :postId
+            """)
+    int decreaseLikeCount(Long postId);
+
+    @Modifying
+    @Query("""
+                update Post p
+                set p.bookmarkCount = p.bookmarkCount + 1
+                where p.id = :postId
+            """)
+    int increaseBookmarkCount(Long postId);
+
+    @Modifying
+    @Query("""
+                update Post p
+                set p.bookmarkCount = case
+                    when p.bookmarkCount > 0 then p.bookmarkCount - 1
+                    else 0
+                end
+                where p.id = :postId
+            """)
+    int decreaseBookmarkCount(Long postId);
 }
