@@ -4,7 +4,6 @@ import com.moassam.post.application.provided.bookmark.BookmarkFinder;
 import com.moassam.post.application.provided.bookmark.BookmarkRegister;
 import com.moassam.post.application.required.BookmarkRepository;
 import com.moassam.post.application.required.PostRepository;
-import com.moassam.post.domain.bookmark.PostBookmark;
 import com.moassam.post.domain.post.Post;
 import com.moassam.post.exception.PostErrorCode;
 import com.moassam.shared.exception.BusinessException;
@@ -24,28 +23,28 @@ public class BookmarkService implements BookmarkRegister, BookmarkFinder {
 
     @Override
     public void bookmark(Long userId, Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND));
-
-        if (bookmarkRepository.existsByPostIdAndUserId(postId, userId)) {
-            return;
+        if (!postRepository.existsById(postId)) {
+            throw new BusinessException(PostErrorCode.POST_NOT_FOUND);
         }
 
-        post.increaseBookmarkCount();
+        int inserted = bookmarkRepository.insertIgnore(postId, userId);
 
-        bookmarkRepository.save(PostBookmark.create(userId, postId));
+        if (inserted == 1) {
+            postRepository.increaseBookmarkCount(postId);
+        }
     }
 
     @Override
     public void unbookmark(Long userId, Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND));
+        if (!postRepository.existsById(postId)) {
+            throw new BusinessException(PostErrorCode.POST_NOT_FOUND);
+        }
 
-        bookmarkRepository.findByPostIdAndUserId(postId, userId)
-                .ifPresent(bookmark -> {
-                    post.decreaseBookmarkCount();
-                    bookmarkRepository.delete(bookmark);
-                });
+        int deleted = bookmarkRepository.deleteByPostIdAndUserId(postId, userId);
+
+        if (deleted == 1) {
+            postRepository.decreaseBookmarkCount(postId);
+        }
     }
 
     @Override

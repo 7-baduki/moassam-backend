@@ -2,19 +2,11 @@ package com.moassam.post.application;
 
 import com.moassam.post.application.required.PostLikeRepository;
 import com.moassam.post.application.required.PostRepository;
-import com.moassam.post.domain.post.Category;
-import com.moassam.post.domain.post.HeadTag;
-import com.moassam.post.domain.post.Post;
-import com.moassam.post.domain.postlike.PostLike;
 import com.moassam.post.exception.PostErrorCode;
 import com.moassam.shared.exception.BusinessException;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mock;
 
@@ -28,82 +20,71 @@ public class PostLikeServiceTest {
 
     @Test
     void like() {
-        Post post = Post.create(99L, "제목", "내용", Category.FREE, null, null, HeadTag.QUESTION);
-
-        given(postRepository.findById(10L)).willReturn(Optional.of(post));
-        given(postLikeRepository.existsByPostIdAndUserId(10L, 1L)).willReturn(false);
+        given(postRepository.existsById(10L)).willReturn(true);
+        given(postLikeRepository.insertIgnore(10L, 1L)).willReturn(1);
 
         postLikeService.like(1L, 10L);
 
-        assertThat(post.getLikeCount()).isEqualTo(1);
-
-        ArgumentCaptor<PostLike> captor = ArgumentCaptor.forClass(PostLike.class);
-        then(postLikeRepository).should().save(captor.capture());
-
-        PostLike savedPostLike = captor.getValue();
-        assertThat(savedPostLike.getUserId()).isEqualTo(1L);
-        assertThat(savedPostLike.getPostId()).isEqualTo(10L);
+        then(postLikeRepository).should().insertIgnore(10L, 1L);
+        then(postRepository).should().increaseLikeCount(10L);
     }
 
     @Test
     void like_alreadyLiked() {
-        Post post = Post.create(99L, "제목", "내용", Category.FREE, null, null, HeadTag.QUESTION);
-
-        given(postRepository.findById(10L)).willReturn(Optional.of(post));
-        given(postLikeRepository.existsByPostIdAndUserId(10L, 1L)).willReturn(true);
+        given(postRepository.existsById(10L)).willReturn(true);
+        given(postLikeRepository.insertIgnore(10L, 1L)).willReturn(0);
 
         postLikeService.like(1L, 10L);
 
-        assertThat(post.getLikeCount()).isZero();
-        then(postLikeRepository).should(never()).save(any(PostLike.class));
+        then(postLikeRepository).should().insertIgnore(10L, 1L);
+        then(postRepository).should(never()).increaseLikeCount(10L);
     }
 
     @Test
     void like_postNotFound() {
-        given(postRepository.findById(10L)).willReturn(Optional.empty());
+        given(postRepository.existsById(10L)).willReturn(false);
 
         assertThatThrownBy(() -> postLikeService.like(1L, 10L))
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(PostErrorCode.POST_NOT_FOUND);
+
+        then(postLikeRepository).should(never()).insertIgnore(anyLong(), anyLong());
+        then(postRepository).should(never()).increaseLikeCount(anyLong());
     }
 
     @Test
     void unlike() {
-        Post post = Post.create(99L, "제목", "내용", Category.FREE, null, null, HeadTag.QUESTION);
-        post.increaseLikeCount();
-
-        PostLike postLike = PostLike.create(1L, 10L);
-
-        given(postRepository.findById(10L)).willReturn(Optional.of(post));
-        given(postLikeRepository.findByPostIdAndUserId(10L, 1L)).willReturn(Optional.of(postLike));
+        given(postRepository.existsById(10L)).willReturn(true);
+        given(postLikeRepository.deleteByPostIdAndUserId(10L, 1L)).willReturn(1);
 
         postLikeService.unlike(1L, 10L);
 
-        assertThat(post.getLikeCount()).isZero();
-        then(postLikeRepository).should().delete(postLike);
+        then(postLikeRepository).should().deleteByPostIdAndUserId(10L, 1L);
+        then(postRepository).should().decreaseLikeCount(10L);
     }
 
     @Test
     void unlike_notLiked() {
-        Post post = Post.create(99L, "제목", "내용", Category.FREE, null, null, HeadTag.QUESTION);
-
-        given(postRepository.findById(10L)).willReturn(Optional.of(post));
-        given(postLikeRepository.findByPostIdAndUserId(10L, 1L)).willReturn(Optional.empty());
+        given(postRepository.existsById(10L)).willReturn(true);
+        given(postLikeRepository.deleteByPostIdAndUserId(10L, 1L)).willReturn(0);
 
         postLikeService.unlike(1L, 10L);
 
-        assertThat(post.getLikeCount()).isZero();
-        then(postLikeRepository).should(never()).delete(any(PostLike.class));
+        then(postLikeRepository).should().deleteByPostIdAndUserId(10L, 1L);
+        then(postRepository).should(never()).decreaseLikeCount(10L);
     }
 
     @Test
     void unlike_postNotFound() {
-        given(postRepository.findById(10L)).willReturn(Optional.empty());
+        given(postRepository.existsById(10L)).willReturn(false);
 
         assertThatThrownBy(() -> postLikeService.unlike(1L, 10L))
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(PostErrorCode.POST_NOT_FOUND);
+
+        then(postLikeRepository).should(never()).deleteByPostIdAndUserId(anyLong(), anyLong());
+        then(postRepository).should(never()).decreaseLikeCount(anyLong());
     }
 }

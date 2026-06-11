@@ -3,8 +3,6 @@ package com.moassam.post.application;
 import com.moassam.post.application.provided.postlike.PostLikeRegister;
 import com.moassam.post.application.required.PostLikeRepository;
 import com.moassam.post.application.required.PostRepository;
-import com.moassam.post.domain.post.Post;
-import com.moassam.post.domain.postlike.PostLike;
 import com.moassam.post.exception.PostErrorCode;
 import com.moassam.shared.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -22,26 +20,27 @@ public class PostLikeService implements PostLikeRegister {
 
     @Override
     public void like(Long userId, Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND));
-
-        if (postLikeRepository.existsByPostIdAndUserId(postId, userId)) {
-            return;
+        if (!postRepository.existsById(postId)) {
+            throw new BusinessException(PostErrorCode.POST_NOT_FOUND);
         }
 
-        post.increaseLikeCount();
-        postLikeRepository.save(PostLike.create(userId, postId));
+        int inserted = postLikeRepository.insertIgnore(postId, userId);
+
+        if (inserted == 1) {
+            postRepository.increaseLikeCount(postId);
+        }
     }
 
     @Override
     public void unlike(Long userId, Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new BusinessException(PostErrorCode.POST_NOT_FOUND));
+        if (!postRepository.existsById(postId)) {
+            throw new BusinessException(PostErrorCode.POST_NOT_FOUND);
+        }
 
-        postLikeRepository.findByPostIdAndUserId(postId, userId)
-                .ifPresent(postLike -> {
-                    post.decreaseLikeCount();
-                    postLikeRepository.delete(postLike);
-                });
+        int deleted = postLikeRepository.deleteByPostIdAndUserId(postId, userId);
+
+        if (deleted == 1) {
+            postRepository.decreaseLikeCount(postId);
+        }
     }
 }
