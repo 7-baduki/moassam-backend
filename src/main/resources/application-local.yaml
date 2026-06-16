@@ -27,6 +27,10 @@ app:
     failure-redirect-uri: http://localhost:3000/oauth/callback
   cookie:
     same-site: Lax
+    access-token:
+      name: accessToken
+      max-age-ms: 1800000
+      secure: false
     refresh-token:
       name: refreshToken
       max-age-days: 14

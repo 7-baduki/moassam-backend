@@ -3,7 +3,6 @@ package com.moassam.auth.adapter.web;
 import com.moassam.auth.adapter.security.cookie.HttpOnlyCookie;
 import com.moassam.auth.application.provided.Auth;
 import com.moassam.docs.ApiDocumentUtils;
-import com.moassam.docs.CommonDocumentation;
 import com.moassam.docs.RestDocsSupport;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
@@ -21,11 +20,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AuthApiTest extends RestDocsSupport {
 
     private final Auth auth = mock(Auth.class);
+    private final HttpOnlyCookie accessTokenCookie = mock(HttpOnlyCookie.class);
     private final HttpOnlyCookie refreshTokenCookie = mock(HttpOnlyCookie.class);
 
     @Override
     protected Object initController() {
-        return new AuthApi(auth, refreshTokenCookie);
+        return new AuthApi(auth, accessTokenCookie, refreshTokenCookie);
     }
 
     @Test
@@ -39,9 +39,7 @@ class AuthApiTest extends RestDocsSupport {
                         ApiDocumentUtils.getDocumentRequest(),
                         ApiDocumentUtils.getDocumentResponse(),
                         responseFields(
-                                CommonDocumentation.successResponseFields(
-                                        fieldWithPath("data.accessToken").type(JsonFieldType.STRING).description("새로 발급된 액세스 토큰")
-                                )
+                                fieldWithPath("data").type(JsonFieldType.NULL).description("응답 데이터 없음. 새 액세스 토큰은 HttpOnly 쿠키로 발급")
                         )
                 ));
     }
