@@ -24,6 +24,10 @@ app:
     failure-redirect-uri: ${OAUTH_FAILURE_REDIRECT_URI}
   cookie:
     same-site: None
+    access-token:
+      name: accessToken
+      max-age-ms: 1800000
+      secure: true
     refresh-token:
       name: refreshToken
       max-age-days: 14

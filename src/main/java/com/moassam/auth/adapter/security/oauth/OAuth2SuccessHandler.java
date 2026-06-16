@@ -30,6 +30,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final HttpOnlyCookie accessTokenCookie;
     private final HttpOnlyCookie refreshTokenCookie;
     private final Set<String> allowedSuccessRedirectUris;
     private final String defaultSuccessRedirectUri;
@@ -39,6 +40,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public OAuth2SuccessHandler(
             TokenProvider tokenProvider,
             RefreshTokenRepository refreshTokenRepository,
+            @Qualifier("accessTokenCookie") HttpOnlyCookie accessTokenCookie,
             @Qualifier("refreshTokenCookie") HttpOnlyCookie refreshTokenCookie,
             @Value("${app.oauth.success-redirect-uris}") String successRedirectUris,
             @Value("${app.oauth.default-success-redirect-uri}") String defaultSuccessRedirectUri,
@@ -47,6 +49,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     ) {
         this.tokenProvider = tokenProvider;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.accessTokenCookie = accessTokenCookie;
         this.refreshTokenCookie = refreshTokenCookie;
         this.allowedSuccessRedirectUris = Arrays.stream(successRedirectUris.split(","))
                 .map(String::trim)
@@ -69,21 +72,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String accessToken = tokenProvider.generateAccessToken(userId);
         String refreshToken = issueRefreshToken(userId);
 
+        accessTokenCookie.add(response, accessToken);
         refreshTokenCookie.add(response, refreshToken);
 
-        String redirectUri = createRedirectUri(request, accessToken);
+        String redirectUri = defineSuccessRedirectUri(request);
         deleteSuccessRedirectUriCookie(response);
 
         getRedirectStrategy().sendRedirect(request, response, redirectUri);
-    }
-
-    private String createRedirectUri(HttpServletRequest request, String accessToken) {
-        String successRedirectUri = defineSuccessRedirectUri(request);
-
-        return UriComponentsBuilder.fromUriString(successRedirectUri)
-                .queryParam("accessToken", accessToken)
-                .build()
-                .toUriString();
     }
 
     private String defineSuccessRedirectUri(HttpServletRequest request) {
