@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -29,11 +30,13 @@ public class OAuthSuccessRedirectUriFilter extends OncePerRequestFilter {
     private final Set<String> allowedSuccessRedirectUris;
     private final boolean secure;
     private final String sameSite;
+    private final String domain;
 
     public OAuthSuccessRedirectUriFilter(
             @Value("${app.oauth.success-redirect-uris}") String successRedirectUris,
             @Value("${app.cookie.refresh-token.secure}") boolean secure,
-            @Value("${app.cookie.same-site}") String sameSite
+            @Value("${app.cookie.same-site}") String sameSite,
+            @Value("${app.cookie.domain:}") String domain
     ) {
         this.allowedSuccessRedirectUris = Arrays.stream(successRedirectUris.split(","))
                 .map(String::trim)
@@ -41,6 +44,7 @@ public class OAuthSuccessRedirectUriFilter extends OncePerRequestFilter {
                 .collect(Collectors.toUnmodifiableSet());
         this.secure = secure;
         this.sameSite = sameSite;
+        this.domain = domain;
     }
 
     @Override
@@ -77,14 +81,19 @@ public class OAuthSuccessRedirectUriFilter extends OncePerRequestFilter {
     private void addSuccessRedirectUriCookie(HttpServletResponse response, String successRedirectUri) {
         String encodedValue = URLEncoder.encode(successRedirectUri, StandardCharsets.UTF_8);
 
-        ResponseCookie cookie = ResponseCookie.from(SUCCESS_REDIRECT_URI_COOKIE_NAME, encodedValue)
-                .httpOnly(true)
-                .secure(secure)
-                .sameSite(sameSite)
-                .path("/")
-                .maxAge(Duration.ofMinutes(3))
-                .build();
+        ResponseCookie.ResponseCookieBuilder builder =
+                ResponseCookie.from(SUCCESS_REDIRECT_URI_COOKIE_NAME, encodedValue)
+                        .httpOnly(true)
+                        .secure(secure)
+                        .sameSite(sameSite)
+                        .path("/")
+                        .maxAge(Duration.ofMinutes(3));
 
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        if (StringUtils.hasText(domain)) {
+            builder.domain(domain);
+        }
+
+        response.addHeader(HttpHeaders.SET_COOKIE,
+                builder.build().toString());
     }
 }
