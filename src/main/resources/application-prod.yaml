@@ -25,7 +25,7 @@ app:
     default-success-redirect-uri: ${OAUTH_DEFAULT_SUCCESS_REDIRECT_URI}
     failure-redirect-uri: ${OAUTH_FAILURE_REDIRECT_URI}
   cookie:
-    same-site: None
+    same-site: Lax
     access-token:
       name: accessToken
       max-age-ms: 1800000
