@@ -3,7 +3,6 @@ package com.moassam.auth.adapter.web;
 import com.moassam.auth.adapter.security.cookie.HttpOnlyCookie;
 import com.moassam.auth.adapter.web.annotation.CurrentUserId;
 import com.moassam.auth.adapter.web.annotation.RequireAuth;
-import com.moassam.auth.adapter.web.dto.TokenRefreshResponse;
 import com.moassam.auth.application.provided.Auth;
 import com.moassam.shared.web.SuccessResponse;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,23 +20,28 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthApi {
 
     private final Auth auth;
+    private final HttpOnlyCookie accessTokenCookie;
     private final HttpOnlyCookie refreshTokenCookie;
 
     public AuthApi(
             Auth auth,
+            @Qualifier("accessTokenCookie") HttpOnlyCookie accessTokenCookie,
             @Qualifier("refreshTokenCookie") HttpOnlyCookie refreshTokenCookie
     ) {
         this.auth = auth;
+        this.accessTokenCookie = accessTokenCookie;
         this.refreshTokenCookie = refreshTokenCookie;
     }
 
     @PostMapping("/refresh")
-    public SuccessResponse<TokenRefreshResponse> refresh(
-            @CookieValue("refreshToken") String refreshToken
+    public SuccessResponse<Void> refresh(
+            @CookieValue("refreshToken") String refreshToken,
+            HttpServletResponse response
     ) {
         String accessToken = auth.refresh(refreshToken);
+        accessTokenCookie.add(response, accessToken);
 
-        return SuccessResponse.of(new TokenRefreshResponse(accessToken));
+        return SuccessResponse.of(null);
     }
 
     @RequireAuth
@@ -49,6 +53,7 @@ public class AuthApi {
     ) {
         auth.logout(userId);
 
+        accessTokenCookie.clear(response);
         refreshTokenCookie.clear(response);
     }
 
@@ -61,6 +66,7 @@ public class AuthApi {
     ) {
         auth.withdraw(userId);
 
+        accessTokenCookie.clear(response);
         refreshTokenCookie.clear(response);
     }
 }
