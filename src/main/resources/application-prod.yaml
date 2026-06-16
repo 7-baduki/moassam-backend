@@ -26,6 +26,7 @@ app:
     failure-redirect-uri: ${OAUTH_FAILURE_REDIRECT_URI}
   cookie:
     same-site: Lax
+    domain: .moassam.com
     access-token:
       name: accessToken
       max-age-ms: 1800000

@@ -14,7 +14,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -36,6 +36,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final String defaultSuccessRedirectUri;
     private final boolean secure;
     private final String sameSite;
+    private final String domain;
 
     public OAuth2SuccessHandler(
             TokenProvider tokenProvider,
@@ -45,7 +46,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             @Value("${app.oauth.success-redirect-uris}") String successRedirectUris,
             @Value("${app.oauth.default-success-redirect-uri}") String defaultSuccessRedirectUri,
             @Value("${app.cookie.refresh-token.secure}") boolean secure,
-            @Value("${app.cookie.same-site}") String sameSite
+            @Value("${app.cookie.same-site}") String sameSite,
+            @Value("${app.cookie.domain:}") String domain
     ) {
         this.tokenProvider = tokenProvider;
         this.refreshTokenRepository = refreshTokenRepository;
@@ -58,6 +60,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         this.defaultSuccessRedirectUri = defaultSuccessRedirectUri;
         this.secure = secure;
         this.sameSite = sameSite;
+        this.domain = domain;
     }
 
     @Override
@@ -100,15 +103,20 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     }
 
     private void deleteSuccessRedirectUriCookie(HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from(OAuthSuccessRedirectUriFilter.SUCCESS_REDIRECT_URI_COOKIE_NAME, "")
-                .httpOnly(true)
-                .secure(secure)
-                .sameSite(sameSite)
-                .path("/")
-                .maxAge(Duration.ZERO)
-                .build();
+        ResponseCookie.ResponseCookieBuilder builder =
+                ResponseCookie.from(OAuthSuccessRedirectUriFilter.SUCCESS_REDIRECT_URI_COOKIE_NAME, "")
+                        .httpOnly(true)
+                        .secure(secure)
+                        .sameSite(sameSite)
+                        .path("/")
+                        .maxAge(Duration.ZERO);
 
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        if (StringUtils.hasText(domain)) {
+            builder.domain(domain);
+        }
+
+        response.addHeader(HttpHeaders.SET_COOKIE,
+                builder.build().toString());
     }
 
     private String issueRefreshToken(Long userId) {
