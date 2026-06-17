@@ -11,6 +11,7 @@
 
 include::../shared/overview.adoc[]
 
+include::admin.adoc[]
 include::auth.adoc[]
 include::user.adoc[]
 include::post.adoc[]
