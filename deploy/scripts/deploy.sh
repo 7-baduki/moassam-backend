@@ -63,9 +63,10 @@ set -a
 source "$DEPLOY_DIR/.env"
 set +a
 
-: "${NGINX_SERVER_NAME:?NGINX_SERVER_NAME is required}"
+: "${NGINX_SERVER_NAMES:?NGINX_SERVER_NAMES is required}"
+: "${NGINX_CERT_NAME:?NGINX_CERT_NAME is required}"
 
-envsubst '${NGINX_SERVER_NAME}' \
+envsubst '${NGINX_SERVER_NAMES} ${NGINX_CERT_NAME}' \
   < "$DEPLOY_DIR/nginx.conf" \
   > "$DEPLOY_DIR/nginx.rendered.conf"
 

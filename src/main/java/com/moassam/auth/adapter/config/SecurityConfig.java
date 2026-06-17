@@ -1,5 +1,6 @@
 package com.moassam.auth.adapter.config;
 
+import com.moassam.admin.adapter.security.jwt.AdminJwtAuthenticationFilter;
 import com.moassam.auth.adapter.security.jwt.JwtAuthenticationFilter;
 import com.moassam.auth.adapter.security.oauth.OAuth2FailureHandler;
 import com.moassam.auth.adapter.security.oauth.OAuth2SuccessHandler;
@@ -30,6 +31,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CorsConfigurationSource corsConfigurationSource;
     private final OAuthSuccessRedirectUriFilter oauthSuccessRedirectUriFilter;
+    private final AdminJwtAuthenticationFilter adminJwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -51,6 +53,11 @@ public class SecurityConfig {
                                 "/api/v1/posts/moabang/search",
                                 "/api/v1/posts/free/search"
                         ).permitAll()
+                        .requestMatchers(
+                                "/api/v1/admin/auth/login",
+                                "/api/v1/admin/auth/refresh"
+                        ).permitAll()
+                        .requestMatchers("/api/v1/admin/**").hasRole("SUPER_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
@@ -63,11 +70,9 @@ public class SecurityConfig {
                                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
                         )
                 )
-                .addFilterBefore(
-                        oauthSuccessRedirectUriFilter,
-                        OAuth2AuthorizationRequestRedirectFilter.class
-                )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(oauthSuccessRedirectUriFilter, OAuth2AuthorizationRequestRedirectFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(adminJwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

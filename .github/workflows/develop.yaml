@@ -130,7 +130,11 @@ jobs:
             IMAGE_NAME=${{ needs.docker-build.outputs.image_name }}
             PREVIOUS_IMAGE_NAME=ghcr.io/7-baduki/moassam-backend:develop-previous
             SPRING_PROFILES_ACTIVE=dev
-            NGINX_SERVER_NAME=${{ secrets.NGINX_SERVER_NAME }}
+            NGINX_SERVER_NAMES="${{ secrets.NGINX_SERVER_NAMES }}"
+            NGINX_CERT_NAME="${{ secrets.NGINX_CERT_NAME }}"
+            
+            ADMIN_USERNAME="${{ secrets.ADMIN_USERNAME }}"
+            ADMIN_PASSWORD="${{ secrets.ADMIN_PASSWORD }}"
             
             DB_NAME=${{ secrets.DB_NAME }}
             DB_USER=${{ secrets.DB_USER }}
@@ -196,7 +200,11 @@ jobs:
             IMAGE_NAME=${{ needs.docker-build.outputs.image_name }}
             PREVIOUS_IMAGE_NAME=ghcr.io/7-baduki/moassam-backend:previous
             SPRING_PROFILES_ACTIVE=prod
-            NGINX_SERVER_NAME=${{ secrets.NGINX_SERVER_NAME }}
+            NGINX_SERVER_NAMES="${{ secrets.NGINX_SERVER_NAMES }}"
+            NGINX_CERT_NAME="${{ secrets.NGINX_CERT_NAME }}"
+            
+            ADMIN_USERNAME="${{ secrets.ADMIN_USERNAME }}"
+            ADMIN_PASSWORD="${{ secrets.ADMIN_PASSWORD }}"
 
             DB_NAME=${{ secrets.DB_NAME }}
             DB_USER=${{ secrets.DB_USER }}

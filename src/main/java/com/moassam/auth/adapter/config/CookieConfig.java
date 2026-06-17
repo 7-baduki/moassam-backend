@@ -9,6 +9,28 @@ import org.springframework.context.annotation.Configuration;
 public class CookieConfig {
 
     @Bean
+    public HttpOnlyCookie adminAccessTokenCookie(
+            @Value("${app.cookie.admin-access-token.name}") String name,
+            @Value("${app.cookie.admin-access-token.max-age-ms}") long maxAgeMs,
+            @Value("${app.cookie.admin-access-token.secure}") boolean secure,
+            @Value("${app.cookie.same-site}") String sameSite,
+            @Value("${app.cookie.domain:}") String domain
+    ) {
+        return new HttpOnlyCookie(name, (int) (maxAgeMs / 1000), secure, sameSite, domain);
+    }
+
+    @Bean
+    public HttpOnlyCookie adminRefreshTokenCookie(
+            @Value("${app.cookie.admin-refresh-token.name}") String name,
+            @Value("${app.cookie.admin-refresh-token.max-age-days}") int maxAgeDays,
+            @Value("${app.cookie.admin-refresh-token.secure}") boolean secure,
+            @Value("${app.cookie.same-site}") String sameSite,
+            @Value("${app.cookie.domain:}") String domain
+    ) {
+        return new HttpOnlyCookie(name, maxAgeDays * 24 * 60 * 60, secure, sameSite, domain);
+    }
+
+    @Bean
     public HttpOnlyCookie accessTokenCookie(
             @Value("${app.cookie.access-token.name}") String name,
             @Value("${app.cookie.access-token.max-age-ms}") long maxAgeMs,
