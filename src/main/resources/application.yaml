@@ -64,6 +64,11 @@ openai:
   api-key: ${OPENAI_API_KEY}
   model: gpt-4.1-mini
 
+admin:
+  initial:
+    username: ${ADMIN_USERNAME:}
+    password: ${ADMIN_PASSWORD:}
+
 management:
   endpoints:
     web:

@@ -35,3 +35,11 @@ app:
       name: refreshToken
       max-age-days: 14
       secure: false
+    admin-access-token:
+      name: adminAccessToken
+      max-age-ms: 1800000
+      secure: false
+    admin-refresh-token:
+      name: adminRefreshToken
+      max-age-days: 14
+      secure: false

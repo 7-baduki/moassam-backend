@@ -335,7 +335,62 @@
         <column name="user_id"/>
       </basic>
     </attributes>
+  </entity>
 
+  <entity class="com.moassam.admin.domain.AdminAccount">
+    <table name="admin_accounts">
+      <unique-constraint name="uk_admin_accounts_username">
+        <column-name>username</column-name>
+      </unique-constraint>
+    </table>
+    <attributes>
+      <id name="id">
+        <column name="id"/>
+        <generated-value strategy="IDENTITY"/>
+      </id>
+      <basic name="username">
+        <column name="username" nullable="false" length="50"/>
+      </basic>
+      <basic name="passwordHash">
+        <column name="password_hash" nullable="false"/>
+      </basic>
+      <basic name="role">
+        <column name="role" nullable="false" length="30"/>
+        <enumerated>STRING</enumerated>
+      </basic>
+      <basic name="enabled">
+        <column name="enabled" nullable="false"/>
+      </basic>
+      <basic name="lastLoginAt">
+        <column name="last_login_at"/>
+      </basic>
+    </attributes>
+  </entity>
+
+  <entity class="com.moassam.admin.domain.AdminRefreshToken">
+    <table name="admin_refresh_tokens">
+      <unique-constraint name="uk_admin_refresh_tokens_token">
+        <column-name>token</column-name>
+      </unique-constraint>
+      <unique-constraint name="uk_admin_refresh_tokens_admin_account_id">
+        <column-name>admin_account_id</column-name>
+      </unique-constraint>
+    </table>
+    <attributes>
+      <id name="id">
+        <column name="id"/>
+        <generated-value strategy="IDENTITY"/>
+      </id>
+      <basic name="adminAccountId">
+        <column name="admin_account_id" nullable="false"/>
+      </basic>
+      <basic name="token">
+        <column name="token" nullable="false" length="512"/>
+      </basic>
+      <basic name="expiresAt">
+        <column name="expires_at" nullable="false"/>
+      </basic>
+    </attributes>
   </entity>
 
 </entity-mappings>
