@@ -19,3 +19,18 @@ operation::admin/refresh[snippets='http-request,http-response,response-fields']
 현재 로그인한 SUPER_ADMIN 계정의 refresh token을 삭제하고 관리자 인증 쿠키를 만료시킵니다.
 
 operation::admin/logout[snippets='http-request,http-response']
+
+=== 게시글 관리 - 조회
+
+게시글 목록을 조회합니다. 카테고리 및 키워드(제목 키워드, 유저명)를 통해 검색이 가능합니다.
+카테고리와 키워드는 null값이 가능합니다.
+
+operation::admin/post/get-posts[snippets='http-request,http-response,response-fields']
+
+
+=== 게시글 관리 - 삭제
+
+부적절한 게시글을 삭제합니다.
+
+operation::admin/post/delete-post[snippets='http-request,http-response']
+
