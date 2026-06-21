@@ -75,6 +75,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String accessToken = tokenProvider.generateAccessToken(userId);
         String refreshToken = issueRefreshToken(userId);
 
+        accessTokenCookie.clearAll(response);
+        refreshTokenCookie.clearAll(response);
+
         accessTokenCookie.add(response, accessToken);
         refreshTokenCookie.add(response, refreshToken);
 

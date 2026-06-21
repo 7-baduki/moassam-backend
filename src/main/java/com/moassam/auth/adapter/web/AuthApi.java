@@ -59,8 +59,8 @@ public class AuthApi {
     ) {
         auth.logout(userId);
 
-        accessTokenCookie.clear(response);
-        refreshTokenCookie.clear(response);
+        accessTokenCookie.clearAll(response);
+        refreshTokenCookie.clearAll(response);
     }
 
     @RequireAuth
@@ -72,7 +72,7 @@ public class AuthApi {
     ) {
         auth.withdraw(userId);
 
-        accessTokenCookie.clear(response);
-        refreshTokenCookie.clear(response);
+        accessTokenCookie.clearAll(response);
+        refreshTokenCookie.clearAll(response);
     }
 }

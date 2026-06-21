@@ -36,6 +36,9 @@ public class AdminAuthApi {
     ) {
         AdminLoginResult result = adminAuth.login(request.username(), request.password());
 
+        adminAccessTokenCookie.clearAll(response);
+        adminRefreshTokenCookie.clearAll(response);
+
         adminAccessTokenCookie.add(response, result.accessToken());
         adminRefreshTokenCookie.add(response, result.refreshToken());
 
@@ -67,7 +70,7 @@ public class AdminAuthApi {
     ) {
         adminAuth.logout(adminAccountId);
 
-        adminAccessTokenCookie.clear(response);
-        adminRefreshTokenCookie.clear(response);
+        adminAccessTokenCookie.clearAll(response);
+        adminRefreshTokenCookie.clearAll(response);
     }
 }
