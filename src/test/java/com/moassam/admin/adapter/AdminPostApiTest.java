@@ -7,6 +7,7 @@ import com.moassam.docs.CommonDocumentation;
 import com.moassam.docs.RestDocsSupport;
 import com.moassam.post.domain.post.Category;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.restdocs.payload.JsonFieldType;
@@ -16,8 +17,10 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
@@ -77,6 +80,33 @@ class AdminPostApiTest extends RestDocsSupport {
                                 fieldWithPath("data.hasNext").type(JsonFieldType.BOOLEAN).description("다음 페이지 존재 여부")
                         ))
                 ));
+    }
+
+    @Test
+    void getPosts_allCategory() throws Exception {
+        PageRequest pageRequest = PageRequest.of(0, 20);
+        given(adminPostService.getPosts(isNull(), isNull(), eq(0), eq(20)))
+                .willReturn(Page.empty(pageRequest));
+
+        mockMvc.perform(get("/api/v1/admin/posts")
+                        .param("category", "ALL")
+                        .param("page", "0")
+                        .param("size", "20"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.data").isArray())
+                .andExpect(jsonPath("$.data.totalElements").value(0));
+
+        then(adminPostService).should().getPosts(null, null, 0, 20);
+    }
+
+    @Test
+    void getPosts_invalidCategory() throws Exception {
+        mockMvc.perform(get("/api/v1/admin/posts")
+                        .param("category", "INVALID"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.properties.code").value("INVALID_REQUEST"));
+
+        verifyNoInteractions(adminPostService);
     }
 
     @Test
