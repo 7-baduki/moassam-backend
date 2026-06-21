@@ -10,6 +10,9 @@ import com.moassam.admin.exception.AdminAuthErrorCode;
 import com.moassam.shared.exception.BusinessException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,6 +25,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 @ExtendWith(MockitoExtension.class)
 class AdminAuthServiceTest {
@@ -168,6 +172,19 @@ class AdminAuthServiceTest {
                 .isInstanceOf(BusinessException.class)
                 .extracting("errorCode")
                 .isEqualTo(AdminAuthErrorCode.EXPIRED_TOKEN);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = {" ", "   ", "\t", "\n"})
+    void refresh_nullOrBlankToken_throwsInvalidToken(String refreshToken) {
+        assertThatThrownBy(() -> adminAuthService.refresh(refreshToken))
+                .isInstanceOf(BusinessException.class)
+                .extracting("errorCode")
+                .isEqualTo(AdminAuthErrorCode.INVALID_TOKEN);
+
+        verifyNoInteractions(adminRefreshTokenRepository);
+        verifyNoInteractions(adminTokenProvider);
     }
 
     @Test

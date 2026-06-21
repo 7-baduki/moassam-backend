@@ -36,6 +36,9 @@ public class AdminAuthApi {
     ) {
         AdminLoginResult result = adminAuth.login(request.username(), request.password());
 
+        adminAccessTokenCookie.clearAll(response);
+        adminRefreshTokenCookie.clearAll(response);
+
         adminAccessTokenCookie.add(response, result.accessToken());
         adminRefreshTokenCookie.add(response, result.refreshToken());
 
@@ -44,13 +47,19 @@ public class AdminAuthApi {
 
     @PostMapping("/refresh")
     public SuccessResponse<Void> refresh(
-            @CookieValue("adminRefreshToken") String refreshToken,
+            @CookieValue(value = "adminRefreshToken", required = false) String refreshToken,
             HttpServletResponse response
     ) {
-        String accessToken = adminAuth.refresh(refreshToken);
-        adminAccessTokenCookie.add(response, accessToken);
+        try {
+            String accessToken = adminAuth.refresh(refreshToken);
+            adminAccessTokenCookie.add(response, accessToken);
 
-        return SuccessResponse.of(null);
+            return SuccessResponse.of(null);
+        } catch (RuntimeException e) {
+            adminAccessTokenCookie.clearAll(response);
+            adminRefreshTokenCookie.clearAll(response);
+            throw e;
+        }
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -61,7 +70,7 @@ public class AdminAuthApi {
     ) {
         adminAuth.logout(adminAccountId);
 
-        adminAccessTokenCookie.clear(response);
-        adminRefreshTokenCookie.clear(response);
+        adminAccessTokenCookie.clearAll(response);
+        adminRefreshTokenCookie.clearAll(response);
     }
 }

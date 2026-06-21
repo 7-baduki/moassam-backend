@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -59,6 +60,10 @@ public class AdminAuthService implements AdminAuth {
     @Override
     @Transactional
     public String refresh(String refreshToken) {
+        if (!StringUtils.hasText(refreshToken)) {
+            throw new BusinessException(AdminAuthErrorCode.INVALID_TOKEN);
+        }
+
         AdminRefreshToken storedToken = adminRefreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new BusinessException(AdminAuthErrorCode.INVALID_TOKEN));
 

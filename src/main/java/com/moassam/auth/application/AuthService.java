@@ -15,6 +15,7 @@ import com.moassam.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -44,6 +45,10 @@ public class AuthService implements Auth {
 
     @Override
     public String refresh(String refreshToken) {
+        if (!StringUtils.hasText(refreshToken)) {
+            throw new BusinessException(AuthErrorCode.INVALID_TOKEN);
+        }
+
         RefreshToken storedToken = refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(() -> new BusinessException(AuthErrorCode.INVALID_TOKEN));
 
@@ -51,9 +56,7 @@ public class AuthService implements Auth {
             throw new BusinessException(AuthErrorCode.EXPIRED_TOKEN);
         }
 
-        String newAccessToken = tokenProvider.generateAccessToken(storedToken.getUserId());
-
-        return newAccessToken;
+        return tokenProvider.generateAccessToken(storedToken.getUserId());
     }
 
     @Override
