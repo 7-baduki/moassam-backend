@@ -35,13 +35,19 @@ public class AuthApi {
 
     @PostMapping("/refresh")
     public SuccessResponse<Void> refresh(
-            @CookieValue("refreshToken") String refreshToken,
+            @CookieValue(value = "refreshToken", required = false) String refreshToken,
             HttpServletResponse response
     ) {
-        String accessToken = auth.refresh(refreshToken);
-        accessTokenCookie.add(response, accessToken);
+        try {
+            String accessToken = auth.refresh(refreshToken);
+            accessTokenCookie.add(response, accessToken);
 
-        return SuccessResponse.of(null);
+            return SuccessResponse.of(null);
+        } catch (RuntimeException e) {
+            accessTokenCookie.clearAll(response);
+            refreshTokenCookie.clearAll(response);
+            throw e;
+        }
     }
 
     @RequireAuth

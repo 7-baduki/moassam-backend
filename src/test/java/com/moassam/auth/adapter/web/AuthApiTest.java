@@ -2,14 +2,18 @@ package com.moassam.auth.adapter.web;
 
 import com.moassam.auth.adapter.security.cookie.HttpOnlyCookie;
 import com.moassam.auth.application.provided.Auth;
+import com.moassam.auth.exception.AuthErrorCode;
 import com.moassam.docs.ApiDocumentUtils;
 import com.moassam.docs.RestDocsSupport;
+import com.moassam.shared.exception.BusinessException;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.Test;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -42,6 +46,19 @@ class AuthApiTest extends RestDocsSupport {
                                 fieldWithPath("data").type(JsonFieldType.NULL).description("응답 데이터 없음. 새 액세스 토큰은 HttpOnly 쿠키로 발급")
                         )
                 ));
+    }
+
+    @Test
+    void refresh_failed_clearsCookies() throws Exception {
+        given(auth.refresh("test-refresh-token"))
+                .willThrow(new BusinessException(AuthErrorCode.INVALID_TOKEN));
+
+        mockMvc.perform(post("/api/v1/auth/refresh")
+                        .cookie(new Cookie("refreshToken", "test-refresh-token")))
+                .andExpect(status().isUnauthorized());
+
+        verify(accessTokenCookie).clearAll(any());
+        verify(refreshTokenCookie).clearAll(any());
     }
 
     @Test
