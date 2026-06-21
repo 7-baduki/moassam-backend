@@ -29,6 +29,18 @@ public class HttpOnlyCookie {
         response.addHeader(HttpHeaders.SET_COOKIE, createCookie("", 0).toString());
     }
 
+    public void clearHostOnly(HttpServletResponse response) {
+        response.addHeader(HttpHeaders.SET_COOKIE, createHostOnlyCookie("", 0).toString());
+    }
+
+    public void clearAll(HttpServletResponse response) {
+        clear(response);
+
+        if (StringUtils.hasText(domain)) {
+            clearHostOnly(response);
+        }
+    }
+
     private ResponseCookie createCookie(String value, int maxAgeSeconds) {
         ResponseCookie.ResponseCookieBuilder builder =
                 ResponseCookie.from(name, value)
@@ -43,5 +55,15 @@ public class HttpOnlyCookie {
         }
 
         return builder.build();
+    }
+
+    private ResponseCookie createHostOnlyCookie(String value, int maxAgeSeconds) {
+        return ResponseCookie.from(name, value)
+                .httpOnly(true)
+                .secure(secure)
+                .path("/")
+                .maxAge(maxAgeSeconds)
+                .sameSite(sameSite)
+                .build();
     }
 }

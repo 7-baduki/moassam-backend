@@ -3,9 +3,11 @@ package com.moassam.admin.adapter;
 import com.moassam.admin.adapter.dto.AdminLoginRequest;
 import com.moassam.admin.application.dto.AdminLoginResult;
 import com.moassam.admin.application.provided.AdminAuth;
+import com.moassam.admin.exception.AdminAuthErrorCode;
 import com.moassam.auth.adapter.security.cookie.HttpOnlyCookie;
 import com.moassam.docs.ApiDocumentUtils;
 import com.moassam.docs.RestDocsSupport;
+import com.moassam.shared.exception.BusinessException;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -99,6 +101,20 @@ class AdminAuthApiTest extends RestDocsSupport {
     }
 
     @Test
+    void refresh_failed_clearsCookies() throws Exception {
+        given(adminAuth.refresh("invalid-admin-refresh-token"))
+                .willThrow(new BusinessException(AdminAuthErrorCode.INVALID_TOKEN));
+
+        mockMvc.perform(post("/api/v1/admin/auth/refresh")
+                        .cookie(new Cookie("adminRefreshToken", "invalid-admin-refresh-token")))
+                .andExpect(status().isUnauthorized());
+
+        verify(adminAccessTokenCookie).clearAll(any());
+        verify(adminRefreshTokenCookie).clearAll(any());
+    }
+
+
+    @Test
     void logout() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken("1", null, List.of())
@@ -112,8 +128,8 @@ class AdminAuthApiTest extends RestDocsSupport {
                 ));
 
         verify(adminAuth).logout(1L);
-        verify(adminAccessTokenCookie).clear(any());
-        verify(adminRefreshTokenCookie).clear(any());
+        verify(adminAccessTokenCookie).clearAll(any());
+        verify(adminRefreshTokenCookie).clearAll(any());
 
         SecurityContextHolder.clearContext();
     }

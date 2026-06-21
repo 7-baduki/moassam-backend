@@ -8,6 +8,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.OffsetDateTime;
 import java.util.stream.Collectors;
@@ -25,6 +26,21 @@ public class ApiControllerAdvice {
         log.warn("[VALIDATION] 요청 값 검증 실패 message={}", detail);
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, detail);
+        problemDetail.setTitle(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        problemDetail.setProperty("timestamp", OffsetDateTime.now().toString());
+        problemDetail.setProperty("code", "INVALID_REQUEST");
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class, MethodArgumentTypeMismatchException.class})
+    public ProblemDetail handleInvalidRequest(Exception exception) {
+        log.warn("[INVALID_REQUEST] 잘못된 요청 파라미터 message={}", exception.getMessage());
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                "요청 파라미터가 올바르지 않습니다."
+        );
         problemDetail.setTitle(HttpStatus.BAD_REQUEST.getReasonPhrase());
         problemDetail.setProperty("timestamp", OffsetDateTime.now().toString());
         problemDetail.setProperty("code", "INVALID_REQUEST");
