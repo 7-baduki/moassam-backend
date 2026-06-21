@@ -9,6 +9,24 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 
 public interface AdminPostQueryRepository extends Repository<Post, Long> {
+
+    default Page<AdminPostSummary> findAdminPostSummaries(
+            Category category,
+            String keyword,
+            Pageable pageable
+    ) {
+        if (category == null && keyword == null) {
+            return findAllAdminPostSummaries(pageable);
+        }
+        if (category == null) {
+            return findAdminPostSummariesByKeyword(keyword, pageable);
+        }
+        if (keyword == null) {
+            return findAdminPostSummariesByCategory(category, pageable);
+        }
+        return findAdminPostSummariesByCategoryAndKeyword(category, keyword, pageable);
+    }
+
     @Query("""
                 select new com.moassam.admin.application.dto.AdminPostSummary(
                 p.id,
@@ -20,15 +38,68 @@ public interface AdminPostQueryRepository extends Repository<Post, Long> {
                 )
                 from Post p
                 join User u on u.id = p.userId
-                where (:category is null or p.category = :category)
+                order by p.createdAt desc
+            """)
+    Page<AdminPostSummary> findAllAdminPostSummaries(Pageable pageable);
+
+    @Query("""
+                select new com.moassam.admin.application.dto.AdminPostSummary(
+                p.id,
+                p.title,
+                u.nickname,
+                p.category,
+                p.createdAt,
+                p.viewCount
+                )
+                from Post p
+                join User u on u.id = p.userId
+                where p.category = :category
+                order by p.createdAt desc
+            """)
+    Page<AdminPostSummary> findAdminPostSummariesByCategory(
+            Category category,
+            Pageable pageable
+    );
+
+    @Query("""
+                select new com.moassam.admin.application.dto.AdminPostSummary(
+                p.id,
+                p.title,
+                u.nickname,
+                p.category,
+                p.createdAt,
+                p.viewCount
+                )
+                from Post p
+                join User u on u.id = p.userId
+                where lower(p.title) like lower(concat('%', :keyword, '%'))
+                    or lower(u.nickname) like lower(concat('%', :keyword, '%'))
+                order by p.createdAt desc
+            """)
+    Page<AdminPostSummary> findAdminPostSummariesByKeyword(
+            String keyword,
+            Pageable pageable
+    );
+
+    @Query("""
+                select new com.moassam.admin.application.dto.AdminPostSummary(
+                p.id,
+                p.title,
+                u.nickname,
+                p.category,
+                p.createdAt,
+                p.viewCount
+                )
+                from Post p
+                join User u on u.id = p.userId
+                where p.category = :category
                     and (
-                        :keyword is null
-                        or lower(p.title) like lower(concat('%', :keyword, '%'))
-                        or lower(u.nickname) like lower (concat('%', :keyword, '%')) 
+                        lower(p.title) like lower(concat('%', :keyword, '%'))
+                        or lower(u.nickname) like lower(concat('%', :keyword, '%'))
                     )
                 order by p.createdAt desc
             """)
-    Page<AdminPostSummary> findAdminPostSummaries(
+    Page<AdminPostSummary> findAdminPostSummariesByCategoryAndKeyword(
             Category category,
             String keyword,
             Pageable pageable
