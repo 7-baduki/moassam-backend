@@ -20,6 +20,13 @@ operation::admin/refresh[snippets='http-request,http-response,response-fields']
 
 operation::admin/logout[snippets='http-request,http-response']
 
+=== 사용자 관리 - 조회
+
+전체 누적 사용자 수와 선택한 가입 기간의 사용자 수 및 사용자 목록을 조회합니다.
+가입 시작일과 종료일은 선택값이며, 한쪽 날짜만 입력한 조회도 가능합니다.
+
+operation::admin/user/get-users[snippets='http-request,query-parameters,http-response,response-fields']
+
 === 게시글 관리 - 조회
 
 게시글 목록을 조회합니다. 카테고리 및 키워드(제목 키워드, 유저명)를 통해 검색이 가능합니다.
