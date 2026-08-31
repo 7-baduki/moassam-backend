@@ -125,6 +125,8 @@ jobs:
         run: |
           cat > ssm-command.sh <<EOF
           set -Eeuo pipefail
+          DEPLOY_BUCKET='${DEPLOY_BUCKET}'
+          IMAGE_NAME='${IMAGE_NAME}'
           WORK_DIR=/opt/moassam
           RELEASE_DIR="\$WORK_DIR/releases/${GITHUB_SHA}"
           TEMP_DIR="\$(mktemp -d)"
@@ -184,6 +186,8 @@ jobs:
         run: |
           cat > ssm-command.sh <<EOF
           set -Eeuo pipefail
+          DEPLOY_BUCKET='${DEPLOY_BUCKET}'
+          IMAGE_NAME='${IMAGE_NAME}'
           WORK_DIR=/opt/moassam
           RELEASE_DIR="\$WORK_DIR/releases/${GITHUB_SHA}"
           TEMP_DIR="\$(mktemp -d)"
