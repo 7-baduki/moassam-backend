@@ -9,6 +9,7 @@ import com.moassam.post.domain.dashboard.MoabangDashboardDetail;
 import com.moassam.user.application.required.UserRepository;
 import com.moassam.user.domain.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,15 +26,12 @@ import java.util.stream.Collectors;
 @Service
 public class DashboardService implements DashboardFinder {
 
-    private final static String ALL_DEFAULT_THUMBNAIL_URL = "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_all.png";
-    private final static String INFANT_DEFAULT_THUMBNAIL_URL = "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_infant.png";
-    private final static String AGE3_DEFAULT_THUMBNAIL_URL = "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_age3.png";
-    private final static String AGE4_DEFAULT_THUMBNAIL_URL = "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_age4.png";
-    private final static String AGE5_DEFAULT_THUMBNAIL_URL = "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_age5.png";
-
     private final PostRepository postRepository;
     private final PostFileRepository postFileRepository;
     private final UserRepository userRepository;
+
+    @Value("${storage.public-base-url}")
+    private String publicBaseUrl;
 
     @Override
     public Page<MoabangDashboardDetail> getMoabangDashboard(PostAge postAge, ResourceType resourceType, int page, int size) {
@@ -211,12 +209,16 @@ public class DashboardService implements DashboardFinder {
 
     private String defineThumbnailUrl(Post post) {
         return switch (post.getPostAge()) {
-            case ALL -> ALL_DEFAULT_THUMBNAIL_URL;
-            case INFANT -> INFANT_DEFAULT_THUMBNAIL_URL;
-            case AGE_3 -> AGE3_DEFAULT_THUMBNAIL_URL;
-            case AGE_4 -> AGE4_DEFAULT_THUMBNAIL_URL;
-            case AGE_5 -> AGE5_DEFAULT_THUMBNAIL_URL;
+            case ALL -> publicUrl("posts/dashboard/default_all.png");
+            case INFANT -> publicUrl("posts/dashboard/default_infant.png");
+            case AGE_3 -> publicUrl("posts/dashboard/default_age3.png");
+            case AGE_4 -> publicUrl("posts/dashboard/default_age4.png");
+            case AGE_5 -> publicUrl("posts/dashboard/default_age5.png");
         };
+    }
+
+    private String publicUrl(String key) {
+        return (publicBaseUrl.endsWith("/") ? publicBaseUrl : publicBaseUrl + "/") + key;
     }
 
 

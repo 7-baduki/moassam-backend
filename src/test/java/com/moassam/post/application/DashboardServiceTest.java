@@ -31,25 +31,29 @@ import static org.mockito.Mockito.mock;
 class DashboardServiceTest {
 
     private static final String ALL_DEFAULT_THUMBNAIL_URL =
-            "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_all.png";
+            "https://assets-dev.example.com/posts/dashboard/default_all.png";
 
     private static final String INFANT_DEFAULT_THUMBNAIL_URL =
-            "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_infant.png";
+            "https://assets-dev.example.com/posts/dashboard/default_infant.png";
 
     private static final String AGE3_DEFAULT_THUMBNAIL_URL =
-            "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_age3.png";
+            "https://assets-dev.example.com/posts/dashboard/default_age3.png";
 
     private static final String AGE4_DEFAULT_THUMBNAIL_URL =
-            "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_age4.png";
+            "https://assets-dev.example.com/posts/dashboard/default_age4.png";
 
     private static final String AGE5_DEFAULT_THUMBNAIL_URL =
-            "https://storage.googleapis.com/moassam-storage/posts/dashboard/default_age5.png";
+            "https://assets-dev.example.com/posts/dashboard/default_age5.png";
 
     private final PostRepository postRepository = mock(PostRepository.class);
     private final PostFileRepository postFileRepository = mock(PostFileRepository.class);
     private final UserRepository userRepository = mock(UserRepository.class);
 
     private final DashboardService dashboardService = new DashboardService(postRepository, postFileRepository, userRepository);
+
+    DashboardServiceTest() {
+        ReflectionTestUtils.setField(dashboardService, "publicBaseUrl", "https://assets-dev.example.com");
+    }
 
     @Test
     void getMoabangDashboard() {
