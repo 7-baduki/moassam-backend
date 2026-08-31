@@ -6,7 +6,7 @@ IMAGE_NAME="${2:?image name is required}"
 AWS_REGION="${AWS_REGION:-ap-northeast-2}"
 DEPLOY_DIR="/opt/moassam/current/deploy"
 
-"${DEPLOY_DIR}/scripts/render-env.sh" "$ENVIRONMENT"
+bash "${DEPLOY_DIR}/scripts/render-env.sh" "$ENVIRONMENT"
 printf '\nIMAGE_NAME=%s\n' "$IMAGE_NAME" >> "${DEPLOY_DIR}/.env"
 
 GHCR_USERNAME="$(aws ssm get-parameter \
