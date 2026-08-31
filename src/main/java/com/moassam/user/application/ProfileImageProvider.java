@@ -1,6 +1,7 @@
 package com.moassam.user.application;
 
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.Random;
@@ -8,15 +9,21 @@ import java.util.Random;
 @Component
 public class ProfileImageProvider {
 
-    private static final List<String> DEFAULT_PROFILE_IMAGES = List.of(
-            "https://storage.googleapis.com/moassam-storage/profile/a.png",
-            "https://storage.googleapis.com/moassam-storage/profile/mo.png",
-            "https://storage.googleapis.com/moassam-storage/profile/ssam.png"
-    );
+    @Value("${storage.public-base-url}")
+    private String publicBaseUrl;
 
     private final Random random = new Random();
 
     public String getRandomProfileImage() {
-        return DEFAULT_PROFILE_IMAGES.get(random.nextInt(DEFAULT_PROFILE_IMAGES.size()));
+        List<String> defaultProfileImages = List.of(
+                publicUrl("profile/a.png"),
+                publicUrl("profile/mo.png"),
+                publicUrl("profile/ssam.png")
+        );
+        return defaultProfileImages.get(random.nextInt(defaultProfileImages.size()));
+    }
+
+    private String publicUrl(String key) {
+        return (publicBaseUrl.endsWith("/") ? publicBaseUrl : publicBaseUrl + "/") + key;
     }
 }

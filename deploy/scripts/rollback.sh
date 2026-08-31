@@ -6,7 +6,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-DEPLOY_DIR="/home/abcd010531/moassam/deploy"
+DEPLOY_DIR="/opt/moassam/current/deploy"
 ENV_FILE="$DEPLOY_DIR/.env"
 HEALTH_CHECK_URL="http://localhost:8080/actuator/health"
 MAX_RETRY=30
