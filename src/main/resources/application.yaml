@@ -56,9 +56,10 @@ jwt:
   access-token-expiry-ms: 1800000
   refresh-token-expiry-days: 14
 
-gcp:
-  storage:
-    bucket: ${GCP_BUCKET}
+storage:
+  bucket: ${S3_BUCKET}
+  public-base-url: ${STORAGE_PUBLIC_BASE_URL}
+  cloudfront-distribution-id: ${CLOUDFRONT_DISTRIBUTION_ID}
 
 openai:
   api-key: ${OPENAI_API_KEY}

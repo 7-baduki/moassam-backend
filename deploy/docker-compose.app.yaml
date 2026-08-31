@@ -13,7 +13,7 @@ services:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
       TZ: Asia/Seoul
     volumes:
-      - /root/logs/moassam:/logs
+      - /srv/moassam-data/logs:/logs
     command: ["java", "-Duser.timezone=Asia/Seoul", "-jar", "app.jar"]
 
 networks:

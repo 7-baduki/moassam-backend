@@ -6,7 +6,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-WORK_DIR="/home/abcd010531/moassam"
+WORK_DIR="/opt/moassam/current"
 DEPLOY_DIR="$WORK_DIR/deploy"
 ENV_FILE="$DEPLOY_DIR/.env"
 HEALTH_CHECK_URL="http://localhost:8080/actuator/health"
