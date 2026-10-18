@@ -5,20 +5,27 @@ import com.moassam.user.domain.Provider;
 import com.moassam.user.domain.User;
 import com.moassam.user.domain.UserRegisterRequest;
 import jakarta.persistence.EntityManager;
+import org.hibernate.resource.jdbc.spi.StatementInspector;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles("test")
 @DataJpaTest
-@Import(JpaAuditingConfig.class)
+@Import({JpaAuditingConfig.class, AdminUserQueryRepositoryTest.SqlCaptureConfig.class})
 class AdminUserQueryRepositoryTest {
 
     @Autowired
@@ -26,6 +33,29 @@ class AdminUserQueryRepositoryTest {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private SqlCaptureStatementInspector sqlCapture;
+
+    @Test
+    void findAdminUserSummaries_typesNullableParametersInGeneratedSql() {
+        sqlCapture.clear();
+
+        adminUserQueryRepository.findAdminUserSummaries(
+                null,
+                null,
+                PageRequest.of(0, 20)
+        );
+
+        String selectSql = sqlCapture.statements().stream()
+                .filter(sql -> sql.contains("from users"))
+                .findFirst()
+                .orElseThrow();
+        assertThat(StringUtils.countOccurrencesOf(
+                selectSql,
+                "cast(? as timestamp"
+        )).isEqualTo(2);
+    }
 
     @Test
     void findAdminUserSummaries_withoutDateFilters() {
@@ -128,5 +158,40 @@ class AdminUserQueryRepositoryTest {
                 .setParameter("createdAt", createdAt)
                 .setParameter("userId", userId)
                 .executeUpdate();
+    }
+
+    @TestConfiguration(proxyBeanMethods = false)
+    static class SqlCaptureConfig {
+
+        @Bean
+        SqlCaptureStatementInspector sqlCaptureStatementInspector() {
+            return new SqlCaptureStatementInspector();
+        }
+
+        @Bean
+        HibernatePropertiesCustomizer sqlCaptureHibernatePropertiesCustomizer(
+                SqlCaptureStatementInspector inspector
+        ) {
+            return properties -> properties.put("hibernate.session_factory.statement_inspector", inspector);
+        }
+    }
+
+    static class SqlCaptureStatementInspector implements StatementInspector {
+
+        private final List<String> statements = new ArrayList<>();
+
+        @Override
+        public String inspect(String sql) {
+            statements.add(sql);
+            return sql;
+        }
+
+        List<String> statements() {
+            return List.copyOf(statements);
+        }
+
+        void clear() {
+            statements.clear();
+        }
     }
 }
