@@ -23,8 +23,8 @@ public interface AdminUserQueryRepository extends Repository<User, Long> {
                 u.deletedAt
             )
             from User u
-            where (:startAt is null or u.createdAt >= :startAt)
-              and (:endAt is null or u.createdAt < :endAt)
+            where (cast(:startAt as LocalDateTime) is null or u.createdAt >= :startAt)
+              and (cast(:endAt as LocalDateTime) is null or u.createdAt < :endAt)
             order by u.createdAt desc, u.id desc
             """)
     Page<AdminUserSummary> findAdminUserSummaries(
