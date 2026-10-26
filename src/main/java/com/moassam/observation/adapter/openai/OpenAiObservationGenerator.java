@@ -131,9 +131,25 @@ public class OpenAiObservationGenerator implements ObservationGenerator {
         }
 
         try {
-            return objectMapper.readValue(outputText, ObservationGeneration.class);
+            ObservationGeneration generation = objectMapper.readValue(outputText, ObservationGeneration.class);
+            JsonNode usage = response.path("usage");
+            return new ObservationGeneration(
+                    generation.title(),
+                    generation.summary(),
+                    generation.sections(),
+                    response.path("id").asText(null),
+                    response.path("model").asText(model),
+                    nullableLong(usage, "input_tokens"),
+                    nullableLong(usage, "output_tokens"),
+                    nullableLong(usage, "total_tokens")
+            );
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("OpenAI 관찰일지 생성 결과 파싱에 실패했습니다.", e);
         }
+    }
+
+    private Long nullableLong(JsonNode node, String fieldName) {
+        JsonNode value = node.path(fieldName);
+        return value.isNumber() ? value.longValue() : null;
     }
 }
