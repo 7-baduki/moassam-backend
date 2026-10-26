@@ -12,6 +12,8 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
     Post save(Post post);
 
+    boolean existsByUserId(Long userId);
+
     @Query("""
                 select p
                 from Post p

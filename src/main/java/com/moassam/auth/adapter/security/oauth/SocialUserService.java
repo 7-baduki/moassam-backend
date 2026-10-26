@@ -5,10 +5,12 @@ import com.moassam.auth.adapter.integration.oauth.parser.ParserFactory;
 import com.moassam.auth.adapter.integration.oauth.parser.UserInfoParser;
 import com.moassam.credit.application.provided.CreditCharger;
 import com.moassam.user.application.ProfileImageProvider;
+import com.moassam.user.application.required.UserLifecycleEventRepository;
 import com.moassam.user.application.required.UserRepository;
 import com.moassam.user.domain.Provider;
 import com.moassam.user.domain.User;
 import com.moassam.user.domain.UserRegisterRequest;
+import com.moassam.user.domain.UserLifecycleEventType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -16,6 +18,9 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Clock;
+import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Service
@@ -25,6 +30,8 @@ public class SocialUserService extends DefaultOAuth2UserService {
     private final ParserFactory parserFactory;
     private final ProfileImageProvider profileImageProvider;
     private final CreditCharger creditCharger;
+    private final UserLifecycleEventRepository userLifecycleEventRepository;
+    private final Clock clock;
 
     @Override
     @Transactional
@@ -42,7 +49,7 @@ public class SocialUserService extends DefaultOAuth2UserService {
         return parser.parse(oauth2User.getAttributes());
     }
 
-    private User resolveUser(UserInfo userInfo) {
+    User resolveUser(UserInfo userInfo) {
         return userRepository.findByProviderAndProviderId(userInfo.provider(), userInfo.providerId())
                 .map(user -> reactivateIfNeeded(user, userInfo))
                 .orElseGet(() -> registerNew(userInfo));
@@ -53,6 +60,7 @@ public class SocialUserService extends DefaultOAuth2UserService {
             String profileImage = profileImageProvider.getRandomProfileImage();
             user.rejoin(userInfo.email(), userInfo.nickname(), profileImage);
             userRepository.save(user);
+            appendLifecycleEvent(user.getId(), UserLifecycleEventType.REACTIVATION);
         }
         return user;
     }
@@ -68,6 +76,17 @@ public class SocialUserService extends DefaultOAuth2UserService {
                 profileImage
         ));
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        appendLifecycleEvent(savedUser.getId(), UserLifecycleEventType.SIGNUP);
+        return savedUser;
+    }
+
+    private void appendLifecycleEvent(Long userId, UserLifecycleEventType eventType) {
+        userLifecycleEventRepository.append(
+                userId,
+                eventType.name(),
+                null,
+                LocalDateTime.now(clock)
+        );
     }
 }

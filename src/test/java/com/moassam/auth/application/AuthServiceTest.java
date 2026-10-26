@@ -11,7 +11,9 @@ import com.moassam.post.application.required.*;
 import com.moassam.shared.exception.BusinessException;
 import com.moassam.support.UserFixture;
 import com.moassam.user.application.required.UserRepository;
+import com.moassam.user.application.required.UserLifecycleEventRepository;
 import com.moassam.user.domain.User;
+import com.moassam.user.domain.UserLifecycleEventType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,6 +37,9 @@ class AuthServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private UserLifecycleEventRepository userLifecycleEventRepository;
 
     @Mock
     private PostRepository postRepository;
@@ -144,6 +149,12 @@ class AuthServiceTest {
         verify(observationRepository).deleteByUserId(1L);
         verify(creditWalletRepository).deleteByUserId(1L);
         verify(refreshTokenRepository).deleteByUserId(1L);
+        verify(userLifecycleEventRepository).append(
+                1L,
+                UserLifecycleEventType.WITHDRAWAL.name(),
+                true,
+                user.getDeletedAt()
+        );
     }
 
     @Test

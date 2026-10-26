@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class Observation extends BaseEntity {
 
     private Long id;
+    private long version;
     private Long userId;
     private String title;
     private String summary;

@@ -1,6 +1,5 @@
 package com.moassam.observation.application;
 
-import com.moassam.credit.application.provided.CreditUser;
 import com.moassam.observation.application.required.ObservationGenerator;
 import com.moassam.observation.application.required.ObservationReferenceProvider;
 import com.moassam.observation.application.required.ObservationRepository;
@@ -25,14 +24,16 @@ class ObservationServiceTest {
     private final ObservationSectionRepository observationSectionRepository = mock(ObservationSectionRepository.class);
     private final ObservationReferenceProvider observationReferenceProvider = mock(ObservationReferenceProvider.class);
     private final ObservationGenerator observationGenerator = mock(ObservationGenerator.class);
-    private final CreditUser creditUser = mock(CreditUser.class);
+    private final ObservationPersistenceService observationPersistenceService = mock(ObservationPersistenceService.class);
+    private final ObservationGenerationUsageRecorder usageRecorder = mock(ObservationGenerationUsageRecorder.class);
 
     private final ObservationService observationService = new ObservationService(
             observationRepository,
             observationSectionRepository,
             observationReferenceProvider,
             observationGenerator,
-            creditUser
+            observationPersistenceService,
+            usageRecorder
     );
 
     @Test
@@ -49,19 +50,19 @@ class ObservationServiceTest {
         given(observationGenerator.generateObservation(any(), any(), anyString(), anyList(), anyList()))
                 .willReturn(generation());
 
-        given(observationRepository.save(any(Observation.class)))
-                .willAnswer(invocation -> {
-                    Observation observation = invocation.getArgument(0);
-                    ReflectionTestUtils.setField(observation, "id", 1L);
-                    return observation;
-                });
+        given(observationPersistenceService.create(eq(1L), eq(request), any(ObservationGeneration.class)))
+                .willReturn(1L);
 
         Long observationId = observationService.createObservation(1L, request);
 
         assertThat(observationId).isEqualTo(1L);
-        then(observationRepository).should().save(any(Observation.class));
-        then(observationSectionRepository).should().saveAll(anyList());
-        then(creditUser).should().useForCreateObservation(1L, observationId);
+        then(observationPersistenceService).should()
+                .create(eq(1L), eq(request), any(ObservationGeneration.class));
+        then(usageRecorder).should().recordProviderSuccess(
+                anyString(), eq(1L), eq(ObservationGenerationOperation.CREATE),
+                any(ObservationGeneration.class), anyLong()
+        );
+        then(usageRecorder).should().markSaved(anyString());
     }
 
     @Test
@@ -118,14 +119,19 @@ class ObservationServiceTest {
                 .willReturn(List.of(reference(SectionType.COMMUNICATION)));
         given(observationGenerator.generateObservation(any(), any(), anyString(), anyList(), anyList()))
                 .willReturn(generation());
+        Observation updated = observation(1L, 1L);
+        updated.updateGeneratedResult("생성 제목", "생성 총평");
+        ObservationSection generatedSection = section(11L, 1L, SectionType.COMMUNICATION);
+        given(observationPersistenceService.regenerate(eq(1L), eq(1L), eq(0L), any(ObservationGeneration.class)))
+                .willReturn(new ObservationDetail(updated, List.of(generatedSection)));
 
         ObservationDetail detail = observationService.regenerateObservation(1L, 1L);
 
         assertThat(detail.observation().getTitle()).isEqualTo("생성 제목");
         assertThat(detail.sections()).hasSize(1);
-        then(observationSectionRepository).should().deleteAllByObservationId(1L);
-        then(observationSectionRepository).should().saveAll(anyList());
-        then(creditUser).should().useForRegenerateObservation(1L, 1L);
+        then(observationPersistenceService).should()
+                .regenerate(eq(1L), eq(1L), eq(0L), any(ObservationGeneration.class));
+        then(usageRecorder).should().markSaved(anyString());
     }
 
     @Test
