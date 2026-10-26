@@ -1,6 +1,5 @@
 package com.moassam.observation.application;
 
-import com.moassam.credit.application.provided.CreditUser;
 import com.moassam.observation.application.provided.*;
 import com.moassam.observation.application.required.ObservationGenerator;
 import com.moassam.observation.application.required.ObservationReferenceProvider;
@@ -15,21 +14,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ObservationService implements ObservationCreator, ObservationRegenerator, ObservationFinder, ObservationDeleter, ObservationStatsFinder {
 
     private final ObservationRepository observationRepository;
     private final ObservationSectionRepository observationSectionRepository;
     private final ObservationReferenceProvider observationReferenceProvider;
     private final ObservationGenerator observationGenerator;
-    private final CreditUser creditUser;
+    private final ObservationPersistenceService observationPersistenceService;
+    private final ObservationGenerationUsageRecorder usageRecorder;
 
     @Override
-    @Transactional
     public Long createObservation(Long userId, ObservationCreateRequest request) {
         validateCreateRequest(request);
 
@@ -37,7 +37,11 @@ public class ObservationService implements ObservationCreator, ObservationRegene
 
         List<ObservationReference> references = observationReferenceProvider.getObservationReferences(curriculumType, request.sectionTypes());
 
-        ObservationGeneration result = observationGenerator.generateObservation(
+        String correlationId = UUID.randomUUID().toString();
+        ObservationGeneration result = generate(
+                correlationId,
+                userId,
+                ObservationGenerationOperation.CREATE,
                 request.age(),
                 curriculumType,
                 request.situation(),
@@ -45,32 +49,17 @@ public class ObservationService implements ObservationCreator, ObservationRegene
                 references
         );
 
-        Observation observation = Observation.create(
-                userId,
-                result.title(),
-                result.summary(),
-                request.age(),
-                request.situation()
-        );
-
-        Observation saved = observationRepository.save(observation);
-
-        creditUser.useForCreateObservation(userId, saved.getId());
-
-        List<ObservationSection> sections = result.sections().stream()
-                .map(section -> ObservationSection.create(
-                        saved.getId(),
-                        section.sectionType(),
-                        section.content()
-                ))
-                .toList();
-        observationSectionRepository.saveAll(sections);
-
-        return saved.getId();
+        try {
+            Long observationId = observationPersistenceService.create(userId, request, result);
+            usageRecorder.markSaved(correlationId);
+            return observationId;
+        } catch (RuntimeException exception) {
+            usageRecorder.markPersistenceFailed(correlationId);
+            throw exception;
+        }
     }
 
     @Override
-    @Transactional
     public ObservationDetail regenerateObservation(Long userId, Long observationId) {
         Observation observation = observationRepository.findByIdAndUserId(observationId, userId)
                 .orElseThrow(() -> new BusinessException(ObservationErrorCode.OBSERVATION_NOT_FOUND));
@@ -88,7 +77,11 @@ public class ObservationService implements ObservationCreator, ObservationRegene
                         sectionTypes
                 );
 
-        ObservationGeneration result = observationGenerator.generateObservation(
+        String correlationId = UUID.randomUUID().toString();
+        ObservationGeneration result = generate(
+                correlationId,
+                userId,
+                ObservationGenerationOperation.REGENERATE,
                 observation.getAge(),
                 observation.getCurriculumType(),
                 observation.getSituation(),
@@ -96,26 +89,23 @@ public class ObservationService implements ObservationCreator, ObservationRegene
                 references
         );
 
-        observation.updateGeneratedResult(result.title(), result.summary());
-
-        observationSectionRepository.deleteAllByObservationId(observationId);
-
-        List<ObservationSection> newSections = result.sections().stream()
-                .map(section -> ObservationSection.create(
-                        observationId,
-                        section.sectionType(),
-                        section.content()
-                ))
-                .toList();
-
-        creditUser.useForRegenerateObservation(userId, observationId);
-
-        observationSectionRepository.saveAll(newSections);
-
-        return new ObservationDetail(observation, newSections);
+        try {
+            ObservationDetail detail = observationPersistenceService.regenerate(
+                    userId,
+                    observationId,
+                    observation.getVersion(),
+                    result
+            );
+            usageRecorder.markSaved(correlationId);
+            return detail;
+        } catch (RuntimeException exception) {
+            usageRecorder.markPersistenceFailed(correlationId);
+            throw exception;
+        }
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ObservationDetail getObservation(Long userId, Long observationId) {
         Observation observation = observationRepository.findByIdAndUserId(observationId, userId)
                 .orElseThrow(() -> new BusinessException(ObservationErrorCode.OBSERVATION_NOT_FOUND));
@@ -126,6 +116,7 @@ public class ObservationService implements ObservationCreator, ObservationRegene
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ObservationListDetail getObservationList(Long userId, Long cursor, int size) {
         int pageSize = Math.clamp(size, 1, 50);
         Pageable pageable = PageRequest.of(0, pageSize + 1);
@@ -160,6 +151,48 @@ public class ObservationService implements ObservationCreator, ObservationRegene
     @Override
     public long countByUserId(Long userId) {
         return observationRepository.countByUserId(userId);
+    }
+
+    private ObservationGeneration generate(
+            String correlationId,
+            Long userId,
+            ObservationGenerationOperation operation,
+            Age age,
+            CurriculumType curriculumType,
+            String situation,
+            List<SectionType> sectionTypes,
+            List<ObservationReference> references
+    ) {
+        long startedAt = System.nanoTime();
+        try {
+            ObservationGeneration generation = observationGenerator.generateObservation(
+                    age,
+                    curriculumType,
+                    situation,
+                    sectionTypes,
+                    references
+            );
+            usageRecorder.recordProviderSuccess(
+                    correlationId,
+                    userId,
+                    operation,
+                    generation,
+                    elapsedMillis(startedAt)
+            );
+            return generation;
+        } catch (RuntimeException exception) {
+            usageRecorder.recordProviderFailure(
+                    correlationId,
+                    userId,
+                    operation,
+                    elapsedMillis(startedAt)
+            );
+            throw exception;
+        }
+    }
+
+    private long elapsedMillis(long startedAt) {
+        return Duration.ofNanos(System.nanoTime() - startedAt).toMillis();
     }
 
     private void validateCreateRequest(ObservationCreateRequest request) {

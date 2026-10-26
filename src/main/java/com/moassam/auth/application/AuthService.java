@@ -11,7 +11,9 @@ import com.moassam.observation.application.required.ObservationSectionRepository
 import com.moassam.post.application.required.*;
 import com.moassam.shared.exception.BusinessException;
 import com.moassam.user.application.required.UserRepository;
+import com.moassam.user.application.required.UserLifecycleEventRepository;
 import com.moassam.user.domain.User;
+import com.moassam.user.domain.UserLifecycleEventType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,7 @@ import java.util.List;
 public class AuthService implements Auth {
 
     private final UserRepository userRepository;
+    private final UserLifecycleEventRepository userLifecycleEventRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
     private final PostLikeRepository postLikeRepository;
@@ -68,8 +71,18 @@ public class AuthService implements Auth {
         List<Long> commentPostIds = commentRepository.findPostIdsByUserId(userId);
         List<Long> likedPostIds = postLikeRepository.findPostIdsByUserId(userId);
         List<Long> observationIds = observationRepository.findIdsByUserId(userId);
+        boolean hadMeaningfulUse = !commentPostIds.isEmpty()
+                || !likedPostIds.isEmpty()
+                || !observationIds.isEmpty()
+                || postRepository.existsByUserId(userId);
 
         user.withdraw();
+        userLifecycleEventRepository.append(
+                userId,
+                UserLifecycleEventType.WITHDRAWAL.name(),
+                hadMeaningfulUse,
+                user.getDeletedAt()
+        );
 
         commentRepository.deleteByUserId(userId);
         postLikeRepository.deleteByUserId(userId);

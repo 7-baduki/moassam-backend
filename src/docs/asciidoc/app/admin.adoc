@@ -27,6 +27,13 @@ operation::admin/logout[snippets='http-request,http-response']
 
 operation::admin/user/get-users[snippets='http-request,query-parameters,http-response,response-fields']
 
+=== 운영 대시보드 조회
+
+오늘 실시간 요약과 어제까지 완결된 7·30·90일 지표를 한 번에 조회합니다.
+수집 전 구간은 0으로 표시하지 않고 각 위젯의 availability 상태와 nullable 값으로 구분합니다.
+
+operation::admin/dashboard/get-dashboard[snippets='http-request,query-parameters,http-response,response-fields']
+
 === 게시글 관리 - 조회
 
 게시글 목록을 조회합니다. 카테고리 및 키워드(제목 키워드, 유저명)를 통해 검색이 가능합니다.

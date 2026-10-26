@@ -193,6 +193,10 @@
         <generated-value strategy="IDENTITY"/>
       </id>
 
+      <version name="version">
+        <column name="version" nullable="false"/>
+      </version>
+
       <basic name="userId">
         <column name="user_id" nullable="false"/>
       </basic>
