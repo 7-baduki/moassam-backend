@@ -23,7 +23,8 @@ public record AdminDashboardSnapshot(
     }
 
     public record Cards(long signups, Double signupChangePercent,
-                        Double observationWritingRatePercent, long withdrawals,
+                        Double observationWritingRatePercent, long observationWritingEligibleUsers,
+                        long withdrawals,
                         long unusedWithdrawals, Availability lifecycleAvailability) {
     }
 

@@ -31,6 +31,8 @@ operation::admin/user/get-users[snippets='http-request,query-parameters,http-res
 
 오늘 실시간 요약과 어제까지 완결된 7·30·90일 지표를 한 번에 조회합니다.
 수집 전 구간은 0으로 표시하지 않고 각 위젯의 availability 상태와 nullable 값으로 구분합니다.
+관찰일지 작성률은 가입 후 7일의 작성 기회가 끝난 사용자를 대상으로 계산하며, 계산 대상 인원도 함께 제공합니다.
+계산 대상자가 없으면 작성률 계산 대상 인원은 0, 관찰일지 작성률은 null로 응답합니다.
 
 operation::admin/dashboard/get-dashboard[snippets='http-request,query-parameters,http-response,response-fields']
 

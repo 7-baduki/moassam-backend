@@ -45,27 +45,31 @@ public class JdbcAdminDashboardQueryRepository implements AdminDashboardQueryRep
     }
 
     @Override
-    public long countSignupUsersWithObservation(
-            LocalDateTime startInclusive,
-            LocalDateTime endExclusive
+    public ObservationWritingCohort getObservationWritingCohort(
+            LocalDateTime signupStartInclusive,
+            LocalDateTime signupEndExclusive
     ) {
-        return count("""
-                SELECT COUNT(DISTINCT lifecycle.user_id)
-                FROM user_lifecycle_events lifecycle
-                WHERE lifecycle.event_type = 'SIGNUP'
-                  AND lifecycle.occurred_at >= ? AND lifecycle.occurred_at < ?
-                  AND EXISTS (
-                      SELECT 1
-                      FROM user_daily_activities activity
-                      WHERE activity.user_id = lifecycle.user_id
-                        AND activity.activity_date >= ? AND activity.activity_date < ?
-                        AND activity.observation_created_count > 0
-                  )
-                """,
-                startInclusive,
-                endExclusive,
-                startInclusive.toLocalDate(),
-                endExclusive.toLocalDate()
+        return jdbcTemplate.queryForObject("""
+                        SELECT COUNT(DISTINCT lifecycle.user_id) eligible_users,
+                               COUNT(DISTINCT CASE WHEN EXISTS (
+                                   SELECT 1
+                                   FROM user_daily_activities activity
+                                   WHERE activity.user_id = lifecycle.user_id
+                                     AND activity.activity_date >= CAST(lifecycle.occurred_at AS DATE)
+                                     AND activity.activity_date < CAST(lifecycle.occurred_at AS DATE) + 7
+                                     AND activity.observation_created_count > 0
+                               ) THEN lifecycle.user_id END) writers
+                        FROM user_lifecycle_events lifecycle
+                        WHERE lifecycle.event_type = 'SIGNUP'
+                          AND lifecycle.occurred_at >= ?
+                          AND lifecycle.occurred_at < ?
+                        """,
+                (resultSet, rowNumber) -> new ObservationWritingCohort(
+                        resultSet.getLong("eligible_users"),
+                        resultSet.getLong("writers")
+                ),
+                signupStartInclusive,
+                signupEndExclusive
         );
     }
 
