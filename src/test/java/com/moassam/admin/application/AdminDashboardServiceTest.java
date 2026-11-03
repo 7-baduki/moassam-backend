@@ -55,6 +55,57 @@ class AdminDashboardServiceTest {
     }
 
     @Test
+    void getDashboard_usesACompletedSevenDayObservationWritingCohort() {
+        given(queryRepository.findCollectionState("USER_ACTIVITY"))
+                .willReturn(new AdminDashboardQueryRepository.CollectionState(
+                        LocalDate.of(2026, 10, 1), false
+                ));
+        given(queryRepository.getObservationWritingCohort(
+                LocalDateTime.of(2026, 10, 11, 0, 0),
+                LocalDateTime.of(2026, 10, 18, 0, 0)
+        )).willReturn(new AdminDashboardQueryRepository.ObservationWritingCohort(5, 2));
+
+        var dashboard = service.getDashboard(7);
+
+        assertThat(dashboard.cards().observationWritingEligibleUsers()).isEqualTo(5);
+        assertThat(dashboard.cards().observationWritingRatePercent()).isEqualTo(40.0);
+    }
+
+    @Test
+    void getDashboard_excludesTheUnobservablePartOfTheObservationWritingCohort() {
+        given(queryRepository.findCollectionState("USER_ACTIVITY"))
+                .willReturn(new AdminDashboardQueryRepository.CollectionState(
+                        LocalDate.of(2026, 10, 1), false
+                ));
+        given(queryRepository.getObservationWritingCohort(
+                LocalDateTime.of(2026, 10, 1, 0, 0),
+                LocalDateTime.of(2026, 10, 18, 0, 0)
+        )).willReturn(new AdminDashboardQueryRepository.ObservationWritingCohort(10, 3));
+
+        var dashboard = service.getDashboard(30);
+
+        assertThat(dashboard.cards().observationWritingEligibleUsers()).isEqualTo(10);
+        assertThat(dashboard.cards().observationWritingRatePercent()).isEqualTo(30.0);
+    }
+
+    @Test
+    void getDashboard_returnsNullWritingRateWhenTheCohortHasNoEligibleUsers() {
+        given(queryRepository.findCollectionState("USER_ACTIVITY"))
+                .willReturn(new AdminDashboardQueryRepository.CollectionState(
+                        LocalDate.of(2026, 10, 1), false
+                ));
+        given(queryRepository.getObservationWritingCohort(
+                LocalDateTime.of(2026, 10, 11, 0, 0),
+                LocalDateTime.of(2026, 10, 18, 0, 0)
+        )).willReturn(new AdminDashboardQueryRepository.ObservationWritingCohort(0, 0));
+
+        var dashboard = service.getDashboard(7);
+
+        assertThat(dashboard.cards().observationWritingEligibleUsers()).isZero();
+        assertThat(dashboard.cards().observationWritingRatePercent()).isNull();
+    }
+
+    @Test
     void getDashboard_calculatesMetricsAndKeepsPreCollectionDaysUnavailable() {
         LocalDateTime todayStart = LocalDateTime.of(2026, 10, 25, 0, 0);
         LocalDateTime currentStart = LocalDateTime.of(2026, 9, 25, 0, 0);
@@ -74,7 +125,6 @@ class AdminDashboardServiceTest {
         given(queryRepository.countLifecycleEvents("SIGNUP", comparisonStart, currentStart)).willReturn(85L);
         given(queryRepository.countLifecycleEvents("WITHDRAWAL", currentStart, todayStart)).willReturn(16L);
         given(queryRepository.countUnusedWithdrawals(currentStart, todayStart)).willReturn(6L);
-        given(queryRepository.countSignupUsersWithObservation(currentStart, todayStart)).willReturn(62L);
         given(queryRepository.countActiveUsers(LocalDate.of(2026, 10, 25), LocalDate.of(2026, 10, 26)))
                 .willReturn(41L);
         given(queryRepository.countObservationCreated(
@@ -112,7 +162,8 @@ class AdminDashboardServiceTest {
 
         assertThat(dashboard.today().activeUsers()).isEqualTo(41);
         assertThat(dashboard.cards().signupChangePercent()).isCloseTo(16.47, within(0.01));
-        assertThat(dashboard.cards().observationWritingRatePercent()).isCloseTo(62.63, within(0.01));
+        assertThat(dashboard.cards().observationWritingEligibleUsers()).isZero();
+        assertThat(dashboard.cards().observationWritingRatePercent()).isNull();
         assertThat(dashboard.dau().sevenDayRevisitRatePercent()).isNull();
         assertThat(dashboard.dau().current().get(0).count()).isNull();
         assertThat(dashboard.dau().current().stream()

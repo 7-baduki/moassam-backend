@@ -10,7 +10,10 @@ public interface AdminDashboardQueryRepository {
 
     long countUnusedWithdrawals(LocalDateTime startInclusive, LocalDateTime endExclusive);
 
-    long countSignupUsersWithObservation(LocalDateTime startInclusive, LocalDateTime endExclusive);
+    ObservationWritingCohort getObservationWritingCohort(
+            LocalDateTime signupStartInclusive,
+            LocalDateTime signupEndExclusive
+    );
 
     long countActiveUsers(LocalDate startInclusive, LocalDate endExclusive);
 
@@ -32,6 +35,9 @@ public interface AdminDashboardQueryRepository {
     CollectionState findCollectionState(String metricKey);
 
     record DailyCount(LocalDate date, long count) {
+    }
+
+    record ObservationWritingCohort(long eligibleUsers, long writers) {
     }
 
     record FeatureUsageCounts(long observationOnly, long observationAndCommunity,
