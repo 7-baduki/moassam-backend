@@ -9,6 +9,7 @@ import com.moassam.admin.application.required.AdminDashboardQueryRepository.AiUs
 import com.moassam.admin.application.required.AdminDashboardQueryRepository.CollectionState;
 import com.moassam.admin.application.required.AdminDashboardQueryRepository.FeatureUsageCounts;
 import com.moassam.admin.application.required.AdminDashboardQueryRepository.GenerationCounts;
+import com.moassam.admin.application.required.AdminDashboardQueryRepository.ObservationWritingCohort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,11 +61,24 @@ public class AdminDashboardService {
 
         long signups = queryRepository.countLifecycleEvents("SIGNUP", currentStart, todayStart);
         long previousSignups = queryRepository.countLifecycleEvents("SIGNUP", comparisonStart, currentStart);
-        long signupWriters = queryRepository.countSignupUsersWithObservation(currentStart, todayStart);
+        LocalDateTime writingCohortEnd = todayStart.minusDays(7);
+        LocalDateTime requestedWritingCohortStart = writingCohortEnd.minusDays(periodDays);
+        LocalDateTime observableWritingCohortStart = observableCohortStart(
+                requestedWritingCohortStart,
+                writingCohortEnd,
+                activityState
+        );
+        ObservationWritingCohort writingCohort = observableWritingCohortStart.isBefore(writingCohortEnd)
+                ? defaultObservationWritingCohort(queryRepository.getObservationWritingCohort(
+                        observableWritingCohortStart,
+                        writingCohortEnd
+                ))
+                : new ObservationWritingCohort(0, 0);
         var cards = new AdminDashboardSnapshot.Cards(
                 signups,
                 percentChange(signups, previousSignups),
-                percent(signupWriters, signups),
+                percent(writingCohort.writers(), writingCohort.eligibleUsers()),
+                writingCohort.eligibleUsers(),
                 queryRepository.countLifecycleEvents("WITHDRAWAL", currentStart, todayStart),
                 queryRepository.countUnusedWithdrawals(currentStart, todayStart),
                 availability(lifecycleState, comparisonDate, today.minusDays(1))
@@ -240,6 +254,22 @@ public class AdminDashboardService {
 
     private GenerationCounts defaultGenerationCounts(GenerationCounts counts) {
         return counts == null ? new GenerationCounts(0, 0) : counts;
+    }
+
+    private ObservationWritingCohort defaultObservationWritingCohort(ObservationWritingCohort cohort) {
+        return cohort == null ? new ObservationWritingCohort(0, 0) : cohort;
+    }
+
+    private LocalDateTime observableCohortStart(
+            LocalDateTime requestedStart,
+            LocalDateTime cohortEnd,
+            CollectionState activityState
+    ) {
+        if (activityState == null || activityState.availableFrom() == null) {
+            return cohortEnd;
+        }
+        LocalDateTime availableFrom = activityState.availableFrom().atStartOfDay();
+        return availableFrom.isAfter(requestedStart) ? availableFrom : requestedStart;
     }
 
     private AiUsageTotals defaultAiUsage(AiUsageTotals totals) {

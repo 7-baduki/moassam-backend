@@ -49,7 +49,7 @@ class AdminDashboardApiTest extends RestDocsSupport {
                 new DashboardPeriod(todayStart.minusDays(30), todayStart),
                 new DashboardPeriod(todayStart.minusDays(60), todayStart.minusDays(30)),
                 new AdminDashboardSnapshot.Today(3, 41, 23),
-                new AdminDashboardSnapshot.Cards(99, 16.0, 63.0, 16, 6, availability),
+                new AdminDashboardSnapshot.Cards(99, 16.0, 63.0, 99, 16, 6, availability),
                 new AdminDashboardSnapshot.Dau(
                         List.of(new AdminDashboardSnapshot.DailyPoint(LocalDate.of(2026, 10, 24), 61L)),
                         List.of(new AdminDashboardSnapshot.DailyPoint(LocalDate.of(2026, 9, 24), 58L)),
@@ -81,6 +81,7 @@ class AdminDashboardApiTest extends RestDocsSupport {
                 .andExpect(jsonPath("$.data.periodDays").value(30))
                 .andExpect(jsonPath("$.data.today.activeUsers").value(41))
                 .andExpect(jsonPath("$.data.cards.observationWritingRatePercent").value(63.0))
+                .andExpect(jsonPath("$.data.cards.observationWritingEligibleUsers").value(99))
                 .andExpect(jsonPath("$.data.dau.current[0].count").value(61))
                 .andExpect(jsonPath("$.data.regeneration.warning.warning").value(true))
                 .andExpect(jsonPath("$.data.aiUsage.totalTokens").value(300))
@@ -119,7 +120,9 @@ class AdminDashboardApiTest extends RestDocsSupport {
                                 fieldWithPath("data.cards.signupChangePercent").type(JsonFieldType.NUMBER)
                                         .description("직전 기간 대비 가입자 증감률(%). 직전 값이 0이면 null"),
                                 fieldWithPath("data.cards.observationWritingRatePercent").type(JsonFieldType.NUMBER)
-                                        .description("현재 기간 신규 가입자의 같은 기간 관찰일지 작성률(%). 가입자가 0명이면 null"),
+                                        .description("7일 작성 기회가 끝난 가입자 중 가입 후 7개 달력일 안에 관찰일지를 작성한 비율(%). 계산 대상자가 0명이면 null"),
+                                fieldWithPath("data.cards.observationWritingEligibleUsers").type(JsonFieldType.NUMBER)
+                                        .description("관찰일지 작성률 계산 대상 사용자 수"),
                                 fieldWithPath("data.cards.withdrawals").type(JsonFieldType.NUMBER)
                                         .description("현재 기간 탈퇴자 수"),
                                 fieldWithPath("data.cards.unusedWithdrawals").type(JsonFieldType.NUMBER)
